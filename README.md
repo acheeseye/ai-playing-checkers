@@ -9,5 +9,4 @@ Version 0:
 - Piece objects display correct \*true positions and directions (\*numerical position starting at top left and incrementing right).
 - Piece objects may become king, however no movements currently allow it.
 - main.cpp draws the Board object and displays existing Piece values.
-# Note
-
+# Non-Version Related Comments
