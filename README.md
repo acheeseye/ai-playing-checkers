@@ -10,5 +10,4 @@ Version 0:
 - Piece objects may become king, however no movements currently allow it.
 - main.cpp draws the Board object and displays existing Piece values.
 # Note
-Not sure how I ended up with a folder within but I removed all the extra Visual Studio stuff. Let me know if there is a way I can fix it if it matters a lot.
-Tried to fix it but now we have two copies, one in the folder and one out.
+
