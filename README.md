@@ -8,7 +8,9 @@ Version 0:
 - Board function print_board displays Board object for debugging purposes.
 - Piece objects display correct \*true positions and directions (\*numerical position starting at top left and incrementing right).
 - Piece objects may become king, however no movements currently allow it.
-- main.cpp draws the Board object and displays existing Piece values.
+- main.cpp draws the Board object and displays existing Piece values.  
+  
+  
 Version 1:
 - All files updated.
 - Board function move_piece allows movement for player 1 (starting player).
