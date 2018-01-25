@@ -14,10 +14,10 @@ Version 0:
 Version 1:
 - All files updated.
 - Board function move_piece allows movement for player 1 (starting player).
-- TODO: Remove Board function is_empty
+- [ ] TODO: Remove Board function is_empty
 - New Board functions init_board, clear_board, is_boarder, and updated_board used to update Board object correctly for print_board.
 - Board construction now only initializes values.
-- TODO: Use initializer list for constructor.
+- [ ] TODO: Use initializer list for constructor.
 - Various new data members for Board objects to keep track of Piece object owners and turn order.
 - New Board function pass_turn and turn checking in move_piece not working properly.
 # Non-Version Related Comments
