@@ -10,3 +10,4 @@ Version 0:
 - Piece objects may become king, however no movements currently allow it.
 - main.cpp draws the Board object and displays existing Piece values.
 # Non-Version Related Comments
+- (JH) Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI!
