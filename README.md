@@ -12,7 +12,7 @@ Version 0:
 
 Version 1:
 - All files updated.
-- Board function move_piece allows movement for player 1 (starting player).
+- Board function `move_piece` allows movement for player 1 (starting player).
 - [x] ~~TODO: Remove Board function is_empty~~ This proved to be useful.
 - New Board functions `init_board`, `clear_board`, `is_boarder`, and `updated_board` used to update Board object correctly for `print_board`.
 - Board construction now only initializes values.
