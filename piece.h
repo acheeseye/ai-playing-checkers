@@ -2,7 +2,7 @@
 // CS 405/605 Introduction to AI Spring 2018
 // AI Playing Checkers Project
 // Members: Jason Hsi, Jesse Keller, and Addeline Mitchell
-// Created Jan, 23, 2018
+// Created Jan 23, 2018
 
 #ifndef _INCLUDED_PIECE_H_
 #define _INCLUDED_PIECE_H_
@@ -25,9 +25,11 @@ public:
 	//int get_position(); //this will be reserved for if we need a clearer display of piece position
 	int get_true_position();
 	int get_direction();
+	int get_owner();
 	void set_position(int destination);
 private:
 	//int m_position;
+	int m_owner;
 	int m_true_position;
 	int m_movement_direction;
 	bool m_is_king;
