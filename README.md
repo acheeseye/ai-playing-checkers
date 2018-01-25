@@ -14,7 +14,7 @@ Version 1:
 - All files updated.
 - Board function `move_piece` allows movement for player 1 (starting player).
 - [x] ~~TODO: Remove Board function is_empty~~ This proved to be useful.
-- New Board functions `init_board`, `clear_board`, `is_boarder`, and `updated_board` used to update Board object correctly for `print_board`.
+- New Board functions `init_board`, `clear_board`, `is_boarder`, and `update_board` used to update Board object correctly for `print_board`.
 - Board construction now only initializes values.
 - [ ] TODO: Use initializer list for constructor.
 - Various new data members for Board objects to keep track of Piece object owners and turn order.
@@ -29,7 +29,8 @@ Version 2:
 - Piece objects now keep track of their livelihood through `m_alive`.
 # Non-Version Related Comments
 - (JH) Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! 1/24
-- (JH) Currently working on implementing king transformations/movements. 1/25
+- (JH) ~~Currently working on implementing king transformations/movements.~~ 1/25
+- (JH) Currently working on all possible move generation. 1/25
 - Here's a maybe helpful chart for all the playable positions:  
 
 |P|L|A|Y|A|B|L|E|
