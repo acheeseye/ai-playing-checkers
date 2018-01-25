@@ -9,6 +9,5 @@ Version 0:
 - Piece objects display correct \*true positions and directions (\*numerical position starting at top left and incrementing right).
 - Piece objects may become king, however no movements currently allow it.
 - main.cpp draws the Board object and displays existing Piece values.
-# Note
-Not sure how I ended up with a folder within but I removed all the extra Visual Studio stuff. Let me know if there is a way I can fix it if it matters a lot.
-Tried to fix it but now we have two copies, one in the folder and one out.
+# Non-Version Related Comments
+- (JH) Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI!
