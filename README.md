@@ -30,3 +30,15 @@ Version 2:
 # Non-Version Related Comments
 - (JH) Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! 1/24
 - (JH) Currently working on implementing king transformations/movements. 1/25
+- Here's a maybe helpful chart for all the playable positions:  
+
+|P|L|A|Y|A|B|L|E|
+|---|---|---|---|---|---|---|---|  
+|x|27|x|29|x|31|x|33|  
+|38|x|40|x|42|x|44|x|  
+|x|51|x|53|x|55|x|57|  
+|62|x|64|x|66|x|68|x|  
+|x|75|x|77|x|79|x|81|  
+|86|x|88|x|90|x|92|x|  
+|x|99|x|101|x|103|x|105|  
+|110|x|112|x|114|x|116|x|
