@@ -1,4 +1,19 @@
-//tests for checkers program
+//Tests for checkers program
+//Uses catch framework.
+//
+//In order to add/ modify tests,
+//simply write
+//		TEST_CASE(" description ", "[ name of test ]")
+//		{
+//			//code to be tested
+//		}
+//
+//Inside of test case, use
+//			INFO("description");
+//to give user description of current subtest. Use
+//			REQUIRE( some boolean );
+//fo actual condition being tested.
+
 
 #include "board.h"
 #include "piece.h"
