@@ -43,6 +43,7 @@ void Piece::set_king()
 void Piece::set_dead()
 {
 	m_alive = false;
+	m_true_position = 0;
 }
 
 //************

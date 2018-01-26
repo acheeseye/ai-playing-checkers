@@ -15,40 +15,59 @@
 //for std::vector
 #include <string>
 //for std::string
+#include <utility>
+//for std::pair
 
 enum {
-	_P2_KING_ = -2,
-	_P2_MAN_ = -1,
-	_P1_MAN_ = 1,
-	_P1_KING_,
+	_RED_KING_ = -2,
+	_RED_MAN_ = -1,
+	_BLACK_MAN_ = 1,
+	_BLACK_KING_,
 	_BOARDER_,
 	_PLAYABLE_
 };
 
 enum {
-	_P1_ = 1,
-	_P2_
+	_BLACK_ = 1,
+	_RED_
 };
 
 class Board {
 public:
-	Board(int width, int height);
+	Board(int width, int height, int starting_player);
 
 	void print_board();
+	void print_moves_made();
+	void print_all_current_possible_moves();
+	void print_all_current_possible_jumps();
+
 	void init_board();
+	void init_king_spots(int width);
 	void clear_board();
 	void update_board();
 	void pass_turn();
 
 	int get_piece_id(int position);
 
-	bool valid_man_move(int piece_id, int player, int & destination);
-	bool ownership_check(int piece_id, int player);
+	bool ownership_check(int piece_id);
 	bool is_boarder(int position);
 	bool is_empty(int position);
-	bool move_piece(int piece_id, int destination);
+	bool is_valid_move(std::pair<int, int> attempted_move);
+	bool is_valid_jump(std::pair<int, int> attempted_move);
+	bool is_king_transformer(int piece_owner, int position);
+	bool game_ended();
+
+	void generate_valid_moves(int & jumped_over_piece_id);
+	void store_if_valid(int current_position, 
+		int & destination, 
+		int diag_move, 
+		int sign_of_direction, 
+		int & jumped_over_piece_id);
+
+	void move_piece(int piece_id, int destination);
 
 	std::vector<Piece> m_pieces; // this is public for the purpose of allowing main to print
+	std::vector<std::pair<int, int>> m_moves_made; // see above
 
 private:
 	int m_current_player;
@@ -56,7 +75,12 @@ private:
 	int m_width;
 	int m_height;
 	int m_number_of_turns;
+	bool m_game_end;
 	std::vector<int> m_board;
+	std::vector<int> m_red_man_to_king_spots;
+	std::vector<int> m_black_man_to_king_spots;
+	std::vector<std::pair<int, int>> m_all_possible_moves_for_current_player;
+	std::vector<std::pair<int, int>> m_all_possible_jumps_for_current_player;
 };
 
 #endif // !_INCLUDED_BOARD_H_

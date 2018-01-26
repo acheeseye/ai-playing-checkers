@@ -10,7 +10,9 @@
 #define _INCLUDED_PIECE_H_
 
 #include <string>
-//For std::string
+//for std::string
+#include <utility>
+//for std::pair
 
 //lower and higher in terms of the numerical value of positions,
 //not positions relative to screen.
