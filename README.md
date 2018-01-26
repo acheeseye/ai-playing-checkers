@@ -26,11 +26,25 @@ Version 2:
 - New Board function `ownership_check` to make sure opposing player cannot move each other's pieces.
 - New Board function `valid_man_move` to check if move declared by `move_piece` is a valid move, and initiates jump events if needed (for man/men/non-king units only).
 - New Board function `get_piece_id` retrieves the ID of a Piece object located on a certain position on the board (kind of sketchy, but it seems to work ok and I don't know how else to retreive the piece's index).
-- Piece objects now keep track of their livelihood through `m_alive`.
+- Piece objects now keep track of their livelihood through `m_alive`.  
+
+Version 3:
+- [ ] TODO: Multijumping to be implemented.
+- [ ] TODO: King transformation movement (becomes king, but crashes right after).
+- [ ] TODO: Allow console to generate moves correctly when using 0 0.
+- Player 1 and 2 are now renamed to Player BLACK and RED, respectively.
+- Black pieces are now at the bottom (as required for assignment).
+- Various new data members and functions to store and retrieve moves made, moves possible, and jumps possible.
+- `valid_man_move` is renamed to `generate_valid_moves` with different functionality. The function now generates all possible moves and stores in `m_all_possible_xxxxx_for_current_player`.
+- Fixed an issue where `m_alive == dead` Piece objects were still left on the board and considered in play.
+- Beginning stages of king transformation attempted to be implemented.
+- `main.cpp` now allows for more interactive debugging with taking console input.
+- `move_piece` function now takes the location of a piece as its first parameter (as opposed to `piece_id`). Invalid locations allow player to retry a different location.
 # Non-Version Related Comments
 - (JH) Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! 1/24
 - (JH) ~~Currently working on implementing king transformations/movements.~~ 1/25
-- (JH) Currently working on all possible move generation. 1/25
+- (JH) Currently working on all possible move generation. 1/25  
+- (JH) Currently working on implementing king movements and debugging transformation. 1/26
 - Here's a maybe helpful chart for all the playable positions:  
 
 |P|L|A|Y|A|B|L|E|
