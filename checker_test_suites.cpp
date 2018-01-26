@@ -3,7 +3,7 @@
 //
 //In order to add/ modify tests,
 //simply write
-//		TEST_CASE(" description ", "[ name of test ]")
+//		TEST_CASE(" description ", "[ Test Category ]")
 //		{
 //			//code to be tested
 //		}
