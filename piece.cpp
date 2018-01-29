@@ -6,20 +6,26 @@
 
 #include "piece.h"
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 //************
 //************
 // Two paramemter Piece object constructor
 //		Constructs the Piece object.
 //************
 //************
-Piece::Piece(int position, int owner)
+Piece::Piece(int position, int owner, int size_of_board) :
+	m_size_of_board(size_of_board),
+	m_owner(owner),
+	m_true_position(position),
+	m_alive(true),
+	m_is_king(false)
 {
-	m_alive = true;
-	m_owner = owner;
-	m_true_position = position;
-	m_is_king = false;
-	if (owner == 1 ) m_movement_direction = _TOWARDS_LOWER_;
-	else m_movement_direction = _TOWARDS_HIGHER_;
+	m_all_diag.resize(4);
+	m_all_jump_destinations.resize(4);
+	update_diag();
 }
 
 //************
@@ -30,7 +36,7 @@ Piece::Piece(int position, int owner)
 //************
 void Piece::set_king()
 {
-	m_movement_direction = _BOTH_;
+	cout << "Piece::set_king triggered." << endl;
 	m_is_king = true;
 }
 
@@ -58,6 +64,16 @@ int Piece::get_true_position()
 	return m_true_position;
 }
 
+int Piece::get_diag_destination(int advancing_id)
+{
+	return m_all_diag[advancing_id];
+}
+
+int Piece::get_jump_destination(int advancing_id)
+{
+	return m_all_jump_destinations[advancing_id];
+}
+
 //************
 //************
 // get_direction
@@ -70,7 +86,9 @@ int Piece::get_true_position()
 //************
 int Piece::get_direction()
 {
-	return m_movement_direction;
+	if (m_is_king) return _BOTH_;
+	else if (m_owner == _BLACK_) return _TOWARDS_LOWER_;
+	else return _TOWARDS_HIGHER_;
 }
 
 //************
@@ -83,6 +101,11 @@ int Piece::get_direction()
 int Piece::get_owner()
 {
 	return m_owner;
+}
+
+bool Piece::is_king()
+{
+	return m_is_king;
 }
 
 //************
@@ -107,4 +130,29 @@ bool Piece::get_dead_status()
 void Piece::set_position(int destination)
 {
 	m_true_position = destination;
+	update_diag();
+}
+
+void Piece::update_diag()
+{
+	int left_up = m_true_position - m_size_of_board - 1;
+	int right_up = m_true_position - m_size_of_board + 1;
+	int left_down = m_true_position + m_size_of_board - 1;
+	int right_down = m_true_position + m_size_of_board + 1;
+
+	int left_up_jump = left_up - m_size_of_board - 1;
+	int right_up_jump = right_up - m_size_of_board + 1;
+	int left_down_jump = left_down + m_size_of_board - 1;
+	int right_down_jump = right_down + m_size_of_board + 1;
+
+
+	m_all_diag[0] = left_up;
+	m_all_diag[1] = right_up;
+	m_all_diag[2] = left_down;
+	m_all_diag[3] = right_down;
+
+	m_all_jump_destinations[0] = left_up_jump;
+	m_all_jump_destinations[1] = right_up_jump;
+	m_all_jump_destinations[2] = left_down_jump;
+	m_all_jump_destinations[3] = right_down_jump;
 }

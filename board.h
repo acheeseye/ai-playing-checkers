@@ -28,8 +28,10 @@ enum {
 };
 
 enum {
-	_BLACK_ = 1,
-	_RED_
+	_LEFTUP_,
+	_RIGHTUP_,
+	_LEFTDOWN_,
+	_RIGHTDOWN_
 };
 
 class Board {
@@ -57,11 +59,21 @@ public:
 	bool is_king_transformer(int piece_owner, int position);
 	bool game_ended();
 
+	//NEW GENERATE TEST//
+	void generate_valid_actions();
+	void store_if_possible(
+		int board_status,
+		std::pair<int, int> position_destination,
+		std::pair<int, int> position_jump_destination,
+		bool can_jump);
+	bool jump_available(int board_status, int piece_jump_destination);
+	//NEW GENERATE TEST//
+
 	void generate_valid_moves(int & jumped_over_piece_id);
-	void store_if_valid(int current_position, 
-		int & destination, 
-		int diag_move, 
-		int sign_of_direction, 
+	void store_if_valid(int current_position,
+		int & destination,
+		int diag_move,
+		int sign_of_direction,
 		int & jumped_over_piece_id);
 
 	void move_piece(int piece_id, int destination);

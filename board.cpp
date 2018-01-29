@@ -51,8 +51,10 @@ Board::Board(int width, int height, int starting_player)
 //************
 void Board::print_board()
 {
-	char en_man = 'r';
-	char man = 'b';
+	char red_man = 'r';
+	char red_king = 'R';
+	char black_man = 'b';
+	char black_king = 'B';
 	char boarder = ':';
 	char playable = 'x';
 	for (int row = 0; row < m_height; ++row) {
@@ -63,10 +65,16 @@ void Board::print_board()
 				cout << boarder;
 				break;
 			case _RED_MAN_:
-				cout << en_man;
+				cout << red_man;
+				break;
+			case _RED_KING_:
+				cout << red_king;
 				break;
 			case _BLACK_MAN_:
-				cout << man;
+				cout << black_man;
+				break;
+			case _BLACK_KING_:
+				cout << black_king;
 				break;
 			case _PLAYABLE_:
 				cout << playable;
@@ -144,8 +152,8 @@ void Board::init_board()
 	for (int row = 0; row < m_height; ++row) {
 		for (int col = 0; col < m_width; ++col) {
 			int index = row * m_width + col;
-			if (	(row <= 1 || row >= m_height - 2)	|| 
-					(col <= 1 || col >= m_width - 2)	) {
+			if ((row <= 1 || row >= m_height - 2) ||
+				(col <= 1 || col >= m_width - 2)) {
 				m_board[index] = _BOARDER_;
 			}
 			else {
@@ -155,12 +163,12 @@ void Board::init_board()
 				}
 				if (row < m_height / 2 - 1 && m_board[index] == _PLAYABLE_) {
 					m_board[index] = _RED_MAN_;
-					Piece p2_piece(index, _RED_);
+					Piece p2_piece(index, _RED_, m_width);
 					m_pieces.push_back(p2_piece);
 				}
 				else if (row > m_height / 2 && m_board[index] == _PLAYABLE_) {
 					m_board[index] = _BLACK_MAN_;
-					Piece p1_piece(index, _BLACK_);
+					Piece p1_piece(index, _BLACK_, m_width);
 					m_pieces.push_back(p1_piece);
 				}
 			}
@@ -224,6 +232,7 @@ void Board::update_board()
 		int position = m_pieces[i].get_true_position();
 		int owner = m_pieces[i].get_owner();
 		bool eliminated = m_pieces[i].get_dead_status();
+		bool king_status = m_pieces[i].is_king();
 
 		if (eliminated) {
 			m_board.push_back(_PLAYABLE_);
@@ -232,14 +241,20 @@ void Board::update_board()
 		else if (owner == _BLACK_) {
 			if (is_king_transformer(_BLACK_, position)) {
 				m_pieces[i].set_king();
+				m_board[position] = _BLACK_KING_;
 			}
-			m_board[position] = _BLACK_MAN_;
+			else {
+				m_board[position] = _BLACK_MAN_;
+			}
 		}
 		else if (owner == _RED_) {
 			if (is_king_transformer(_RED_, position)) {
 				m_pieces[i].set_king();
+				m_board[position] = _RED_KING_;
 			}
-			m_board[position] = _RED_MAN_;
+			else {
+				m_board[position] = _RED_MAN_;
+			}
 		}
 	}
 }
@@ -253,8 +268,8 @@ void Board::update_board()
 void Board::pass_turn()
 {
 	m_number_of_turns++;
-	(m_current_player == _BLACK_) ?	(m_current_player = _RED_, m_player_to_move = _RED_) : 
-									(m_current_player = _BLACK_, m_player_to_move = _BLACK_) ;
+	(m_current_player == _BLACK_) ? (m_current_player = _RED_, m_player_to_move = _RED_) :
+		(m_current_player = _BLACK_, m_player_to_move = _BLACK_);
 	cout << "Turn has been passed to: player " << m_current_player << endl;
 	cout << "Turns elapsed: " << m_number_of_turns << endl;
 }
@@ -325,9 +340,9 @@ bool Board::is_empty(int position)
 //************
 bool Board::is_valid_move(std::pair<int, int> attempted_move)
 {
-	auto it = find(	m_all_possible_moves_for_current_player.begin(),
-					m_all_possible_moves_for_current_player.end(),
-					attempted_move);
+	auto it = find(m_all_possible_moves_for_current_player.begin(),
+		m_all_possible_moves_for_current_player.end(),
+		attempted_move);
 	return it != m_all_possible_moves_for_current_player.end();
 }
 
@@ -379,6 +394,59 @@ bool Board::game_ended()
 	return m_game_end;
 }
 
+void Board::generate_valid_actions()
+{
+	//GENERATE ALL MOVES ONE PIECE AT A TIME//	
+		for (size_t piece_id = 0; piece_id < m_pieces.size(); ++piece_id) {
+			if (m_pieces[piece_id].get_dead_status()) {
+				continue;
+			}
+			int piece_position = m_pieces[piece_id].get_true_position();
+			int piece_direction = m_pieces[piece_id].get_direction();
+			bool piece_is_king = m_pieces[piece_id].is_king();
+
+			//_LEFTUP_ == 0, _RIGHTDOWN_ == 3
+			for (size_t advancing_destination = _LEFTUP_; advancing_destination < _RIGHTDOWN_; ++advancing_destination) {
+
+				int piece_destination = m_pieces[piece_id].get_diag_destination(advancing_destination);
+				int piece_jump_destination = m_pieces[piece_id].get_jump_destination(advancing_destination);
+				int board_status = m_board[advancing_destination];
+
+				bool can_jump = jump_available(board_status, piece_jump_destination);
+
+				pair<int, int> position_destination = make_pair(piece_position, piece_destination);
+				pair<int, int> position_jump_destination = make_pair(piece_position, piece_jump_destination);
+
+				if (piece_is_king) {
+					store_if_possible(board_status, position_destination, position_jump_destination, can_jump);
+				}
+				else {
+					if (piece_direction == _TOWARDS_LOWER_) {
+
+						if (advancing_destination == _LEFTUP_ || advancing_destination == _RIGHTUP_) {
+							store_if_possible(board_status, position_destination, position_jump_destination, can_jump);
+						}
+					}
+					else if (piece_direction == _TOWARDS_HIGHER_)
+						if (advancing_destination == _LEFTDOWN_ || advancing_destination == _RIGHTDOWN_) {
+							store_if_possible(board_status, position_destination, position_jump_destination, can_jump);
+						}
+				}
+			}
+		}
+}
+
+void Board::store_if_possible(int board_status, std::pair<int, int> position_destination, std::pair<int, int> position_jump_destination, bool can_jump)
+{
+}
+
+bool Board::jump_available(int board_status, int piece_jump_destination)
+{
+	if (m_current_player == _BLACK_)
+		return ((board_status == _RED_MAN_ || board_status == _RED_KING_) && piece_jump_destination == _PLAYABLE_);
+	else return ((board_status == _BLACK_MAN_ || board_status == _BLACK_KING_) && piece_jump_destination == _PLAYABLE_);
+}
+
 //************
 //************
 // generate_valid_moves
@@ -416,11 +484,11 @@ void Board::generate_valid_moves(int & jumped_over_piece_id)
 //		Helper function to determine if move to be stored is a move or jump.
 //************
 //************
-void Board::store_if_valid(	int current_piece_position, 
-							int & destination, 
-							int diag_move, 
-							int sign_of_direction,
-							int & jumped_over_piece_id)
+void Board::store_if_valid(int current_piece_position,
+	int & destination,
+	int diag_move,
+	int sign_of_direction,
+	int & jumped_over_piece_id)
 {
 	pair<int, int> tmp_move_holder;
 	if (abs(m_board[destination]) <= 2 &&
@@ -462,7 +530,7 @@ void Board::move_piece(int current_position, int destination)
 	pair<int, int> attempted_move = make_pair(current_position, destination);
 	cout << "Moving piece " << attempted_move.first << " to " << attempted_move.second << "... ";
 
-	if (m_all_possible_jumps_for_current_player.size() != 0 && 
+	if (m_all_possible_jumps_for_current_player.size() != 0 &&
 		is_valid_jump(attempted_move)) {
 		cout << "valid jump attempted" << endl;
 		m_pieces[jumped_over_piece_id].set_dead();

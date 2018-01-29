@@ -48,10 +48,8 @@ void print_info(Board board0) {
 }
 
 int main() {
-	cout << "START OF PROGRAM" << endl;
-
-	//setup
 	Board board0(8, 8, _BLACK_);
+
 	int p1_piece0 = 12;
 
 	//move 0 -- print initial board & info
@@ -71,13 +69,16 @@ int main() {
 	while (!board0.game_ended()) {
 		int current;
 		int destination;
-		cout << "enter the next move: ";
+		cout << "Enter the next move: ";
 		cin >> current >> destination;
 		if (current == 0) {
 			board0.print_moves_made();
 			board0.print_all_current_possible_jumps();
 			board0.print_all_current_possible_moves();
 			print_info(board0);
+		}
+		else if (current == 1) {
+			break;
 		}
 		else {
 			board0.move_piece(current, destination);
