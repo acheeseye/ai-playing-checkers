@@ -246,13 +246,16 @@ void Board::update_board()
 		int owner = m_pieces[i].get_owner();
 		bool eliminated = m_pieces[i].get_dead_status();
 		bool king_status = m_pieces[i].is_king();
-
 		if (eliminated) {
 			m_board.push_back(_PLAYABLE_);
 			position = m_board.size() + 1;
 		}
 		else if (owner == _BLACK_) {
-			if (is_king_transformer(_BLACK_, position)) {
+			cout << "piece_id: " << i << " blk" << endl;
+			if (m_pieces[i].is_king()) {
+				m_board[position] = _BLACK_KING_;
+			}
+			else if(is_king_transformer(_BLACK_, position)) {
 				m_pieces[i].set_king();
 				m_board[position] = _BLACK_KING_;
 			}
@@ -261,11 +264,18 @@ void Board::update_board()
 			}
 		}
 		else if (owner == _RED_) {
-			if (is_king_transformer(_RED_, position)) {
+			cout << "piece_id: " << i << " ";
+			if (m_pieces[i].is_king()) {
+				cout << "already red king, setting board at position as red king." << endl;
+				m_board[position] = _RED_KING_;
+			}
+			else if (is_king_transformer(_RED_, position)) {
+				cout << "red man landed on king transformer spot, transforming and setting board at position as red king." << endl;
 				m_pieces[i].set_king();
 				m_board[position] = _RED_KING_;
 			}
 			else {
+				cout << "red man detected." << endl;
 				m_board[position] = _RED_MAN_;
 			}
 		}
