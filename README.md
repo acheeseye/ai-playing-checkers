@@ -44,6 +44,10 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Kings now update and print correctly when they reach the king spots.
 - King are not able to jump in the opposite direction (can move in opposite direction).
 - Soft save so progress is not lost.
+### Version 3.2:
+- Soft save so progress is not lost.
+- Kings are now able to jump in opposite direction.
+- Kings are not displayed correctly when they move from king spot.
 # Non-Version Related Comments
 - (JH) Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! 1/24
 - (JH) ~~Currently working on implementing king transformations/movements.~~ 1/25
