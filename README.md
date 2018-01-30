@@ -30,7 +30,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 
 ## Version 3:
 - [ ] TODO: Multijumping to be implemented.
-- [ ] TODO: King transformation movement (becomes king, but crashes right after).
+- [x] TODO: King transformation movement (becomes king, but crashes right after).
 - [ ] TODO: Allow console to generate moves correctly when using 0 0.
 - Player 1 and 2 are now renamed to Player BLACK and RED, respectively.
 - Black pieces are now at the bottom (as required for assignment).
@@ -48,6 +48,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Soft save so progress is not lost.
 - Kings are now able to jump in opposite direction.
 - Kings are not displayed correctly when they move from king spot.
+- 3.2.1 hot fix(?) Kings are now displayed correctly at all times.
 # Non-Version Related Comments
 - (JH) Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! 1/24
 - (JH) ~~Currently working on implementing king transformations/movements.~~ 1/25
