@@ -1,7 +1,7 @@
 # AI PLAYING CHECKERS
 This is a project dedicated to creating and training an AI to play pro level checkers/draughts for UAF CS 405/605.  
 # Versions
-Version 0:  
+## Version 0:  
 - All relevant current files added.
 - Board object creates a 12 by 12 board with a boarder with width of 2.
 - Board object correctly generates Piece objects according to playable positions.
@@ -10,7 +10,7 @@ Version 0:
 - Piece objects may become king, however no movements currently allow it.
 - `main.cpp` draws the Board object and displays existing Piece values.  
 
-Version 1:
+## Version 1:
 - All files updated.
 - Board function `move_piece` allows movement for player 1 (starting player).
 - [x] ~~TODO: Remove Board function is_empty~~ This proved to be useful.
@@ -20,7 +20,7 @@ Version 1:
 - Various new data members for Board objects to keep track of Piece object owners and turn order.
 - New Board function `pass_turn` and turn checking in `move_piece` not working properly (fixed: issue #1).  
 
-Version 2:
+## Version 2:
 - All files updated.
 - `move_piece` allows both players to move to empty spaces and jump correctly.
 - New Board function `ownership_check` to make sure opposing player cannot move each other's pieces.
@@ -28,7 +28,7 @@ Version 2:
 - New Board function `get_piece_id` retrieves the ID of a Piece object located on a certain position on the board (kind of sketchy, but it seems to work ok and I don't know how else to retreive the piece's index).
 - Piece objects now keep track of their livelihood through `m_alive`.  
 
-Version 3:
+## Version 3:
 - [ ] TODO: Multijumping to be implemented.
 - [ ] TODO: King transformation movement (becomes king, but crashes right after).
 - [ ] TODO: Allow console to generate moves correctly when using 0 0.
@@ -40,6 +40,10 @@ Version 3:
 - Beginning stages of king transformation attempted to be implemented.
 - `main.cpp` now allows for more interactive debugging with taking console input.
 - `move_piece` function now takes the location of a piece as its first parameter (as opposed to `piece_id`). Invalid locations allow player to retry a different location.
+### Version 3.1:
+- Kings now update and print correctly when they reach the king spots.
+- King are not able to jump in the opposite direction (can move in opposite direction).
+- Soft save so progress is not lost.
 # Non-Version Related Comments
 - (JH) Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! 1/24
 - (JH) ~~Currently working on implementing king transformations/movements.~~ 1/25
