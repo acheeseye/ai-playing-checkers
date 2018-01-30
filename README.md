@@ -50,10 +50,11 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Kings are not displayed correctly when they move from king spot.
 - 3.2.1 hot fix(?) Kings are now displayed correctly at all times.
 # Non-Version Related Comments
-- (JH) Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! 1/24
-- (JH) ~~Currently working on implementing king transformations/movements.~~ 1/25
-- (JH) Currently working on all possible move generation. 1/25  
-- (JH) Currently working on implementing king movements and debugging transformation. 1/26
+- [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
+- [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
+- [x] Currently working on all possible move generation. (1/25, JH)  
+- [x] Currently working on implementing king movements and debugging transformation. (1/26, JH)
+- [ ] Currently working on implementing multijumping. (1/29, JH)
 - Here's a maybe helpful chart for all the playable positions:  
 
 |P|L|A|Y|A|B|L|E|
