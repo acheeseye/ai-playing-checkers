@@ -64,6 +64,16 @@ int Piece::get_true_position()
 	return m_true_position;
 }
 
+std::vector<int> Piece::get_all_diag()
+{
+	return m_all_diag;
+}
+
+std::vector<int> Piece::get_all_jump_destiations()
+{
+	return m_all_jump_destinations;
+}
+
 int Piece::get_diag_destination(int advancing_id)
 {
 	return m_all_diag[advancing_id];

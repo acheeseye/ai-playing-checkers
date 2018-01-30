@@ -101,8 +101,8 @@ void Board::print_moves_made()
 		cout << "No moves made yet!" << endl;
 	}
 	for (auto n : m_moves_made) {
-		//cout << n.first << " " << n.second << " "; //this is format for copy pasting
-		cout << "(" << n.first << ", " << n.second << ")" << endl;
+		cout << n.first << " " << n.second << " "; //this is format for copy pasting
+		//cout << "(" << n.first << ", " << n.second << ")" << endl;
 	}
 	cout << endl;
 }
@@ -110,14 +110,20 @@ void Board::print_moves_made()
 
 void Board::print_all_current_possible_moves()
 {
+	//m_all_possible_moves_for_current_player.clear();
+	//m_all_possible_jumps_for_current_player.clear();
+	//generate_valid_actions();
 	if (m_all_possible_moves_for_current_player.size() == 0) {
 		cout << "No possible moves generated!" << endl;
-		m_game_end = true;
+		//m_game_end = true;
+		return;
 	}
 	cout << "Possible moves:" << endl;
 	for (auto n : m_all_possible_moves_for_current_player) {
 		cout << "(" << n.first << "," << n.second << ") ";
 	}
+	//m_all_possible_moves_for_current_player.clear();
+	//m_all_possible_jumps_for_current_player.clear();
 	cout << endl;
 }
 
@@ -129,14 +135,20 @@ void Board::print_all_current_possible_moves()
 //************
 void Board::print_all_current_possible_jumps()
 {
-	if (m_all_possible_moves_for_current_player.size() == 0) {
+	//m_all_possible_moves_for_current_player.clear();
+	//m_all_possible_jumps_for_current_player.clear();
+	//generate_valid_actions();
+	if (m_all_possible_jumps_for_current_player.size() == 0) {
 		cout << "No possible jumps generated!" << endl;
-		m_game_end = true;
+		//m_game_end = true;
+		return;
 	}
 	cout << "Possible jumps:" << endl;
 	for (auto n : m_all_possible_jumps_for_current_player) {
 		cout << "(" << n.first << "," << n.second << ") ";
 	}
+	//m_all_possible_moves_for_current_player.clear();
+	//m_all_possible_jumps_for_current_player.clear();
 	cout << endl;
 }
 
@@ -148,7 +160,6 @@ void Board::print_all_current_possible_jumps()
 //************
 void Board::init_board()
 {
-	cout << "Initiating board..." << endl;
 	for (int row = 0; row < m_height; ++row) {
 		for (int col = 0; col < m_width; ++col) {
 			int index = row * m_width + col;
@@ -174,6 +185,8 @@ void Board::init_board()
 			}
 		}
 	}
+	int invalid_id = (int)m_pieces.size();
+	m_jumped_over_piece_id = { invalid_id, invalid_id, invalid_id, invalid_id };
 }
 
 //************
@@ -298,6 +311,20 @@ int Board::get_piece_id(int position)
 	return piece_id;
 }
 
+int Board::get_diag_direction(int position, int destination)
+{
+	//cout << "calculating diag direction of: " << position << " " << destination << endl;
+	int piece_id = get_piece_id(position);
+	int diag_direction = -1;
+	//vector<int> all_diag = m_pieces[piece_id].get_all_diag();
+	vector<int> all_diag_jump = m_pieces[piece_id].get_all_jump_destiations();
+	auto it = find(all_diag_jump.begin(), all_diag_jump.end(), destination);
+	if (it != all_diag_jump.end()) {
+		diag_direction = it - all_diag_jump.begin();
+	}
+	return diag_direction;
+}
+
 //************
 //************
 // ownership_check
@@ -397,111 +424,91 @@ bool Board::game_ended()
 void Board::generate_valid_actions()
 {
 	//GENERATE ALL MOVES ONE PIECE AT A TIME//	
-		for (size_t piece_id = 0; piece_id < m_pieces.size(); ++piece_id) {
-			if (m_pieces[piece_id].get_dead_status()) {
-				continue;
-			}
-			int piece_position = m_pieces[piece_id].get_true_position();
-			int piece_direction = m_pieces[piece_id].get_direction();
-			bool piece_is_king = m_pieces[piece_id].is_king();
-
-			//_LEFTUP_ == 0, _RIGHTDOWN_ == 3
-			for (size_t advancing_destination = _LEFTUP_; advancing_destination < _RIGHTDOWN_; ++advancing_destination) {
-
-				int piece_destination = m_pieces[piece_id].get_diag_destination(advancing_destination);
-				int piece_jump_destination = m_pieces[piece_id].get_jump_destination(advancing_destination);
-				int board_status = m_board[advancing_destination];
-
-				bool can_jump = jump_available(board_status, piece_jump_destination);
-
-				pair<int, int> position_destination = make_pair(piece_position, piece_destination);
-				pair<int, int> position_jump_destination = make_pair(piece_position, piece_jump_destination);
-
-				if (piece_is_king) {
-					store_if_possible(board_status, position_destination, position_jump_destination, can_jump);
-				}
-				else {
-					if (piece_direction == _TOWARDS_LOWER_) {
-
-						if (advancing_destination == _LEFTUP_ || advancing_destination == _RIGHTUP_) {
-							store_if_possible(board_status, position_destination, position_jump_destination, can_jump);
-						}
-					}
-					else if (piece_direction == _TOWARDS_HIGHER_)
-						if (advancing_destination == _LEFTDOWN_ || advancing_destination == _RIGHTDOWN_) {
-							store_if_possible(board_status, position_destination, position_jump_destination, can_jump);
-						}
-				}
-			}
-		}
-}
-
-void Board::store_if_possible(int board_status, std::pair<int, int> position_destination, std::pair<int, int> position_jump_destination, bool can_jump)
-{
-}
-
-bool Board::jump_available(int board_status, int piece_jump_destination)
-{
-	if (m_current_player == _BLACK_)
-		return ((board_status == _RED_MAN_ || board_status == _RED_KING_) && piece_jump_destination == _PLAYABLE_);
-	else return ((board_status == _BLACK_MAN_ || board_status == _BLACK_KING_) && piece_jump_destination == _PLAYABLE_);
-}
-
-//************
-//************
-// generate_valid_moves
-//		Generates all possible moves for all possible pieces.
-//		Result is stored in m_all_possible_xxxxx_for_current_player.
-//		The passed in jumped_over_piece_id returns < m_board.size() if
-//		a jump is made.
-//************
-//************
-void Board::generate_valid_moves(int & jumped_over_piece_id)
-{
-	int starting_id;
+	int starting_id, ending_id;
 	(m_current_player == _BLACK_) ? (starting_id = 12) : (starting_id = 0);
-	int ending_id = starting_id + m_pieces.size() / 2;
-	for (int i = starting_id; i < ending_id; ++i) {
-		if (m_pieces[i].get_dead_status()) {
+	ending_id = starting_id + 12;
+	for (size_t piece_id = starting_id; piece_id < ending_id; ++piece_id) {
+		if (m_pieces[piece_id].get_dead_status()) {
 			continue;
 		}
-		int sign_of_direction = m_pieces[i].get_direction();
-		int current_piece_position = m_pieces[i].get_true_position();
-		//left and right is relative to player one
-		int diag_left = (sign_of_direction * m_width) - 1;
-		int diag_right = (sign_of_direction * m_width) + 1;
-		int left_advance = current_piece_position + diag_left;
-		int right_advance = current_piece_position + diag_right;
-		//these only work for men at the moment
-		store_if_valid(current_piece_position, left_advance, diag_left, sign_of_direction, jumped_over_piece_id);
-		store_if_valid(current_piece_position, right_advance, diag_right, sign_of_direction, jumped_over_piece_id);
+		int piece_position = m_pieces[piece_id].get_true_position();
+		int piece_direction = m_pieces[piece_id].get_direction();
+		bool piece_is_king = m_pieces[piece_id].is_king();
+		//cout << "piece info: " << piece_position << " dir: " << piece_direction << " king: " << piece_is_king << endl;
+		//_LEFTUP_ == 0, _RIGHTDOWN_ == 3
+		for (size_t advancing_destination = _LEFTUP_; advancing_destination <= _RIGHTDOWN_; ++advancing_destination) {
+			int piece_destination = m_pieces[piece_id].get_diag_destination(advancing_destination);
+			int piece_jump_destination = m_pieces[piece_id].get_jump_destination(advancing_destination);
+			int board_status_move = m_board[piece_destination];
+			int board_status_jump = m_board[piece_jump_destination];
+
+			bool can_jump = jump_available(board_status_jump, board_status_move);
+
+			pair<int, int> position_destination = make_pair(piece_position, piece_destination);
+			pair<int, int> position_jump_destination = make_pair(piece_position, piece_jump_destination);
+
+			if (piece_is_king) {
+				store_if_possible(board_status_move, board_status_jump, position_destination, position_jump_destination, can_jump, advancing_destination);
+			}
+			else {
+				if (piece_direction == _TOWARDS_LOWER_) {
+					//cout << "	dest: " << piece_destination << " dest stat: " << board_status_move;
+					//cout << " jump: " << piece_jump_destination << " jump stat: " << board_status_jump << endl;
+					if (advancing_destination == _LEFTUP_ || advancing_destination == _RIGHTUP_) {
+						store_if_possible(board_status_move, board_status_jump, position_destination, position_jump_destination, can_jump, advancing_destination);
+					}
+				}
+				else if (piece_direction == _TOWARDS_HIGHER_) {
+					//cout << "	dest: " << piece_destination << " dest stat: " << board_status_move;
+					//cout << " jump: " << piece_jump_destination << " jump stat: " << board_status_jump << endl;
+					if (advancing_destination == _LEFTDOWN_ || advancing_destination == _RIGHTDOWN_) {
+						store_if_possible(board_status_move, board_status_jump, position_destination, position_jump_destination, can_jump, advancing_destination);
+					}
+				}
+			}
+		}
 	}
 }
 
-//************
-//************
-// store_if_valid
-//		Helper function to determine if move to be stored is a move or jump.
-//************
-//************
-void Board::store_if_valid(int current_piece_position,
-	int & destination,
-	int diag_move,
-	int sign_of_direction,
-	int & jumped_over_piece_id)
+void Board::store_if_possible(
+	int board_status_move, 
+	int board_status_jump, 
+	std::pair<int, int> position_destination, 
+	std::pair<int, int> position_jump_destination, 
+	bool can_jump,
+	int diag_direction)
 {
-	pair<int, int> tmp_move_holder;
-	if (abs(m_board[destination]) <= 2 &&
-		signbit((float)m_board[destination]) == signbit((float)sign_of_direction) &&
-		m_board[destination + diag_move] == _PLAYABLE_) {
-		jumped_over_piece_id = get_piece_id(destination);
-		destination += diag_move;
-		pair<int, int> tmp_move_holder = make_pair(current_piece_position, destination);
-		m_all_possible_jumps_for_current_player.push_back(tmp_move_holder);
+	if (can_jump) {
+		m_jumped_over_piece_id[diag_direction] = get_piece_id(position_destination.second);
+		//cout << "jumped_over_id: " << m_jumped_over_piece_id[diag_direction] << endl;
+		m_all_possible_jumps_for_current_player.push_back(position_jump_destination);
+		//cout << "		JUMP action stored" << endl;
+		return;
 	}
-	if (m_board[destination] == _PLAYABLE_) {
-		tmp_move_holder = make_pair(current_piece_position, destination);
-		m_all_possible_moves_for_current_player.push_back(tmp_move_holder);
+	if (board_status_move == _PLAYABLE_) {
+		m_all_possible_moves_for_current_player.push_back(position_destination);
+		//cout << "		MOVE action stored" << endl;
+		return;
+	}
+	//cout << "		move not stored" << endl;
+	return;
+}
+
+bool Board::jump_available(int board_status_jump, int board_status_move)
+{
+	//cout << (board_status_jump == _RED_MAN_) << (board_status_jump == _RED_KING_) << (m_board[piece_jump_destination] == _PLAYABLE_) << endl;
+	if (m_current_player == _BLACK_) {
+		//m_jumped_over_piece_id
+		return ((
+			board_status_move == _RED_MAN_ ||
+			board_status_move == _RED_KING_) &&
+			board_status_jump == _PLAYABLE_);
+	}
+	else {
+		return ((
+			board_status_move == _BLACK_MAN_ ||
+			board_status_move == _BLACK_KING_) &&
+			board_status_jump == _PLAYABLE_);
 	}
 }
 
@@ -518,7 +525,7 @@ void Board::move_piece(int current_position, int destination)
 	m_all_possible_moves_for_current_player.clear();
 	m_all_possible_jumps_for_current_player.clear();
 	int current_piece_id = get_piece_id(current_position);
-	int jumped_over_piece_id = (int)m_pieces.size();
+	//m_jumped_over_piece_id = (int)m_pieces.size();
 
 	if (!ownership_check(current_piece_id))
 	{
@@ -526,14 +533,20 @@ void Board::move_piece(int current_position, int destination)
 		return;
 	}
 
-	generate_valid_moves(jumped_over_piece_id);
-	pair<int, int> attempted_move = make_pair(current_position, destination);
-	cout << "Moving piece " << attempted_move.first << " to " << attempted_move.second << "... ";
+	//generate_valid_moves(m_jumped_over_piece_id);
+	generate_valid_actions();
 
+	print_all_current_possible_jumps();
+	print_all_current_possible_moves();
+
+	pair<int, int> attempted_move = make_pair(current_position, destination);
+	int diag_direction = get_diag_direction(current_position, destination);
+
+	cout << "Moving piece " << attempted_move.first << " to " << attempted_move.second << "... (jump size: " << m_all_possible_jumps_for_current_player.size() << ")" << endl;
 	if (m_all_possible_jumps_for_current_player.size() != 0 &&
 		is_valid_jump(attempted_move)) {
-		cout << "valid jump attempted" << endl;
-		m_pieces[jumped_over_piece_id].set_dead();
+		int j_piece_id = m_jumped_over_piece_id[diag_direction];
+		m_pieces[j_piece_id].set_dead();
 		m_moves_made.push_back(attempted_move);
 		m_pieces[current_piece_id].set_position(destination);
 		update_board();
@@ -551,12 +564,8 @@ void Board::move_piece(int current_position, int destination)
 		update_board();
 		print_board();
 		pass_turn();
-		//int dummy = 0;
-		//generate_valid_moves(dummy);
-		//print_all_current_possible_moves();
 		return;
 	}
 
 	cout << "That is an illegal destination for the selected piece. Try another piece or destination." << endl;
-	//return false;
 }

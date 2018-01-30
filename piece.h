@@ -45,6 +45,8 @@ public:
 
 	//getters
 	int get_true_position();
+	std::vector<int> get_all_diag();
+	std::vector<int> get_all_jump_destiations();
 	int get_diag_destination(int advancing_id);
 	int get_jump_destination(int advancing_id);
 	int get_direction();

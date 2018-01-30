@@ -50,6 +50,7 @@ public:
 	void pass_turn();
 
 	int get_piece_id(int position);
+	int get_diag_direction(int position, int destination);
 
 	bool ownership_check(int piece_id);
 	bool is_boarder(int position);
@@ -62,19 +63,21 @@ public:
 	//NEW GENERATE TEST//
 	void generate_valid_actions();
 	void store_if_possible(
-		int board_status,
+		int board_status_move,
+		int board_status_jump,
 		std::pair<int, int> position_destination,
 		std::pair<int, int> position_jump_destination,
-		bool can_jump);
-	bool jump_available(int board_status, int piece_jump_destination);
+		bool can_jump,
+		int diag_direction);
+	bool jump_available(int board_status_jump, int board_status_move);
 	//NEW GENERATE TEST//
 
-	void generate_valid_moves(int & jumped_over_piece_id);
+	void generate_valid_moves(int & m_jumped_over_piece_id);
 	void store_if_valid(int current_position,
 		int & destination,
 		int diag_move,
 		int sign_of_direction,
-		int & jumped_over_piece_id);
+		int & m_jumped_over_piece_id);
 
 	void move_piece(int piece_id, int destination);
 
@@ -93,6 +96,7 @@ private:
 	std::vector<int> m_black_man_to_king_spots;
 	std::vector<std::pair<int, int>> m_all_possible_moves_for_current_player;
 	std::vector<std::pair<int, int>> m_all_possible_jumps_for_current_player;
+	std::vector<int> m_jumped_over_piece_id;
 };
 
 #endif // !_INCLUDED_BOARD_H_

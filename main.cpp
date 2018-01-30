@@ -66,6 +66,8 @@ int main() {
 
 //SERIES OF TESTS -- I'M NOT SURE HOW TO USE CATCH AT THE MOMENT
 
+	//TODO: generate correct jumped over piece id
+
 	while (!board0.game_ended()) {
 		int current;
 		int destination;
@@ -82,6 +84,7 @@ int main() {
 		}
 		else {
 			board0.move_piece(current, destination);
+			cout << "INSTRUCTION ENDED\n\n";
 		}
 	}
 
