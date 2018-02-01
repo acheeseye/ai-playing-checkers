@@ -625,6 +625,45 @@ temp_Board::temp_Board() :m_current_player(_BLACK_)
 	generate_moves();
 }
 
+temp_Board::temp_Board(std::vector<int> board, int player)
+{
+	if (player != _BLACK_ && player != _RED_)
+	{
+		m_current_player = _BLACK_;
+	}
+	else
+	{
+		m_current_player = player;
+	}
+	m_board.resize(32);
+	if (board.size() != 32)
+		board.resize(32);
+	for (int i = 0;i < 32;++i)
+	{
+		if (board.at(i) != _BLACK_MAN_&& board.at(i) != _RED_MAN_ && board.at(i) != _BLACK_KING_ && board.at(i) != _RED_KING_)
+		{
+			board.at(i) = _PLAYABLE_;
+		}
+		m_board.at(i) = board.at(i);
+	}
+	generate_moves();
+}
+
+bool temp_Board::operator==(const temp_Board & board) const
+{
+	bool flag = true;
+	for (int i = 0;i < 32;++i)
+	{
+		flag &= (board.m_board == this->m_board);
+	}
+	return flag;
+}
+
+std::vector<std::vector<int>> & temp_Board::get_move_list()
+{
+	return m_possible_move_list;
+}
+
 std::vector<std::vector<int>>& temp_Board::generate_moves()
 {
 	m_possible_move_list.resize(0);
@@ -677,6 +716,8 @@ void temp_Board::jump_moves_start()
 					move.push_back(i);
 					move.push_back(move_table[i].ljmp);
 					jump_recurse(*this, move);
+					move.pop_back();
+					move.pop_back();
 					//do jumping stuff
 				}
 			}
@@ -692,6 +733,8 @@ void temp_Board::jump_moves_start()
 					move.push_back(i);
 					move.push_back(move_table[i].rjmp);
 					jump_recurse(*this, move);
+					move.pop_back();
+					move.pop_back();
 					//do jumping stuff
 				}
 			}
@@ -710,6 +753,8 @@ void temp_Board::jump_moves_start()
 					move.push_back(i);
 					move.push_back(move_table[i].ljmp);
 					jump_recurse(*this, move);
+					move.pop_back();
+					move.pop_back();
 					//do jumping stuff
 				}
 			}
@@ -725,6 +770,8 @@ void temp_Board::jump_moves_start()
 					move.push_back(i);
 					move.push_back(move_table[i].rjmp);
 					jump_recurse(*this, move);
+					move.pop_back();
+					move.pop_back();
 					//do jumping stuff
 				}
 			}
@@ -740,6 +787,8 @@ void temp_Board::jump_moves_start()
 					move.push_back(i);
 					move.push_back(31 - move_table[31 - i].rjmp);
 					jump_recurse(*this, move);
+					move.pop_back();
+					move.pop_back();
 					//do jumping stuff
 				}
 			}
@@ -755,6 +804,8 @@ void temp_Board::jump_moves_start()
 					move.push_back(i);
 					move.push_back(31 - move_table[31 - i].ljmp);
 					jump_recurse(*this, move);
+					move.pop_back();
+					move.pop_back();
 					//do jumping stuff
 				}
 			}
@@ -774,6 +825,8 @@ void temp_Board::jump_moves_start()
 					move.push_back(i);
 					move.push_back(31 - move_table[31 - i].rjmp);
 					jump_recurse(*this, move);
+					move.pop_back();
+					move.pop_back();
 					//do jumping stuff
 				}
 			}
@@ -789,6 +842,8 @@ void temp_Board::jump_moves_start()
 					move.push_back(i);
 					move.push_back(31 - move_table[31 - i].ljmp);
 					jump_recurse(*this, move);
+					move.pop_back();
+					move.pop_back();
 					//do jumping stuff
 				}
 			}
@@ -807,6 +862,8 @@ void temp_Board::jump_moves_start()
 					move.push_back(i);
 					move.push_back(move_table[i].ljmp);
 					jump_recurse(*this, move);
+					move.pop_back();
+					move.pop_back();
 					//do jumping stuff
 				}
 			}
@@ -822,6 +879,8 @@ void temp_Board::jump_moves_start()
 					move.push_back(i);
 					move.push_back(move_table[i].rjmp);
 					jump_recurse(*this, move);
+					move.pop_back();
+					move.pop_back();
 					//do jumping stuff
 				}
 			}
@@ -837,6 +896,8 @@ void temp_Board::jump_moves_start()
 					move.push_back(i);
 					move.push_back(31 - move_table[31 - i].rjmp);
 					jump_recurse(*this, move);
+					move.pop_back();
+					move.pop_back();
 					//do jumping stuff
 				}
 			}
@@ -852,6 +913,8 @@ void temp_Board::jump_moves_start()
 					move.push_back(i);
 					move.push_back(31 - move_table[31 - i].ljmp);
 					jump_recurse(*this, move);
+					move.pop_back();
+					move.pop_back();
 					//do jumping stuff
 				}
 			}
@@ -954,27 +1017,29 @@ void temp_Board::jump_recurse(temp_Board board, std::vector<int> next_move)
 	{
 		if (move_table[i].ljmp != -1)
 		{
-			jdleft = m_board.at(move_table[i].ljmp);
-			dleft = m_board.at(move_table[i].lmove);
+			jdleft = board.m_board.at(move_table[i].ljmp);
+			dleft = board.m_board.at(move_table[i].lmove);
 			if (jdleft == _PLAYABLE_ && (dleft == _BLACK_MAN_ || dleft == _BLACK_KING_))
 			{
 				is_leaf = false;
 				//
 				next_move.push_back(move_table[i].ljmp);
 				jump_recurse(board, next_move);
+				next_move.pop_back();
 				//do jumping stuff
 			}
 		}
 		if (move_table[i].rjmp != -1)
 		{
-			jdright = m_board.at(move_table[i].rjmp);
-			dright = m_board.at(move_table[i].rmove);
+			jdright = board.m_board.at(move_table[i].rjmp);
+			dright = board.m_board.at(move_table[i].rmove);
 			if (jdright == _PLAYABLE_ && (dright == _BLACK_MAN_ || dright == _BLACK_KING_))
 			{
 				is_leaf = false;
 				//
 				next_move.push_back(move_table[i].rjmp);
 				jump_recurse(board, next_move);
+				next_move.pop_back();
 				//do jumping stuff
 			}
 		}
@@ -983,53 +1048,57 @@ void temp_Board::jump_recurse(temp_Board board, std::vector<int> next_move)
 	{
 		if (move_table[i].ljmp != -1)
 		{
-			jdleft = m_board.at(move_table[i].ljmp);
-			dleft = m_board.at(move_table[i].lmove);
+			jdleft = board.m_board.at(move_table[i].ljmp);
+			dleft = board.m_board.at(move_table[i].lmove);
 			if (jdleft == _PLAYABLE_ && (dleft == _BLACK_MAN_ || dleft == _BLACK_KING_))
 			{
 				is_leaf = false;
 				//
 				next_move.push_back(move_table[i].ljmp);
 				jump_recurse(board, next_move);
+				next_move.pop_back();
 				//do jumping stuff
 			}
 		}
 		if (move_table[i].rjmp != -1)
 		{
-			jdright = m_board.at(move_table[i].rjmp);
-			dright = m_board.at(move_table[i].rmove);
+			jdright = board.m_board.at(move_table[i].rjmp);
+			dright = board.m_board.at(move_table[i].rmove);
 			if (jdright == _PLAYABLE_ && (dright == _BLACK_MAN_ || dright == _BLACK_KING_))
 			{
 				is_leaf = false;
 				//
 				next_move.push_back(move_table[i].rjmp);
 				jump_recurse(board, next_move);
+				next_move.pop_back();
 				//do jumping stuff
 			}
 		}
 		if (move_table[31 - i].rjmp != -1)
 		{
-			juleft = m_board.at(31 - move_table[31 - i].ljmp);
-			uleft = m_board.at(31 - move_table[31 - i].lmove);
+			juleft = board.m_board.at(31 - move_table[31 - i].rjmp);
+			uleft = board.m_board.at(31 - move_table[31 - i].rmove);
 			if (juleft == _PLAYABLE_ && (uleft == _BLACK_MAN_ || uleft == _BLACK_KING_))
 			{
 				is_leaf = false;
 				//
 				next_move.push_back(31 - move_table[31 - i].rjmp);
 				jump_recurse(board, next_move);
+				next_move.pop_back();
 				//do jumping stuff
 			}
 		}
 		if (move_table[31 - i].ljmp != -1)
 		{
-			juright = m_board.at(31 - move_table[31 - i].ljmp);
-			uright = m_board.at(31 - move_table[31 - i].lmove);
+			juright = board.m_board.at(31 - move_table[31 - i].ljmp);
+			uright = board.m_board.at(31 - move_table[31 - i].lmove);
 			if (juright == _PLAYABLE_ && (uright == _BLACK_MAN_ || uright == _BLACK_KING_))
 			{
 				is_leaf = false;
 				//
 				next_move.push_back(31 - move_table[31 - i].ljmp);
 				jump_recurse(board, next_move);
+				next_move.pop_back();
 				//do jumping stuff
 			}
 		}
@@ -1039,27 +1108,29 @@ void temp_Board::jump_recurse(temp_Board board, std::vector<int> next_move)
 
 		if (move_table[31 - i].rjmp != -1)
 		{
-			juleft = m_board.at(31 - move_table[31 - i].rjmp);
-			uleft = m_board.at(31 - move_table[31 - i].rmove);
+			juleft = board.m_board.at(31 - move_table[31 - i].rjmp);
+			uleft = board.m_board.at(31 - move_table[31 - i].rmove);
 			if (juleft == _PLAYABLE_ && (uleft == _RED_MAN_ || uleft == _RED_KING_))
 			{
 				is_leaf = false;
 				//
 				next_move.push_back(31 - move_table[31 - i].rjmp);
 				jump_recurse(board, next_move);
+				next_move.pop_back();
 				//do jumping stuff
 			}
 		}
 		if (move_table[31 - i].ljmp != -1)
 		{
-			juright = m_board.at(31 - move_table[31 - i].ljmp);
-			uright = m_board.at(31 - move_table[31 - i].lmove);
+			juright = board.m_board.at(31 - move_table[31 - i].ljmp);
+			uright = board.m_board.at(31 - move_table[31 - i].lmove);
 			if (juright == _PLAYABLE_ && (uright == _RED_MAN_ || uright == _RED_KING_))
 			{
 				is_leaf = false;
 				//
 				next_move.push_back(31 - move_table[31 - i].ljmp);
 				jump_recurse(board, next_move);
+				next_move.pop_back();
 				//do jumping stuff
 			}
 		}
@@ -1068,53 +1139,57 @@ void temp_Board::jump_recurse(temp_Board board, std::vector<int> next_move)
 	{
 		if (move_table[i].ljmp != -1)
 		{
-			jdleft = m_board.at(move_table[i].ljmp);
-			dleft = m_board.at(move_table[i].lmove);
+			jdleft = board.m_board.at(move_table[i].ljmp);
+			dleft = board.m_board.at(move_table[i].lmove);
 			if (jdleft == _PLAYABLE_ && (dleft == _RED_MAN_ || dleft == _RED_KING_))
 			{
 				is_leaf = false;
 				//
 				next_move.push_back(move_table[i].ljmp);
 				jump_recurse(board, next_move);
+				next_move.pop_back();
 				//do jumping stuff
 			}
 		}
 		if (move_table[i].rjmp != -1)
 		{
-			jdright = m_board.at(move_table[i].rjmp);
-			dright = m_board.at(move_table[i].rmove);
+			jdright =board.m_board.at(move_table[i].rjmp);
+			dright = board.m_board.at(move_table[i].rmove);
 			if (jdright == _PLAYABLE_ && (dright == _RED_MAN_ || dright == _RED_KING_))
 			{
 				is_leaf = false;
 				//
 				next_move.push_back(move_table[i].rjmp);
 				jump_recurse(board, next_move);
+				next_move.pop_back();
 				//do jumping stuff
 			}
 		}
-		if (move_table[31 - i].ljmp != -1)
+		if (move_table[31 - i].rjmp != -1)
 		{
-			juleft = m_board.at(31 - move_table[31 - i].ljmp);
-			uleft = m_board.at(31 - move_table[31 - i].lmove);
+			juleft = board.m_board.at(31 - move_table[31 - i].rjmp);
+			uleft = board.m_board.at(31 - move_table[31 - i].rmove);
 			if (juleft == _PLAYABLE_ && (uleft == _RED_MAN_ || uleft == _RED_KING_))
 			{
 				is_leaf = false;
 				//
 				next_move.push_back(31 - move_table[31 - i].rjmp);
 				jump_recurse(board, next_move);
+				next_move.pop_back();
 				//do jumping stuff
 			}
 		}
 		if (move_table[31 - i].ljmp != -1)
 		{
-			juright = m_board.at(31 - move_table[31 - i].ljmp);
-			uright = m_board.at(31 - move_table[31 - i].lmove);
+			juright = board.m_board.at(31 - move_table[31 - i].ljmp);
+			uright = board.m_board.at(31 - move_table[31 - i].lmove);
 			if (juright == _PLAYABLE_ && (uright == _RED_MAN_ || uright == _RED_KING_))
 			{
 				is_leaf = false;
 				//
 				next_move.push_back(31 - move_table[31 - i].ljmp);
 				jump_recurse(board, next_move);
+				next_move.pop_back();
 				//do jumping stuff
 			}
 		}

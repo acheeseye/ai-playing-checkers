@@ -157,8 +157,11 @@ class temp_Board
 {
 public:
 	temp_Board(); //default constructor
+	temp_Board(std::vector<int> board, int player);
 	temp_Board(temp_Board &) = default; //copy constructor, useful for recursion
 	std::vector<std::vector<int>> & generate_moves(); //generates list of moves
+	bool operator==(const temp_Board &) const;
+	std::vector<std::vector<int>>& get_move_list();
 	void non_jump_moves();
 	void jump_moves_start();
 	void jump_recurse(temp_Board board_state, std::vector<int> next_move); //pass by VALUE not reference
