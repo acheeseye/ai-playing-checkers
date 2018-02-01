@@ -156,24 +156,28 @@ static const struct
 class temp_Board
 {
 public:
-	temp_Board();
-	temp_Board(temp_Board &) = default;
-	std::vector<std::vector<int>> & generate_moves();
+	temp_Board(); //default constructor
+	temp_Board(temp_Board &) = default; //copy constructor, useful for recursion
+	std::vector<std::vector<int>> & generate_moves(); //generates list of moves
 	void non_jump_moves();
 	void jump_moves_start();
 	void jump_recurse(temp_Board board_state, std::vector<int> next_move); //pass by VALUE not reference
 	void move_piece(int move, bool switch_turns = true);
+
+	bool is_over();
+	int get_Player();
+
 	void print_moves();
 private:
 	//Current state of the board, same as above
 	std::vector<int> m_board;
 	int m_current_player;
-	bool m_do_jump;
+	bool m_do_jump;//member variables storing whether a jump is available
 
 	//List of possible moves, notice that the type
 	//is a list. This allows for repeated jumping to be
-	//represented (i.e (4,5,6,7) would represent the piece
-	//on 4 jumping to 5, then 6, then 7 were such a move possible).
+	//represented (i.e (24,17,8) would represent the piece
+	//on 24 jumping to 17, then to 8).
 	std::vector<std::vector<int>> m_possible_move_list;
 public:
 	void friend draw_board(const temp_Board &);
@@ -181,6 +185,8 @@ private:
 	void move_from(int start, int dest);	//please do not call unless needed.
 											//moves piece from start to dest
 											//but may crash if not given proper values.
+											//Used only because jump_recurse needed a function
+											//like this to function properly.
 };
 
 #endif // !_INCLUDED_BOARD_H_

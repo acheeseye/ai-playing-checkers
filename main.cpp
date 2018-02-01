@@ -48,6 +48,33 @@ void print_info(Board board0) {
 }
 
 int main() {
+
+	//Game of checkers using temp_Board
+	temp_Board board;
+	std::cout << "This is a game of checkers." << std::endl;
+	std::cout << "Printed below the board is the list of move options" << std::endl;
+	std::cout << "Choose a move to begin game, type -1 to end game" << std::endl;
+	int next_move;
+	while (!board.is_over())
+	{
+		draw_board(board);
+		board.print_moves();
+		std::cout << "Player: " << board.get_Player() << std::endl;
+		std::cout << "Move choice:";
+		cin >> next_move;
+		if (next_move == -1)
+		{
+			break;
+		}
+		board.move_piece(next_move);
+	}
+	std::cout << "game over" << std::endl;
+
+	return 0;
+
+
+
+	/*
 	Board board0(8, 8, _BLACK_);
 
 	int p1_piece0 = 12;
@@ -67,11 +94,12 @@ int main() {
 //SERIES OF TESTS -- I'M NOT SURE HOW TO USE CATCH AT THE MOMENT
 
 	//TODO: generate correct jumped over piece id
-
 	while (!board0.game_ended()) {
+		board0.generate_valid_actions();
+		board0.print_all_current_possible_moves();
 		int current;
 		int destination;
-		cout << "Enter the next move: ";
+		cout << "Enter the next move (0 to print board info, 1 to stop game): ";
 		cin >> current >> destination;
 		if (current == 0) {
 			board0.print_moves_made();
@@ -89,4 +117,5 @@ int main() {
 	}
 
 	cout << endl;
+	*/
 }

@@ -40,54 +40,46 @@ TEST_CASE("Temp board tests","[temp board]")
 
 	//std::cin >> move;
 
-	board.generate_moves();
 	board.print_moves();
 	INFO("Doing move 1");
 	move = 3;
 	board.move_piece(move);
 	draw_board(board);
 
-	board.generate_moves();
 	board.print_moves();
 	move = 1;
 	board.move_piece(move);
 	draw_board(board);
 
 
-	board.generate_moves();
 	board.print_moves();
 	move = 0;
 	board.move_piece(move);
 	draw_board(board);
 
-	board.generate_moves();
 	board.print_moves();
 	move = 0;
 	board.move_piece(move);
 	draw_board(board);
 	
-	board.generate_moves();
 	board.print_moves();
 
 	move = 4;
 	board.move_piece(move);
 	draw_board(board);
 
-	board.generate_moves();
 	board.print_moves();
 
 	move = 4;
 	board.move_piece(move);
 	draw_board(board);
 
-	board.generate_moves();
 	board.print_moves();
 
 	move = 0;
 	board.move_piece(move);
 	draw_board(board);
 
-	board.generate_moves();
 	board.print_moves();
 
 	move = 1;
@@ -101,23 +93,24 @@ TEST_CASE("Temp board tests","[temp board]")
 	board.move_piece(move);
 	draw_board(board);
 
-	board.generate_moves();
 	board.print_moves();
 
 	move = 1;
 	board.move_piece(move);
 	draw_board(board);
 
-	board.generate_moves();
 	board.print_moves();
 
 	move = 0;
 	board.move_piece(move);
 	draw_board(board);
 
-	board.generate_moves();
 	board.print_moves();
 
+	move = 5;
+	board.move_piece(move);
+	draw_board(board);
 
+	board.print_moves();
 	//system("pause");
 }

@@ -620,6 +620,9 @@ temp_Board::temp_Board() :m_current_player(_BLACK_)
 			m_board.at(i) = _PLAYABLE_;
 	}
 	m_do_jump = false;
+
+	//populates possible move list
+	generate_moves();
 }
 
 std::vector<std::vector<int>>& temp_Board::generate_moves()
@@ -942,7 +945,7 @@ void temp_Board::jump_recurse(temp_Board board, std::vector<int> next_move)
 	int juleft, juright, jdleft, jdright;
 	board.move_from(next_move.at(next_move.size()-2), next_move.at(next_move.size() - 1));
 
-	int  i = next_move.at(1);
+	int  i = next_move.at(next_move.size()-1);
 	position = board.m_board.at(i);
 	std::vector<int> move;
 	
@@ -1206,6 +1209,8 @@ void temp_Board::move_piece(int move_number, bool switch_turns)
 		if (switch_turns)
 			m_current_player = _BLACK_;
 	}
+	// repopulates move list
+	generate_moves();
 }
 
 void temp_Board::move_from(int start, int dest)
@@ -1260,6 +1265,10 @@ void temp_Board::move_from(int start, int dest)
 		}
 	}
 }
+
+int temp_Board::get_Player() { return m_current_player; }
+
+bool temp_Board::is_over() { return (m_possible_move_list.size() == 0); }
 
 void draw_board(const temp_Board & board)
 {
