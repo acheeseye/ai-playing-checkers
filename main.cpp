@@ -54,14 +54,26 @@ int main() {
 	std::cout << "This is a game of checkers." << std::endl;
 	std::cout << "Printed below the board is the list of move options" << std::endl;
 	std::cout << "Choose a move to begin game, type -1 to end game" << std::endl;
-	int next_move;
 	while (!board.is_over())
 	{
+		int next_move;
 		draw_board(board);
 		board.print_moves();
 		std::cout << "Player: " << board.get_Player() << std::endl;
 		std::cout << "Move choice:";
-		cin >> next_move;
+		std::cin >> next_move;
+		
+		//apparently, setting next move equal to something insanely large like
+		//11111111111111111111111111111111111111
+		//or plugging in characters such as 'a' will cause std::cin.fail() to be
+		//true causing the program to enter an infinite loop. This next if statement
+		//fixes this.
+		if (std::cin.bad() || std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.get();
+		}
+
 		if (next_move == -1)
 		{
 			break;

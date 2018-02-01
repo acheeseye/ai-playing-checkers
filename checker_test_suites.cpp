@@ -144,8 +144,10 @@ TEST_CASE("Jumps", "[Jumps]")
 	//boardState.at()
 	{
 		temp_Board board2(boardState, _BLACK_);
-		draw_board(board2);
-		board2.print_moves();
+		INFO("Jumping nightmare, should be 9 possible moves");
+		REQUIRE( board2.get_move_list().size() == 9);
+		//draw_board(board2);
+		//board2.print_moves();
 	}
 
 
@@ -165,7 +167,12 @@ TEST_CASE("Jumps", "[Jumps]")
 	boardState.at(23) = _BLACK_KING_;
 	{
 		temp_Board board2(boardState, _RED_);
-		draw_board(board2);
-		board2.print_moves();
+		INFO("Jumping nighmare, should be 9 possible moves");
+		REQUIRE(board2.get_move_list().size() == 9);
+		//draw_board(board2);
+		//board2.move_piece(2);
+		//board2.print_moves();
+		//draw_board(board2);
+		//board2.print_moves();
 	}
 }
