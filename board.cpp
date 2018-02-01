@@ -1145,7 +1145,7 @@ void temp_Board::print_moves()
 
 void temp_Board::move_piece(int move_number, bool switch_turns)
 {
-	if (move_number<0 || move_number> m_possible_move_list.size())
+	if (move_number<0 || move_number>= m_possible_move_list.size())
 		return;
 	std::vector<int> moves = m_possible_move_list.at(move_number);
 	int start;
