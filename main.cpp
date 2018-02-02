@@ -74,7 +74,7 @@ int main() {
 	sf::Vector2f board_base_origin = board_base.getPosition();
 	sf::Vector2f slot_origin = board_base_origin + sf::Vector2f(board_boarder, board_boarder);
 
-	board_base.setFillColor(sf::Color::White);
+	board_base.setFillColor(sf::Color(85, 35, 5));
 	selector.setFillColor(sf::Color::Transparent);
 	selector.setOutlineThickness(10);
 	selector.setOutlineColor(sf::Color(55, 0, 130));
