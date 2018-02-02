@@ -58,7 +58,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Simple GUI implemented (with selection indication included).
 - Right side of GUI to be implemented as move display, or something to the likes.
 - [ ] TODO: Check if kings are properly produced when a multi-jump is attempted and the slot the piece lands on is **NOT** a king transformer slot.
-- [ ] TODO: Perhaps clean-up main by creating GUI drawer objects?
+- [ ] TODO: Perhaps clean-up `main.cpp` by creating GUI drawer objects?
 - `_RED_` player is by default and AI with random moves generated and `_BLACK_` is user.
 - [ ] TODO: Test if reverse works and if both can be AI.
 # Non-Version Related Comments
