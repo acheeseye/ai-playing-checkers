@@ -33,42 +33,6 @@ int mouse_selected_index_converter(int mouse_selected_index, int mouse_index_x, 
 		return return_index;
 }
 
-void print_info(Board board0) {
-	cout << "Player 1 Piece Positions: ";
-	for (int i = 0; i < (int)board0.m_pieces.size(); ++i) {
-		if (board0.m_pieces[i].get_owner() == _BLACK_) {
-			int a = board0.m_pieces[i].get_true_position();
-			cout << a << " ";
-		}
-	}
-	cout << endl;
-	cout << "Player 1 Piece Direction: ";
-	for (int i = 0; i < (int)board0.m_pieces.size(); ++i) {
-		if (board0.m_pieces[i].get_owner() == _BLACK_) {
-			int a = board0.m_pieces[i].get_direction();
-			cout << a << " ";
-		}
-	}
-	cout << endl;
-	cout << "Player 2 Piece Positions: ";
-	for (int i = 0; i < (int)board0.m_pieces.size(); ++i) {
-		if (board0.m_pieces[i].get_owner() == _RED_) {
-			int a = board0.m_pieces[i].get_true_position();
-			cout << a << " ";
-		}
-	}
-	cout << endl;
-	cout << "Player 2 Piece Direction: ";
-	for (int i = 0; i < (int)board0.m_pieces.size(); ++i) {
-		if (board0.m_pieces[i].get_owner() == _RED_) {
-			int a = board0.m_pieces[i].get_direction();
-			cout << a << " ";
-		}
-	}
-	cout << endl;
-	cout << "INSTRUCTION FINISHED***************************************" << endl << endl;
-}
-
 int main() {
 
 	//Game of checkers using temp_Board
@@ -78,6 +42,7 @@ int main() {
 
 	int start_piece_id = 33;
 	int end_piece_id = 33;
+	int mouse_selected_index = 64;
 
 	bool draw_selector = false;
 
@@ -147,7 +112,7 @@ int main() {
 				int mouse_index_x = (mouse_x - board_boarder) / slot_width;
 				int mouse_index_y = (mouse_y - board_boarder) / slot_width;
 
-				int mouse_selected_index = mouse_index_x + mouse_index_y * board_size;
+				mouse_selected_index = mouse_index_x + mouse_index_y * board_size;
 				selected_board_index = mouse_selected_index_converter(
 					mouse_selected_index, mouse_index_x, mouse_index_y);
 			}
@@ -243,14 +208,26 @@ int main() {
 			playable_slot = !playable_slot;
 		}
 
-		if (draw_selector)
+		if (mouse_selected_index != 64 && start_piece_id != 33)
 		{
-			selector.setPosition(selector_draw_position);
+			int col = mouse_selected_index % 8;
+			int row = mouse_selected_index / 8;
+			int col_translate = col * slot_width + board_boarder;
+			int row_translate = row * slot_height + board_boarder;
+			sf::Vector2f selector_draw_location(col_translate, row_translate);
+			selector.setPosition(selector_draw_location);
 			window.draw(selector);
 		}
+
 		window.display();
 
+		if (board.is_over()) {
+			cout << "GAME ENDED. PRESS ENTER TO EXIT. (or R to restart but later)" << endl;
+
+			break;
+		}
 	}
+	return 0;
 
 	std::cout << "This is a game of checkers." << std::endl;
 	std::cout << "Printed below the board is the list of move options" << std::endl;
