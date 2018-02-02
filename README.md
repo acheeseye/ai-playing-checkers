@@ -70,6 +70,8 @@ This is a project dedicated to creating and training an AI to play pro level che
 ### Version 4.2:
 - `temp_Board` objects now allow either player to go first.
 - Allows (ish) for both players to be random AI (when `black_is_ai` and `red_is_ai` are both set to true and there is only one piece remaining from either side, the game crashes).
+- Added a delay between each move for viewing.
+- [ ] TODO: Save the moves made and win status and output it to a (text?) file.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
