@@ -175,4 +175,28 @@ TEST_CASE("Jumps", "[Jumps]")
 		//draw_board(board2);
 		//board2.print_moves();
 	}
+
+	for (int i = 0;i < 32;++i)
+	{
+		boardState[i] = _PLAYABLE_;
+	}
+	boardState.at(0) = _RED_MAN_;
+	boardState.at(1) = _RED_MAN_;
+	boardState.at(3) = _RED_MAN_;
+	boardState.at(7) = _RED_MAN_;
+	boardState.at(9) = _RED_MAN_;
+	boardState.at(10) = _RED_MAN_;
+	boardState.at(11) = _RED_MAN_;
+	boardState.at(16) = _BLACK_MAN_;
+	boardState.at(18) = _BLACK_MAN_;
+	boardState.at(21) = _RED_KING_;
+	boardState.at(25) = _BLACK_MAN_;
+	boardState.at(26) = _BLACK_MAN_;
+	boardState.at(27) = _BLACK_MAN_;
+	boardState.at(31) = _BLACK_MAN_;
+	{
+		temp_Board board2(boardState,_RED_);
+		draw_board(board2);
+		board2.print_moves();
+	}
 }

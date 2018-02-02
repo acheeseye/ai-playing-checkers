@@ -777,8 +777,8 @@ void temp_Board::jump_moves_start()
 			}
 			if (move_table[31 - i].rjmp != -1)
 			{
-				juleft = m_board.at(31 - move_table[31 - i].ljmp);
-				uleft = m_board.at(31 - move_table[31 - i].lmove);
+				juleft = m_board.at(31 - move_table[31 - i].rjmp);
+				uleft = m_board.at(31 - move_table[31 - i].rmove);
 				if (juleft == _PLAYABLE_ && (uleft == _BLACK_MAN_ || uleft == _BLACK_KING_))
 				{
 					m_do_jump = true;
