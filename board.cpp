@@ -1319,26 +1319,26 @@ void temp_Board::move_from(int start, int dest)
 		}
 
 
-	if (m_current_player == _BLACK_)
-	{
-		for (int i = 0; i < 4;++i)
-		{
-			if (m_board.at(i) == _BLACK_MAN_)
-			{
-				m_board.at(i) = _BLACK_KING_;
-			}
-		}
-	}
-	else
-	{
-		for (int i = 28; i < 32;++i)
-		{
-			if (m_board.at(i) == _RED_MAN_)
-			{
-				m_board.at(i) = _RED_KING_;
-			}
-		}
-	}
+	//if (m_current_player == _BLACK_)
+	//{
+	//	for (int i = 0; i < 4;++i)
+	//	{
+	//		if (m_board.at(i) == _BLACK_MAN_)
+	//		{
+	//			m_board.at(i) = _BLACK_KING_;
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//	for (int i = 28; i < 32;++i)
+	//	{
+	//		if (m_board.at(i) == _RED_MAN_)
+	//		{
+	//			m_board.at(i) = _RED_KING_;
+	//		}
+	//	}
+	//}
 }
 
 int temp_Board::get_Player() { return m_current_player; }

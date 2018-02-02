@@ -1,5 +1,7 @@
 # AI PLAYING CHECKERS
 This is a project dedicated to creating and training an AI to play pro level checkers/draughts for UAF CS 405/605.  
+# IMPORTANT  
+- [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
 # Versions
 ## Version 0:  
 - All relevant current files added.
@@ -54,7 +56,8 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
 - [x] Currently working on all possible move generation. (1/25, JH)  
 - [x] Currently working on implementing king movements and debugging transformation. (1/26, JH)
-- [ ] Currently working on implementing multijumping. (1/29, JH)
+- [ ] ~~Currently working on implementing multijumping.~~ (1/29, JH)
+- [x] Currently working on implementing mouse click based GUI (1/31, JH)
 - Here's a maybe helpful chart for all the playable positions:  
 
 |P|L|A|Y|A|B|L|E|
