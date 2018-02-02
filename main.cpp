@@ -5,6 +5,8 @@
 // Created Jan 23, 2018
 
 #include "board.h"
+#include <random>
+#include <time.h>
 
 #include <iostream>
 using std::cout;
@@ -51,6 +53,7 @@ int main() {
 
 	//Game of checkers using temp_Board
 	temp_Board board;
+	srand(time(NULL));
 	std::cout << "This is a game of checkers." << std::endl;
 	std::cout << "Printed below the board is the list of move options" << std::endl;
 	std::cout << "Choose a move to begin game, type -1 to end game" << std::endl;
@@ -59,9 +62,18 @@ int main() {
 		int next_move;
 		draw_board(board);
 		board.print_moves();
-		std::cout << "Player: " << board.get_Player() << std::endl;
-		std::cout << "Move choice:";
-		std::cin >> next_move;
+
+		if (board.get_Player() == _BLACK_)
+		{
+			std::cout << "Player: " << board.get_Player() << std::endl;
+			std::cout << "Move choice:";
+			std::cin >> next_move;
+		}
+		else
+		{
+			next_move = rand() % board.get_move_list().size();
+			std::cout << "computer did move" << std::endl;
+		}
 		
 		//apparently, setting next move equal to something insanely large like
 		//11111111111111111111111111111111111111

@@ -201,4 +201,54 @@ TEST_CASE("Jumps", "[Jumps]")
 		//draw_board(board2);
 		//board2.print_moves();
 	}
+
+	for (int i = 0;i < 32;++i)
+	{
+		boardState[i] = _PLAYABLE_;
+	}
+	boardState.at(9) = _RED_MAN_;
+	boardState.at(10) = _RED_MAN_;
+	boardState.at(14) = _BLACK_MAN_;
+	boardState.at(17) = _RED_MAN_;
+	boardState.at(18) = _RED_MAN_;
+	{
+		temp_Board board2(boardState, _BLACK_);
+		draw_board(board2);
+		board2.print_moves();
+	}
+
+	boardState.at(9) = _BLACK_MAN_;
+	boardState.at(10) = _BLACK_MAN_;
+	boardState.at(14) = _RED_MAN_;
+	boardState.at(17) = _BLACK_MAN_;
+	boardState.at(18) = _BLACK_MAN_;
+	{
+		temp_Board board2(boardState, _RED_);
+		draw_board(board2);
+		board2.print_moves();
+	}
+
+	boardState.at(9) = _RED_MAN_;
+	boardState.at(10) = _RED_MAN_;
+	boardState.at(14) = _BLACK_KING_;
+	boardState.at(17) = _RED_MAN_;
+	boardState.at(18) = _RED_MAN_;
+	{
+		temp_Board board2(boardState, _BLACK_);
+		draw_board(board2);
+		board2.print_moves();
+	}
+
+	boardState.at(9) = _BLACK_MAN_;
+	boardState.at(10) = _BLACK_MAN_;
+	boardState.at(14) = _RED_KING_;
+	boardState.at(17) = _BLACK_MAN_;
+	boardState.at(18) = _BLACK_MAN_;
+	{
+		temp_Board board2(boardState, _RED_);
+		draw_board(board2);
+		board2.print_moves();
+	}
+
+
 }
