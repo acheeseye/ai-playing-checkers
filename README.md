@@ -65,7 +65,8 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [ ] TODO: Test if reverse works and if both can be AI.
 ### Version 4.1:
 - Pieces are now displayed smaller allowing the top left corner of the playable slot to display slot id (for easier debugging and/or readability).
-- [ ] TODO: Change the white board base because it hurts my eyes a little.
+- [x] TODO: Change the white board base because it hurts my eyes a little.
+- Now sports a classy dark brown board base.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
