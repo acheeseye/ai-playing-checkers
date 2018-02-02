@@ -1343,6 +1343,11 @@ void temp_Board::move_from(int start, int dest)
 
 int temp_Board::get_Player() { return m_current_player; }
 
+int temp_Board::get_board_status(int board_id)
+{
+	return m_board.at(board_id);
+}
+
 bool temp_Board::is_over() { return (m_possible_move_list.size() == 0); }
 
 void draw_board(const temp_Board & board)
