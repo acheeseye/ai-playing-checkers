@@ -25,7 +25,7 @@ using std::endl;
 //***********************************************************
 //Functions for temp_Board
 //***********************************************************
-temp_Board::temp_Board() :m_current_player(_BLACK_)
+temp_Board::temp_Board(int starting_player) :m_current_player(starting_player)
 {
 	m_board.resize(32);
 	for (int i = 0; i < 32;++i)

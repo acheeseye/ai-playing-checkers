@@ -90,7 +90,7 @@ static const struct
 class temp_Board
 {
 public:
-	temp_Board(); //default constructor
+	temp_Board(int starting_player); //default constructor
 	temp_Board(std::vector<int> board, int player);
 	temp_Board(temp_Board &) = default; //copy constructor, useful for recursion
 

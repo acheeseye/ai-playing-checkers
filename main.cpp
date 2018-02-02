@@ -39,7 +39,7 @@ int mouse_selected_index_converter(int mouse_selected_index, int mouse_index_x, 
 int main() {
 
 	//Game of checkers using temp_Board
-	temp_Board board;
+	temp_Board board(_RED_);
 
 	int next_move;
 
@@ -48,6 +48,8 @@ int main() {
 	int mouse_selected_index = 64;
 
 	bool draw_selector = false;
+	bool red_is_ai = true;
+	bool black_is_ai = false;
 
 	unsigned int board_size = 8;
 	unsigned int board_width = 700;
@@ -93,11 +95,22 @@ int main() {
 			board_status.at(i) = board.get_board_status(i);
 		}
 
-		if (board.get_Player() == _RED_)
-		{
-			next_move = rand() % board.get_move_list().size();
-			board.move_piece(next_move);
+		if (red_is_ai) {
+			if (board.get_Player() == _RED_)
+			{
+				next_move = rand() % board.get_move_list().size();
+				board.move_piece(next_move);
+			}
 		}
+
+		if (black_is_ai) {
+			if (board.get_Player() == _BLACK_)
+			{
+				next_move = rand() % board.get_move_list().size();
+				board.move_piece(next_move);
+			}
+		}
+
 
 		while (window.pollEvent(event))
 		{
@@ -154,11 +167,11 @@ int main() {
 			auto it = find(moves.begin(), moves.end(), attempted_move);
 			if (it != moves.end())
 			{
-				cout << "move attempted is valid" << endl;
+				//cout << "move attempted is valid" << endl;
 				int move_id = it - moves.begin();
 				board.move_piece(move_id);
 			}
-			else cout << "move attempted is INVALID" << endl;
+			//else cout << "move attempted is INVALID" << endl;
 			start_piece_id = 33;
 			end_piece_id = 33;
 		}
@@ -239,8 +252,7 @@ int main() {
 		window.display();
 
 		if (board.is_over()) {
-			cout << "GAME ENDED. PRESS ENTER TO EXIT. (or R to restart but later)" << endl;
-
+			cout << "GAME ENDED. RETURNED TO CONSOLE." << endl;
 			break;
 		}
 	}
