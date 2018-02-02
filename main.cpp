@@ -15,6 +15,9 @@ using std::endl;
 using std::cin;
 #include <vector>
 using std::vector;
+#include <string>
+using std::string;
+using std::to_string;
 
 int mouse_selected_index_converter(int mouse_selected_index, int mouse_index_x, int mouse_index_y)
 {
@@ -53,13 +56,20 @@ int main() {
 	unsigned int board_boarder = 30;
 	unsigned int slot_width = (board_width - board_boarder * 2) / board_size;
 	unsigned int slot_height = (board_width - board_boarder * 2) / board_size;
+	unsigned int piece_distance_from_edge = 10;
+
+	sf::Font font;
+	if (!font.loadFromFile("ai-playing-checkers/cour.ttf"))
+	{
+		cout << "font load failed" << endl;
+	}
 
 	sf::RenderWindow window(sf::VideoMode(board_width + side_display_width, board_height), "CHECKERS");
 
 	sf::RectangleShape board_base(sf::Vector2f(board_width, board_height));
 	sf::RectangleShape selector(sf::Vector2f(slot_width, slot_height));
 	sf::RectangleShape slot(sf::Vector2f(slot_width, slot_height));
-	sf::CircleShape piece(slot_width / 2);
+	sf::CircleShape piece(slot_width / 2 - piece_distance_from_edge);
 
 	sf::Vector2f board_base_origin = board_base.getPosition();
 	sf::Vector2f slot_origin = board_base_origin + sf::Vector2f(board_boarder, board_boarder);
@@ -120,7 +130,7 @@ int main() {
 				window.close();
 		}
 
-		if (selected_board_index != 33) {
+		if (selected_board_index != 33) { // location selected is valid
 			if (selected_board_index == start_piece_id) {
 				start_piece_id = 33;
 				end_piece_id = 33;
@@ -166,9 +176,12 @@ int main() {
 					sf::Vector2f(slot_origin.x, slot_origin.y) +
 					sf::Vector2f(slot_width * col, slot_height * row);
 				slot.setPosition(position_on_board);
-				piece.setPosition(position_on_board);
 
-				int current_status = board_status[(row * board_size + col) / 2];
+				sf::Vector2f piece_dfe_holder(piece_distance_from_edge, piece_distance_from_edge);
+				piece.setPosition(position_on_board + piece_dfe_holder);
+
+				int playable_slot_id = (row * board_size + col) / 2;
+				int current_status = board_status[playable_slot_id];
 
 				switch (current_status)
 				{
@@ -191,8 +204,12 @@ int main() {
 
 				if (playable_slot)
 				{
+					string p_slot_id_str = to_string(playable_slot_id);
+					sf::Text slot_id(p_slot_id_str, font, 15);
+					slot_id.setPosition(position_on_board);
 					slot.setFillColor(sf::Color(125, 75, 30));
 					window.draw(slot);
+					window.draw(slot_id);
 					window.draw(piece);
 					if (draw_selector)
 						selector_draw_position = position_on_board;
@@ -207,7 +224,7 @@ int main() {
 			}
 			playable_slot = !playable_slot;
 		}
-
+		// selector drawer
 		if (mouse_selected_index != 64 && start_piece_id != 33)
 		{
 			int col = mouse_selected_index % 8;
@@ -227,6 +244,7 @@ int main() {
 			break;
 		}
 	}
+
 	return 0;
 
 	std::cout << "This is a game of checkers." << std::endl;

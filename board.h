@@ -9,8 +9,6 @@
 #ifndef _INCLUDED_BOARD_H_
 #define _INCLUDED_BOARD_H_
 
-#include "piece.h"
-
 #include <vector>
 //for std::vector
 #include <string>
@@ -29,6 +27,11 @@ enum {
 	_PLAYABLE_
 };
 
+enum {
+	_RED_,
+	_BLACK_
+};
+
 //Directions on board
 enum {
 	_LEFTUP_,
@@ -36,75 +39,6 @@ enum {
 	_LEFTDOWN_,
 	_RIGHTDOWN_
 };
-
-
-
-class Board {
-public:
-	Board(int width = 8, int height = 8, int starting_player = _BLACK_); //Constructor for board
-
-	void print_board(); //Prints board
-	void print_moves_made(); //prints past moves
-	void print_all_current_possible_moves();//prints all possible non jumping moves
-	void print_all_current_possible_jumps();//prints all possible jumping moves
-
-	void init_board();//initiallizes pieces
-	void init_king_spots(int width);//sets places on board where piece can become king
-	void clear_board();//clears board
-	void update_board();
-	void pass_turn();
-
-	int get_piece_id(int position);
-	int get_diag_direction(int position, int destination);
-
-	bool ownership_check(int piece_id);
-	bool is_boarder(int position);
-	bool is_empty(int position);
-	bool is_valid_move(std::pair<int, int> attempted_move);
-	bool is_valid_jump(std::pair<int, int> attempted_move);
-	bool is_king_transformer(int piece_owner, int position);
-	bool game_ended();
-
-	//NEW GENERATE TEST//
-	void generate_valid_actions();
-	void store_if_possible(
-		int board_status_move,
-		int board_status_jump,
-		std::pair<int, int> position_destination,
-		std::pair<int, int> position_jump_destination,
-		bool can_jump,
-		int diag_direction);
-	bool jump_available(int board_status_jump, int board_status_move);
-	//NEW GENERATE TEST//
-
-	void generate_valid_moves(int & m_jumped_over_piece_id);
-	void store_if_valid(int current_position,
-		int & destination,
-		int diag_move,
-		int sign_of_direction,
-		int & m_jumped_over_piece_id);
-
-	void move_piece(int piece_id, int destination);
-
-	std::vector<Piece> m_pieces; // this is public for the purpose of allowing main to print
-	std::vector<std::pair<int, int>> m_moves_made; // see above
-
-private:
-	int m_current_player;
-	int m_player_to_move;
-	int m_width; //width of board
-	int m_height; //height of board
-	int m_number_of_turns;
-	bool m_game_end;
-	std::vector<int> m_board;
-	std::vector<int> m_red_man_to_king_spots;
-	std::vector<int> m_black_man_to_king_spots;
-	std::vector<std::pair<int, int>> m_all_possible_moves_for_current_player;
-	std::vector<std::pair<int, int>> m_all_possible_jumps_for_current_player;
-	std::vector<int> m_jumped_over_piece_id;
-};
-
-
 
 //move table for temp_Board (seen below)
 static const struct
@@ -159,13 +93,16 @@ public:
 	temp_Board(); //default constructor
 	temp_Board(std::vector<int> board, int player);
 	temp_Board(temp_Board &) = default; //copy constructor, useful for recursion
+
 	std::vector<std::vector<int>> & generate_moves(); //generates list of moves
 	bool operator==(const temp_Board &) const;
 	std::vector<std::vector<int>>& get_move_list();
+
 	void non_jump_moves();
 	void jump_moves_start();
 	void jump_recurse(temp_Board board_state, std::vector<int> next_move); //pass by VALUE not reference
 	void move_piece(int move, bool switch_turns = true);
+	void store_move(std::vector<int> move_made);
 
 	bool is_over();
 	int get_Player();
@@ -177,6 +114,7 @@ private:
 	std::vector<int> m_board;
 	int m_current_player;
 	bool m_do_jump;//member variables storing whether a jump is available
+	std::vector<std::vector<int>> m_moves_made;
 
 	//List of possible moves, notice that the type
 	//is a list. This allows for repeated jumping to be
