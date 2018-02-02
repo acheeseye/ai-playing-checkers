@@ -120,10 +120,10 @@ TEST_CASE("Jumps", "[Jumps]")
 	}
 	{
 		temp_Board board2(boardState, _RED_);
-		draw_board(board2);
-		board2.print_moves();
+		//draw_board(board2);
+		//board2.print_moves();
 		board2.move_piece(1);
-		draw_board(board2);
+		//draw_board(board2);
 	}
 
 	for (int i = 0; i < 32; ++i)
@@ -196,7 +196,9 @@ TEST_CASE("Jumps", "[Jumps]")
 	boardState.at(31) = _BLACK_MAN_;
 	{
 		temp_Board board2(boardState,_RED_);
-		draw_board(board2);
-		board2.print_moves();
+		INFO("red-up-left without recursion test, should give two answers");
+		REQUIRE( (board2.get_move_list().size() == 2) );
+		//draw_board(board2);
+		//board2.print_moves();
 	}
 }
