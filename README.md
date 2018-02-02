@@ -15,7 +15,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 ## Version 1:
 - All files updated.
 - Board function `move_piece` allows movement for player 1 (starting player).
-- [x] ~~TODO: Remove Board function is_empty~~ This proved to be useful.
+- [ ] ~~TODO: Remove Board function `is_empty`.~~ This proved to be useful.
 - New Board functions `init_board`, `clear_board`, `is_boarder`, and `update_board` used to update Board object correctly for `print_board`.
 - Board construction now only initializes values.
 - [ ] TODO: Use initializer list for constructor.
@@ -31,9 +31,9 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Piece objects now keep track of their livelihood through `m_alive`.  
 
 ## Version 3:
-- [ ] TODO: Multijumping to be implemented.
+- [x] TODO: Multijumping to be implemented.
 - [x] TODO: King transformation movement (becomes king, but crashes right after).
-- [ ] TODO: Allow console to generate moves correctly when using 0 0.
+- [ ] ~~TODO: Allow console to generate moves correctly when using 0 0.~~
 - Player 1 and 2 are now renamed to Player BLACK and RED, respectively.
 - Black pieces are now at the bottom (as required for assignment).
 - Various new data members and functions to store and retrieve moves made, moves possible, and jumps possible.
@@ -51,6 +51,16 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Kings are now able to jump in opposite direction.
 - Kings are not displayed correctly when they move from king spot.
 - 3.2.1 hot fix(?) Kings are now displayed correctly at all times.
+## Version 4:
+- New class `temp_Board` is used to keep track of board status and pieces.
+- [ ] TODO: Delete `piece.cpp` and `piece.h` files.
+- King moves and jumps correctly for single pieces.
+- Simple GUI implemented (with selection indication included).
+- Right side of GUI to be implemented as move display, or something to the likes.
+- [ ] TODO: Check if kings are properly produced when a multi-jump is attempted and the slot the piece lands on is **NOT** a king transformer slot.
+- [ ] TODO: Perhaps clean-up main by creating GUI drawer objects?
+- `_RED_` player is by default and AI with random moves generated and `_BLACK_` is user.
+- [ ] TODO: Test if reverse works and if both can be AI.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
@@ -58,7 +68,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [x] Currently working on implementing king movements and debugging transformation. (1/26, JH)
 - [ ] ~~Currently working on implementing multijumping.~~ (1/29, JH)
 - [x] Currently working on implementing mouse click based GUI (1/31, JH)
-- Here's a maybe helpful chart for all the playable positions:  
+- Here's a maybe **NOT** helpful chart for all the playable positions (new class uses a different board):  
 
 |P|L|A|Y|A|B|L|E|
 |---|---|---|---|---|---|---|---|  
