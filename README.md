@@ -53,7 +53,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - 3.2.1 hot fix(?) Kings are now displayed correctly at all times.
 ## Version 4:
 - New class `temp_Board` is used to keep track of board status and pieces.
-- [ ] TODO: Delete `piece.cpp` and `piece.h` files.
+- [x] TODO: Delete `piece.cpp` and `piece.h` files.
 - King moves and jumps correctly for single pieces.
 - Simple GUI implemented (with selection indication included).
 - Right side of GUI to be implemented as move display, or something to the likes.
@@ -61,6 +61,9 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [ ] TODO: Perhaps clean-up `main.cpp` by creating GUI drawer objects?
 - `_RED_` player is by default and AI with random moves generated and `_BLACK_` is user.
 - [ ] TODO: Test if reverse works and if both can be AI.
+### Version 4.1:
+- Pieces are now displayed smaller allowing the top left corner of the playable slot to display slot id (for easier debugging and/or readability).
+- [ ] TODO: Change the white board base because it hurts my eyes a little.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
