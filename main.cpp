@@ -72,7 +72,7 @@ int main() {
 		else
 		{
 			next_move = rand() % board.get_move_list().size();
-			std::cout << "computer did move" << std::endl;
+			std::cout << "computer did move:" <<next_move<< std::endl;
 		}
 		
 		//apparently, setting next move equal to something insanely large like
