@@ -46,10 +46,11 @@ int main() {
 	int start_piece_id = 33;
 	int end_piece_id = 33;
 	int mouse_selected_index = 64;
+	int clock_cycles = 0;
 
 	bool draw_selector = false;
 	bool red_is_ai = true;
-	bool black_is_ai = false;
+	bool black_is_ai = true;
 
 	unsigned int board_size = 8;
 	unsigned int board_width = 700;
@@ -86,6 +87,8 @@ int main() {
 	//while (false)
 	while (window.isOpen())
 	{
+		clock_cycles++;
+
 		sf::Event event;
 		sf::Mouse mouse;
 		int selected_board_index = 33;
@@ -95,19 +98,26 @@ int main() {
 			board_status.at(i) = board.get_board_status(i);
 		}
 
-		if (red_is_ai) {
-			if (board.get_Player() == _RED_)
-			{
-				next_move = rand() % board.get_move_list().size();
-				board.move_piece(next_move);
+		cout << clock_cycles << endl;
+		if (clock_cycles == 500) {
+			if (red_is_ai) {
+				if (board.get_Player() == _RED_)
+				{
+					next_move = rand() % board.get_move_list().size();
+					board.move_piece(next_move);
+					clock_cycles = 0;
+				}
 			}
 		}
 
-		if (black_is_ai) {
-			if (board.get_Player() == _BLACK_)
-			{
-				next_move = rand() % board.get_move_list().size();
-				board.move_piece(next_move);
+		if (clock_cycles == 500) {
+			if (black_is_ai) {
+				if (board.get_Player() == _BLACK_)
+				{
+					next_move = rand() % board.get_move_list().size();
+					board.move_piece(next_move);
+					clock_cycles = 0;
+				}
 			}
 		}
 
@@ -253,7 +263,7 @@ int main() {
 
 		if (board.is_over()) {
 			cout << "GAME ENDED. RETURNED TO CONSOLE." << endl;
-			break;
+			//break;
 		}
 	}
 
