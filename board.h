@@ -169,6 +169,7 @@ public:
 
 	bool is_over();
 	int get_Player();
+	int get_board_status(int board_id);
 
 	void print_moves();
 private:
