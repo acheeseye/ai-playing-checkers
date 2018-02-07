@@ -82,6 +82,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [ ] ~~Currently working on implementing multijumping.~~ (1/29, JH)
 - [x] Currently working on implementing mouse click based GUI. (1/31, JH)
 - [ ] Currently contemplating if SFML related objects should be handled within a class. (2/1, JH)
+- [ ] Devising a way to playback and store game info. (2/6, JH)
 - Here's a maybe **NOT** helpful chart for all the playable positions (new class uses a different board):  
 
 |P|L|A|Y|A|B|L|E|
