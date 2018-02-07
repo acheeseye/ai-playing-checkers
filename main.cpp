@@ -46,11 +46,12 @@ int main() {
 	int start_piece_id = 33;
 	int end_piece_id = 33;
 	int mouse_selected_index = 64;
-	int clock_cycles = 0;
+	int window_loop_cycles = 0;
+	int ai_wait_time = 300;
 
 	bool draw_selector = false;
 	bool red_is_ai = true;
-	bool black_is_ai = true;
+	bool black_is_ai = false;
 
 	unsigned int board_size = 8;
 	unsigned int board_width = 700;
@@ -87,7 +88,7 @@ int main() {
 	//while (false)
 	while (window.isOpen())
 	{
-		clock_cycles++;
+		window_loop_cycles++;
 
 		sf::Event event;
 		sf::Mouse mouse;
@@ -98,26 +99,21 @@ int main() {
 			board_status.at(i) = board.get_board_status(i);
 		}
 
-		cout << clock_cycles << endl;
-		if (clock_cycles == 500) {
-			if (red_is_ai) {
-				if (board.get_Player() == _RED_)
-				{
-					next_move = rand() % board.get_move_list().size();
-					board.move_piece(next_move);
-					clock_cycles = 0;
-				}
+		if (window_loop_cycles > ai_wait_time) {
+			if (red_is_ai && board.get_Player() == _RED_) {
+				board.print_moves();
+				next_move = rand() % board.get_move_list().size();
+				board.move_piece(next_move);
+				window_loop_cycles = 0;
 			}
 		}
 
-		if (clock_cycles == 500) {
-			if (black_is_ai) {
-				if (board.get_Player() == _BLACK_)
-				{
-					next_move = rand() % board.get_move_list().size();
-					board.move_piece(next_move);
-					clock_cycles = 0;
-				}
+		if (window_loop_cycles > ai_wait_time) {
+			if (black_is_ai && board.get_Player() == _BLACK_) {
+				board.print_moves();
+				next_move = rand() % board.get_move_list().size();
+				board.move_piece(next_move);
+				window_loop_cycles = 0;
 			}
 		}
 
@@ -132,9 +128,15 @@ int main() {
 				}
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
 				{
-					cout << "GUI OVERRIDE. ENTER MOVE ID: ";
+					cout << "GUI OVERRIDE. ENTER MOVE ID OR q TO EXIT OVERRIDE: ";
 					cin >> next_move;
-					board.move_piece(next_move);
+					if (next_move == 'q')
+					{
+						break;
+					}
+					else {
+						board.move_piece(next_move);
+					}
 				}
 			}
 			if (event.type == sf::Event::MouseButtonPressed)
@@ -259,11 +261,28 @@ int main() {
 			window.draw(selector);
 		}
 
+		vector<string> strings_to_draw;
+
+		string player = "null";
+		sf::Text player_text(player, font, 30);
+		if (board.get_Player() == _RED_) { 
+			player = "RED TURN";
+			player_text.setFillColor(sf::Color::Red);
+		}
+		else { 
+			player = "BLACK TURN"; 
+			player_text.setFillColor(sf::Color::White);
+		}
+		player_text.setString(player);
+
+		player_text.setPosition(board_width + 10, 5);
+		window.draw(player_text);
+
 		window.display();
 
 		if (board.is_over()) {
 			cout << "GAME ENDED. RETURNED TO CONSOLE." << endl;
-			//break;
+			break;
 		}
 	}
 
