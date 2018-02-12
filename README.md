@@ -74,6 +74,12 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Above seems to be resolved (?). Just did a game that ended with 0 black pieces.
 - Added a delay between each move for viewing.
 - [ ] TODO: Save the moves made and win status and output it to a (text?) file.
+### Version 4.3:
+- Identified issue causing crash where both players are to be random AI and only one piece is remaining on either side, it was because of attempted division by 0 when randomizing. Issue is now resolved.
+- Added images and replaced `CircleShape piece` with `Sprite piece`.
+- Window does not auto-close at end of game and notes who the winner is.
+- [ ] TODO: Visually execute the winning move before `board.is_over()` evaluates to `true`.
+- [ ] TODO: Examine rules to determine what should happen when a given player is unable to make any moves (currently the player who is not unable to make moves auto-wins). This happens when a player has one piece left, that piece is in a corner or up against the wall, and it is the other player's turn to move.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
