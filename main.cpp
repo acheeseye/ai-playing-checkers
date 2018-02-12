@@ -62,18 +62,13 @@ int main() {
 	unsigned int slot_height = (board_width - board_boarder * 2) / board_size;
 	unsigned int piece_distance_from_edge = 10;
 
-	sf::Font font;
-	if (!font.loadFromFile("ai-playing-checkers/cour.ttf"))
-	{
-		cout << "font load failed" << endl;
-	}
-
 	sf::RenderWindow window(sf::VideoMode(board_width + side_display_width, board_height), "CHECKERS");
 
 	sf::RectangleShape board_base(sf::Vector2f(board_width, board_height));
 	sf::RectangleShape selector(sf::Vector2f(slot_width, slot_height));
 	sf::RectangleShape slot(sf::Vector2f(slot_width, slot_height));
-	sf::CircleShape piece(slot_width / 2 - piece_distance_from_edge);
+	sf::Sprite piece;
+	piece.setScale(0.2375, 0.2375);
 
 	sf::Vector2f board_base_origin = board_base.getPosition();
 	sf::Vector2f slot_origin = board_base_origin + sf::Vector2f(board_boarder, board_boarder);
@@ -82,6 +77,47 @@ int main() {
 	selector.setFillColor(sf::Color::Transparent);
 	selector.setOutlineThickness(10);
 	selector.setOutlineColor(sf::Color(55, 0, 130));
+
+
+	sf::Font font;
+	if (!font.loadFromFile("cour.ttf"))
+	{
+		cout << "font load failed" << endl;
+	}
+
+	sf::Texture red_king;
+	if (!red_king.loadFromFile("red_king.png"))
+	{
+		cout << "red_king load failed" << endl;
+	}
+	red_king.setSmooth(true);
+
+	sf::Texture red_soldier;
+	if (!red_soldier.loadFromFile("red_soldier.png"))
+	{
+		cout << "red_soldier load failed" << endl;
+	}
+	red_soldier.setSmooth(true);
+
+	sf::Texture black_king;
+	if (!black_king.loadFromFile("black_king.png"))
+	{
+		cout << "black_king load failed" << endl;
+	}
+	black_king.setSmooth(true);
+
+	sf::Texture black_soldier;
+	if (!black_soldier.loadFromFile("black_soldier.png"))
+	{
+		cout << "black_soldier load failed" << endl;
+	}
+	black_soldier.setSmooth(true);
+
+	sf::Texture unseen_piece;
+	if (!unseen_piece.loadFromFile("empty.png"))
+	{
+		cout << "unseen_piece load failed" << endl;
+	}
 
 	srand(time(NULL));
 
@@ -100,16 +136,14 @@ int main() {
 		}
 
 		if (window_loop_cycles > ai_wait_time) {
-			if (red_is_ai && board.get_Player() == _RED_) {
+			if (red_is_ai && board.get_Player() == _RED_ && board.get_move_list().size() > 0) {
 				board.print_moves();
 				next_move = rand() % board.get_move_list().size();
 				board.move_piece(next_move);
 				window_loop_cycles = 0;
 			}
-		}
-
-		if (window_loop_cycles > ai_wait_time) {
-			if (black_is_ai && board.get_Player() == _BLACK_) {
+		
+			if (black_is_ai && board.get_Player() == _BLACK_ && board.get_move_list().size() > 0) {
 				board.print_moves();
 				next_move = rand() % board.get_move_list().size();
 				board.move_piece(next_move);
@@ -211,19 +245,19 @@ int main() {
 				switch (current_status)
 				{
 				case _RED_MAN_:
-					piece.setFillColor(sf::Color::Red);
+					piece.setTexture(red_soldier);
 					break;
 				case _RED_KING_:
-					piece.setFillColor(sf::Color(165, 0, 80));
+					piece.setTexture(red_king);
 					break;
 				case _BLACK_MAN_:
-					piece.setFillColor(sf::Color::Black);
+					piece.setTexture(black_soldier);
 					break;
 				case _BLACK_KING_:
-					piece.setFillColor(sf::Color(125, 125, 125));
+					piece.setTexture(black_king);
 					break;
 				case _PLAYABLE_:
-					piece.setFillColor(sf::Color::Transparent);
+					piece.setTexture(unseen_piece);
 					break;
 				}
 
@@ -273,6 +307,19 @@ int main() {
 			player = "BLACK TURN"; 
 			player_text.setFillColor(sf::Color::White);
 		}
+		
+		if (board.is_over()) {
+			if (board.get_Player() == _RED_) {
+				player = "BLACK WINS";
+				player_text.setFillColor(sf::Color::White);
+			}
+			else {
+				player = "RED WINS";
+				player_text.setFillColor(sf::Color::Red);
+			}
+			cout << "GAME ENDED. RETURNED TO CONSOLE." << endl;
+		}
+
 		player_text.setString(player);
 
 		player_text.setPosition(board_width + 10, 5);
@@ -281,11 +328,13 @@ int main() {
 		window.display();
 
 		if (board.is_over()) {
-			cout << "GAME ENDED. RETURNED TO CONSOLE." << endl;
 			break;
 		}
 	}
 
+	// update to show last move and ask to close?
+	std::cout << "game over, enter 'x' to exit" << std::endl;
+	while (cin.get() != 'x');
 	return 0;
 
 	std::cout << "This is a game of checkers." << std::endl;
@@ -327,8 +376,10 @@ int main() {
 		}
 		board.move_piece(next_move);
 	}
-	std::cout << "game over" << std::endl;
-
+	std::cout << "game over, press 'x' to exit" << std::endl;
+	cin.clear();
+	cin.get();
+	while (cin.get() != 'x');
 	return 0;
 
 
