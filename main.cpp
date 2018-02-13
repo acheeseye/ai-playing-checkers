@@ -263,7 +263,7 @@ int main() {
 
 		if (board.is_over()) {
 			cout << "GAME ENDED. RETURNED TO CONSOLE." << endl;
-			//break;
+			break;
 		}
 	}
 
