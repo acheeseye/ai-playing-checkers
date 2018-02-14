@@ -88,6 +88,9 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [ ] TODO: Make a directory to store the gameplay files/change the storing directory for the `std::ofstream`.
 - [ ] Or keep track of them ourselves?
 - [ ] Do we need to make sure no overlapping names when trying to congregate our games played?
+## Version 5:
+- New classes `NeuralNetwork` and `NNNodes` for creating AI.
+- New classes are currently useless.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
