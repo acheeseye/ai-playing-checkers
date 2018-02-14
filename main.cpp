@@ -72,7 +72,7 @@ int main() {
 	string second = adjust_time(timeinfo.tm_sec);
 
 	//sorry, for my version I have to enter the "ai-playing-checkers" direcotry to open the files
-	//just remove the "ai-playing-checkers/" part of the string for it to work for you (probably)
+	//just remove the "ai-playing-checkers" part of the string for it to work for you (probably)
 	string file_name = "ai-playing-checkers\\games_played\\game_" + year + month + day + '_' + hour + minute + second + ".txt";
 
 	std::ofstream to_file;
@@ -170,9 +170,9 @@ int main() {
 
 	srand(time(NULL));
 
-	//while (false)
 	while (window.isOpen())
 	{
+		// this is for ai wait time only, may remove
 		window_loop_cycles++;
 
 		sf::Event event;
@@ -256,7 +256,7 @@ int main() {
 		//*************************************************************************
 
 
-
+		// Board Selector Set Up
 		if (selected_board_index != 33) { // location selected is valid
 			if (selected_board_index == start_piece_id) {
 				start_piece_id = 33;
