@@ -80,41 +80,41 @@ int main() {
 
 
 	sf::Font font;
-	if (!font.loadFromFile("cour.ttf"))
+	if (!font.loadFromFile("ai-playing-checkers/cour.ttf"))
 	{
 		cout << "font load failed" << endl;
 	}
 
 	sf::Texture red_king;
-	if (!red_king.loadFromFile("red_king.png"))
+	if (!red_king.loadFromFile("ai-playing-checkers/red_king.png"))
 	{
 		cout << "red_king load failed" << endl;
 	}
 	red_king.setSmooth(true);
 
 	sf::Texture red_soldier;
-	if (!red_soldier.loadFromFile("red_soldier.png"))
+	if (!red_soldier.loadFromFile("ai-playing-checkers/red_soldier.png"))
 	{
 		cout << "red_soldier load failed" << endl;
 	}
 	red_soldier.setSmooth(true);
 
 	sf::Texture black_king;
-	if (!black_king.loadFromFile("black_king.png"))
+	if (!black_king.loadFromFile("ai-playing-checkers/black_king.png"))
 	{
 		cout << "black_king load failed" << endl;
 	}
 	black_king.setSmooth(true);
 
 	sf::Texture black_soldier;
-	if (!black_soldier.loadFromFile("black_soldier.png"))
+	if (!black_soldier.loadFromFile("ai-playing-checkers/black_soldier.png"))
 	{
 		cout << "black_soldier load failed" << endl;
 	}
 	black_soldier.setSmooth(true);
 
 	sf::Texture unseen_piece;
-	if (!unseen_piece.loadFromFile("empty.png"))
+	if (!unseen_piece.loadFromFile("ai-playing-checkers/empty.png"))
 	{
 		cout << "unseen_piece load failed" << endl;
 	}
@@ -151,7 +151,10 @@ int main() {
 			}
 		}
 
-
+		
+		//*************************************************************************
+		// EVENT POLLER -- ADD RUNTIME EVENTS HERE
+		//*************************************************************************
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::KeyPressed)
@@ -172,6 +175,10 @@ int main() {
 						board.move_piece(next_move);
 					}
 				}
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+				{
+
+				}
 			}
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
@@ -186,8 +193,14 @@ int main() {
 					mouse_selected_index, mouse_index_x, mouse_index_y);
 			}
 			if (event.type == sf::Event::Closed)
+			{
 				window.close();
+			}
 		}
+		//*************************************************************************
+		// END OF EVENT POLLER
+		//*************************************************************************
+
 
 		if (selected_board_index != 33) { // location selected is valid
 			if (selected_board_index == start_piece_id) {
@@ -205,6 +218,7 @@ int main() {
 			}
 			cout << "start selected: " << start_piece_id << " end selected: " << end_piece_id << endl;
 		}
+
 
 		if (start_piece_id != 33 && end_piece_id != 33)
 		{
