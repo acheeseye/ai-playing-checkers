@@ -71,10 +71,20 @@ int main() {
 	string minute = adjust_time(timeinfo.tm_min);
 	string second = adjust_time(timeinfo.tm_sec);
 
-	string file_name = "game_" + year + month + day + '_' + hour + minute + second + ".txt";
+	//sorry, for my version I have to enter the "ai-playing-checkers" direcotry to open the files
+	//just remove the "ai-playing-checkers/" part of the string for it to work for you (probably)
+	string file_name = "ai-playing-checkers\\games_played\\game_" + year + month + day + '_' + hour + minute + second + ".txt";
 
 	std::ofstream to_file;
 	to_file.open(file_name, std::ofstream::out | std::ofstream::app);
+
+	if (!to_file.is_open()) 
+	{
+		cout << "*********************************************************" << endl;
+		cout << "ERROR OPENING FILE: PROBABLY NOT WRITING GAME DATA" << endl;
+		cout << "PLEASE CHECK IF THE FILE NAME IS CORRECT FOR YOUR VERSION" << endl;
+		cout << "*********************************************************" << endl;
+	}
 
 	int next_move;
 
