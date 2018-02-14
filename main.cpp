@@ -75,7 +75,10 @@ int main() {
 
 	std::ofstream to_file;
 	to_file.open(file_name, std::ofstream::out | std::ofstream::app);
-
+	if (to_file.is_open())
+	{
+		cout << "file is open for writing" << endl;
+	}
 
 	int next_move;
 
@@ -86,7 +89,7 @@ int main() {
 	int ai_wait_time = 300;
 
 	bool draw_selector = false;
-	bool red_is_ai = true;
+	bool red_is_ai = false;
 	bool black_is_ai = false;
 	bool last_move = false;
 
@@ -119,41 +122,41 @@ int main() {
 	sf::Font font;
 
 	//sorry, for my version I have to enter the "ai-playing-checkers" direcotry to open the files
-	if (!font.loadFromFile("ai-playing-checkers/cour.ttf"))
+	if (!font.loadFromFile("ai-playing-checkers/res/cour.ttf"))
 	{
 		cout << "font load failed" << endl;
 	}
 
 	sf::Texture red_king;
-	if (!red_king.loadFromFile("ai-playing-checkers/red_king.png"))
+	if (!red_king.loadFromFile("ai-playing-checkers/res/red_king.png"))
 	{
 		cout << "red_king load failed" << endl;
 	}
 	red_king.setSmooth(true);
 
 	sf::Texture red_soldier;
-	if (!red_soldier.loadFromFile("ai-playing-checkers/red_soldier.png"))
+	if (!red_soldier.loadFromFile("ai-playing-checkers/res/red_soldier.png"))
 	{
 		cout << "red_soldier load failed" << endl;
 	}
 	red_soldier.setSmooth(true);
 
 	sf::Texture black_king;
-	if (!black_king.loadFromFile("ai-playing-checkers/black_king.png"))
+	if (!black_king.loadFromFile("ai-playing-checkers/res/black_king.png"))
 	{
 		cout << "black_king load failed" << endl;
 	}
 	black_king.setSmooth(true);
 
 	sf::Texture black_soldier;
-	if (!black_soldier.loadFromFile("ai-playing-checkers/black_soldier.png"))
+	if (!black_soldier.loadFromFile("ai-playing-checkers/res/black_soldier.png"))
 	{
 		cout << "black_soldier load failed" << endl;
 	}
 	black_soldier.setSmooth(true);
 
 	sf::Texture unseen_piece;
-	if (!unseen_piece.loadFromFile("ai-playing-checkers/empty.png"))
+	if (!unseen_piece.loadFromFile("ai-playing-checkers/res/empty.png"))
 	{
 		cout << "unseen_piece load failed" << endl;
 	}
@@ -219,7 +222,10 @@ int main() {
 				}
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 				{
-
+					cout << "right key pressed" << endl;
+					next_move = rand() % board.get_move_list().size();
+					board.process_output(next_move, to_file);
+					board.move_piece(next_move);
 				}
 			}
 			if (event.type == sf::Event::MouseButtonPressed)
@@ -242,6 +248,7 @@ int main() {
 		//*************************************************************************
 		// END OF EVENT POLLER
 		//*************************************************************************
+
 
 
 		if (selected_board_index != 33) { // location selected is valid
@@ -279,8 +286,9 @@ int main() {
 			end_piece_id = 33;
 		}
 
+		//*************************************************************************
+		//*************************************************************************
 		window.clear();
-
 		window.draw(board_base);
 		bool playable_slot = false;
 		sf::Vector2f selector_draw_position;
@@ -396,102 +404,9 @@ int main() {
 	}
 
 	// update to show last move and ask to close?
-	std::cout << "game over, enter 'x' to exit" << std::endl;
-	while (cin.get() != 'x');
-	return 0;
-
-	std::cout << "This is a game of checkers." << std::endl;
-	std::cout << "Printed below the board is the list of move options" << std::endl;
-	std::cout << "Choose a move to begin game, type -1 to end game" << std::endl;
-	while (!board.is_over())
-	{
-		int next_move;
-		draw_board(board);
-		board.print_moves();
-
-		if (board.get_Player() == _BLACK_)
-		{
-			std::cout << "Player: " << board.get_Player() << std::endl;
-			std::cout << "Move choice:";
-			std::cin >> next_move;
-		}
-		else
-		{
-			next_move = rand() % board.get_move_list().size();
-			std::cout << "computer did move:" <<next_move<< std::endl;
-			std::cout << "computer did move" << std::endl;
-		}
-		
-		//apparently, setting next move equal to something insanely large like
-		//11111111111111111111111111111111111111
-		//or plugging in characters such as 'a' will cause std::cin.fail() to be
-		//true causing the program to enter an infinite loop. This next if statement
-		//fixes this.
-		if (std::cin.bad() || std::cin.fail())
-		{
-			std::cin.clear();
-			std::cin.get();
-		}
-
-		if (next_move == -1)
-		{
-			break;
-		}
-		board.move_piece(next_move);
-	}
-
-	std::cout << "game over, press 'x' to exit" << std::endl;
+	std::cout << "game over, press 'x' to close game window" << std::endl;
 	to_file.close();
 
-	cin.clear();
-	cin.get();
 	while (cin.get() != 'x');
 	return 0;
-
-
-
-	/*
-	Board board0(8, 8, _BLACK_);
-
-	int p1_piece0 = 12;
-
-	//move 0 -- print initial board & info
-	board0.print_board();
-	//board0.move_piece(92, 79);
-	//board0.move_piece(57, 68);
-	//board0.move_piece(79, 66);
-	//board0.move_piece(79, 57);
-
-	//this:
-	//92 79 57 68 79 57 55 68
-	//produces a disappearing r piece
-	//92 79 57 68 79 57 55 68 90 79 68 90
-
-//SERIES OF TESTS -- I'M NOT SURE HOW TO USE CATCH AT THE MOMENT
-
-	//TODO: generate correct jumped over piece id
-	while (!board0.game_ended()) {
-		board0.generate_valid_actions();
-		board0.print_all_current_possible_moves();
-		int current;
-		int destination;
-		cout << "Enter the next move (0 to print board info, 1 to stop game): ";
-		cin >> current >> destination;
-		if (current == 0) {
-			board0.print_moves_made();
-			board0.print_all_current_possible_jumps();
-			board0.print_all_current_possible_moves();
-			print_info(board0);
-		}
-		else if (current == 1) {
-			break;
-		}
-		else {
-			board0.move_piece(current, destination);
-			cout << "INSTRUCTION ENDED\n\n";
-		}
-	}
-
-	cout << endl;
-	*/
 }
