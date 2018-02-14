@@ -20,6 +20,9 @@ using std::string;
 #include <iostream>
 using std::cout;
 using std::endl;
+#include <fstream>
+using std::ofstream;
+//using std::ifstream;
 #include <stdexcept>
 
 //***********************************************************
@@ -706,36 +709,36 @@ void temp_Board::store_move(std::vector<int> move_made)
 }
 
 
-void temp_Board::denote_endgame(string player)
+void temp_Board::denote_endgame(string player, std::ofstream & to_file)
 {
 	if (player == "RED WINS")
 	{
-		cout << "R";
+		to_file << "R";
 	}
 	else
 	{
-		cout << "B";
+		to_file << "B";
 	}
 }
 
 
-void temp_Board::process_output(int idx)
+void temp_Board::process_output(int idx, std::ofstream & to_file)
 {
 	if (get_Player() == _BLACK_)
 	{
-		cout << "b ";
+		to_file << "b ";
 	}
 	else
 	{
-		cout << "r ";
+		to_file << "r ";
 	}
 	for (int j = 0; j < m_possible_move_list.at(idx).size(); ++j)
 	{
 		if (j != 0 && j != m_possible_move_list.at(idx).size())
-			std::cout << " ";
-		std::cout << m_possible_move_list.at(idx).at(j);
+			to_file << " ";
+		to_file << m_possible_move_list.at(idx).at(j);
 	}
-	std::cout << std::endl;
+	to_file << endl;
 }
 
 

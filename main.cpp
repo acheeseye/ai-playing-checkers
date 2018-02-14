@@ -18,6 +18,9 @@ using std::vector;
 #include <string>
 using std::string;
 using std::to_string;
+#include <fstream>
+using std::ofstream;
+//using std::ifstream;
 
 int mouse_selected_index_converter(int mouse_selected_index, int mouse_index_x, int mouse_index_y)
 {
@@ -36,10 +39,43 @@ int mouse_selected_index_converter(int mouse_selected_index, int mouse_index_x, 
 		return return_index;
 }
 
-int main() {
+string adjust_time(int unit);
+string adjust_time(int unit)
+{
+	string str;
+	if (unit < 10)
+	{
+		str = "0" + to_string(unit);
+	}
+	else
+	{
+		str = to_string(unit);
+	}
+	return str;
+}
 
+int main() {
 	//Game of checkers using temp_Board
 	temp_Board board(_RED_);
+
+
+	struct tm timeinfo;
+	time_t now = time(0);
+	localtime_s(&timeinfo, &now);
+
+	string year = to_string(1900 + timeinfo.tm_year);
+	string month = adjust_time(1 + timeinfo.tm_mon);
+	string day = adjust_time(timeinfo.tm_mday);
+
+	string hour = adjust_time(timeinfo.tm_hour);
+	string minute = adjust_time(timeinfo.tm_min);
+	string second = adjust_time(timeinfo.tm_sec);
+
+	string file_name = "game_" + year + month + day + '_' + hour + minute + second + ".txt";
+
+	std::ofstream to_file;
+	to_file.open(file_name, std::ofstream::out | std::ofstream::app);
+
 
 	int next_move;
 
@@ -140,7 +176,7 @@ int main() {
 			if (red_is_ai && board.get_Player() == _RED_ && board.get_move_list().size() > 0) {
 				board.print_moves();
 				next_move = rand() % board.get_move_list().size();
-				board.process_output(next_move);
+				board.process_output(next_move, to_file);
 				board.move_piece(next_move);
 				window_loop_cycles = 0;
 			}
@@ -148,7 +184,7 @@ int main() {
 			if (black_is_ai && board.get_Player() == _BLACK_ && board.get_move_list().size() > 0) {
 				board.print_moves();
 				next_move = rand() % board.get_move_list().size();
-				board.process_output(next_move);
+				board.process_output(next_move, to_file);
 				board.move_piece(next_move);
 				window_loop_cycles = 0;
 			}
@@ -172,7 +208,7 @@ int main() {
 						break;
 					}
 					else {
-						board.process_output(next_move);
+						board.process_output(next_move, to_file);
 						board.move_piece(next_move);
 					}
 				}
@@ -219,7 +255,7 @@ int main() {
 			{
 				//cout << "move attempted is valid" << endl;
 				int move_id = it - moves.begin();
-				board.process_output(move_id);
+				board.process_output(move_id, to_file);
 				board.move_piece(move_id);
 			}
 			//else cout << "move attempted is INVALID" << endl;
@@ -335,7 +371,7 @@ int main() {
 		{
 			if (last_move)
 			{
-				board.denote_endgame(player);
+				board.denote_endgame(player, to_file);
 				cout << "GAME ENDED. RETURNED TO CONSOLE." << endl;
 				break;
 			}
@@ -387,7 +423,10 @@ int main() {
 		}
 		board.move_piece(next_move);
 	}
+
 	std::cout << "game over, press 'x' to exit" << std::endl;
+	to_file.close();
+
 	cin.clear();
 	cin.get();
 	while (cin.get() != 'x');
