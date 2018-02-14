@@ -2,7 +2,7 @@
 This is a project dedicated to creating and training an AI to play pro level checkers/draughts for UAF CS 405/605.  
 # IMPORTANT  
 - [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
-- ~~\*\*\*Are pieces allowed to make a king jump if it was previously a man but landed on a king transformer space and has a possible jump? Currently, the new king generated does not take any possible jumps and acts as if it is still a man piece (or perhaps due to some other behavior, or something not processed correctly if such situations are to take place). I think pieces are allowed to make all the jumps, but we may need to consult professor.~~ [Source:](https://www.itsyourturn.com/t_helptopic2130.html) The piece must be on the transformer slot at the end of the turn to become king, thus king jumps cannot be made by momentarily being on the transformer slot.
+- ***PLEASE*** check if the file name for the output file and file location for the resource files are correct for your version. You may need to remove the `ai-playing-checkers` portion of the name (my VS creates a separate directory for the `.cpp` and `.h` files and that directory is the master for me; I am not sure how to make the `.sln` read the files from the same directory instead).
 # Versions
 ## Version 0:  
 - All relevant current files added.
