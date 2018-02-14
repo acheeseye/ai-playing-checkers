@@ -91,15 +91,15 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [x] Currently working on implementing mouse click based GUI. (1/31, JH)
 - [ ] Currently contemplating if SFML related objects should be handled within a class. (2/1, JH)
 - [ ] Devising a way to playback and store game info. (2/6, JH)
-- Here's a maybe **NOT** helpful chart for all the playable positions (new class uses a different board):  
+- Here's a potentially helpful chart for all the playable positions:  
 
 |P|L|A|Y|A|B|L|E|
 |---|---|---|---|---|---|---|---|  
-|x|27|x|29|x|31|x|33|  
-|38|x|40|x|42|x|44|x|  
-|x|51|x|53|x|55|x|57|  
-|62|x|64|x|66|x|68|x|  
-|x|75|x|77|x|79|x|81|  
-|86|x|88|x|90|x|92|x|  
-|x|99|x|101|x|103|x|105|  
-|110|x|112|x|114|x|116|x|
+|x|0|x|1|x|2|x|3|  
+|4|x|5|x|6|x|7|x|  
+|x|8|x|9|x|10|x|11|  
+|12|x|13|x|14|x|15|x|  
+|x|16|x|17|x|18|x|19|  
+|20|x|21|x|22|x|23|x|  
+|x|24|x|25|x|26|x|27|  
+|28|x|29|x|30|x|31|x|
