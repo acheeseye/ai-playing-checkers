@@ -117,6 +117,8 @@ int main() {
 
 
 	sf::Font font;
+
+	//sorry, for my version I have to enter the "ai-playing-checkers" direcotry to open the files
 	if (!font.loadFromFile("ai-playing-checkers/cour.ttf"))
 	{
 		cout << "font load failed" << endl;
