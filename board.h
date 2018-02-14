@@ -109,6 +109,9 @@ public:
 	int get_board_status(int board_id);
 
 	void print_moves();
+
+	void denote_endgame(std::string player);
+	void process_output(int idx);
 private:
 	//Current state of the board, same as above
 	std::vector<int> m_board;

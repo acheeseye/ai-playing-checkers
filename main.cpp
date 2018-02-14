@@ -52,6 +52,7 @@ int main() {
 	bool draw_selector = false;
 	bool red_is_ai = true;
 	bool black_is_ai = false;
+	bool last_move = false;
 
 	unsigned int board_size = 8;
 	unsigned int board_width = 700;
@@ -139,6 +140,7 @@ int main() {
 			if (red_is_ai && board.get_Player() == _RED_ && board.get_move_list().size() > 0) {
 				board.print_moves();
 				next_move = rand() % board.get_move_list().size();
+				board.process_output(next_move);
 				board.move_piece(next_move);
 				window_loop_cycles = 0;
 			}
@@ -146,6 +148,7 @@ int main() {
 			if (black_is_ai && board.get_Player() == _BLACK_ && board.get_move_list().size() > 0) {
 				board.print_moves();
 				next_move = rand() % board.get_move_list().size();
+				board.process_output(next_move);
 				board.move_piece(next_move);
 				window_loop_cycles = 0;
 			}
@@ -169,6 +172,7 @@ int main() {
 						break;
 					}
 					else {
+						board.process_output(next_move);
 						board.move_piece(next_move);
 					}
 				}
@@ -215,6 +219,7 @@ int main() {
 			{
 				//cout << "move attempted is valid" << endl;
 				int move_id = it - moves.begin();
+				board.process_output(move_id);
 				board.move_piece(move_id);
 			}
 			//else cout << "move attempted is INVALID" << endl;
@@ -317,7 +322,6 @@ int main() {
 				player = "RED WINS";
 				player_text.setFillColor(sf::Color::Red);
 			}
-			cout << "GAME ENDED. RETURNED TO CONSOLE." << endl;
 		}
 
 		player_text.setString(player);
@@ -327,8 +331,15 @@ int main() {
 
 		window.display();
 
-		if (board.is_over()) {
-			break;
+		if (board.is_over())
+		{
+			if (last_move)
+			{
+				board.denote_endgame(player);
+				cout << "GAME ENDED. RETURNED TO CONSOLE." << endl;
+				break;
+			}
+			last_move = true;
 		}
 	}
 
