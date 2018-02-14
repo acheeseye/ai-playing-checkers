@@ -78,7 +78,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Identified issue causing crash where both players are to be random AI and only one piece is remaining on either side, it was because of attempted division by 0 when randomizing. Issue is now resolved.
 - Added images and replaced `CircleShape piece` with `Sprite piece`.
 - Window does not auto-close at end of game and notes who the winner is.
-- [ ] TODO: Visually execute the winning move before `board.is_over()` evaluates to `true`.
+- [x] TODO: Visually execute the winning move before `board.is_over()` evaluates to `true`.
 - [x] TODO: Examine rules to determine what should happen when a given player is unable to make any moves (currently the player who is not unable to make moves auto-wins). This happens when a player has one piece left, that piece is in a corner or up against the wall, and it is the other player's turn to move.
 - "The player who cannot move, because he has no pieces, or because all of his pieces are blocked, loses the game." http://www.chesslab.com/rules/CheckerComments.html
 # Non-Version Related Comments
