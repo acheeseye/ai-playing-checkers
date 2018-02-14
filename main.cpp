@@ -75,10 +75,6 @@ int main() {
 
 	std::ofstream to_file;
 	to_file.open(file_name, std::ofstream::out | std::ofstream::app);
-	if (to_file.is_open())
-	{
-		cout << "file is open for writing" << endl;
-	}
 
 	int next_move;
 
@@ -122,6 +118,7 @@ int main() {
 	sf::Font font;
 
 	//sorry, for my version I have to enter the "ai-playing-checkers" direcotry to open the files
+	//just remove the "ai-playing-checkers/" part of the string for it to work for you (probably)
 	if (!font.loadFromFile("ai-playing-checkers/res/cour.ttf"))
 	{
 		cout << "font load failed" << endl;
@@ -222,7 +219,6 @@ int main() {
 				}
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 				{
-					cout << "right key pressed" << endl;
 					next_move = rand() % board.get_move_list().size();
 					board.process_output(next_move, to_file);
 					board.move_piece(next_move);
