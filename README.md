@@ -73,12 +73,13 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Allows (ish) for both players to be random AI (when `black_is_ai` and `red_is_ai` are both set to true and there is only one piece remaining from either side, the game crashes).
 - Above seems to be resolved (?). Just did a game that ended with 0 black pieces.
 - Added a delay between each move for viewing.
-- [ ] TODO: Save the moves made and win status and output it to a (text?) file.
+- [x] TODO: Save the moves made and win status and output it to a (text?) file.
+- When the program is run, a game file (`.txt`) is created; the generated file name contains the current date and time. The file contents are space-delimited and each line contains `r` or `b` followed by the move it took, except for the last line which is either `R` or `B` depending on who won the game.
 ### Version 4.3:
 - Identified issue causing crash where both players are to be random AI and only one piece is remaining on either side, it was because of attempted division by 0 when randomizing. Issue is now resolved.
 - Added images and replaced `CircleShape piece` with `Sprite piece`.
 - Window does not auto-close at end of game and notes who the winner is.
-- [ ] TODO: Visually execute the winning move before `board.is_over()` evaluates to `true`.
+- [x] TODO: Visually execute the winning move before `board.is_over()` evaluates to `true`.
 - [x] TODO: Examine rules to determine what should happen when a given player is unable to make any moves (currently the player who is not unable to make moves auto-wins). This happens when a player has one piece left, that piece is in a corner or up against the wall, and it is the other player's turn to move.
 - "The player who cannot move, because he has no pieces, or because all of his pieces are blocked, loses the game." http://www.chesslab.com/rules/CheckerComments.html
 # Non-Version Related Comments
@@ -90,15 +91,15 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [x] Currently working on implementing mouse click based GUI. (1/31, JH)
 - [ ] Currently contemplating if SFML related objects should be handled within a class. (2/1, JH)
 - [ ] Devising a way to playback and store game info. (2/6, JH)
-- Here's a maybe **NOT** helpful chart for all the playable positions (new class uses a different board):  
+- Here's a potentially helpful chart for all the playable positions:  
 
 |P|L|A|Y|A|B|L|E|
 |---|---|---|---|---|---|---|---|  
-|x|27|x|29|x|31|x|33|  
-|38|x|40|x|42|x|44|x|  
-|x|51|x|53|x|55|x|57|  
-|62|x|64|x|66|x|68|x|  
-|x|75|x|77|x|79|x|81|  
-|86|x|88|x|90|x|92|x|  
-|x|99|x|101|x|103|x|105|  
-|110|x|112|x|114|x|116|x|
+|x|0|x|1|x|2|x|3|  
+|4|x|5|x|6|x|7|x|  
+|x|8|x|9|x|10|x|11|  
+|12|x|13|x|14|x|15|x|  
+|x|16|x|17|x|18|x|19|  
+|20|x|21|x|22|x|23|x|  
+|x|24|x|25|x|26|x|27|  
+|28|x|29|x|30|x|31|x|

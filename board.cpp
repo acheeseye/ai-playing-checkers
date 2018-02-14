@@ -20,6 +20,9 @@ using std::string;
 #include <iostream>
 using std::cout;
 using std::endl;
+#include <fstream>
+using std::ofstream;
+//using std::ifstream;
 #include <stdexcept>
 
 //***********************************************************
@@ -414,9 +417,6 @@ void temp_Board::non_jump_moves()
 				}
 			}
 		}
-
-
-
 	}
 }
 
@@ -672,10 +672,7 @@ void temp_Board::move_piece(int move_number, bool switch_turns)
 			{
 				m_board.at(move_table[start].rmove) = _PLAYABLE_;
 			}
-
 		}
-		
-
 	}
 		
 	if (m_current_player == _BLACK_)
@@ -711,6 +708,40 @@ void temp_Board::store_move(std::vector<int> move_made)
 	m_moves_made.push_back(move_made);
 }
 
+
+void temp_Board::denote_endgame(string player, std::ofstream & to_file)
+{
+	if (player == "RED WINS")
+	{
+		to_file << "R";
+	}
+	else
+	{
+		to_file << "B";
+	}
+}
+
+
+void temp_Board::process_output(int idx, std::ofstream & to_file)
+{
+	if (get_Player() == _BLACK_)
+	{
+		to_file << "b ";
+	}
+	else
+	{
+		to_file << "r ";
+	}
+	for (int j = 0; j < m_possible_move_list.at(idx).size(); ++j)
+	{
+		if (j != 0 && j != m_possible_move_list.at(idx).size())
+			to_file << " ";
+		to_file << m_possible_move_list.at(idx).at(j);
+	}
+	to_file << endl;
+}
+
+
 void temp_Board::move_from(int start, int dest)
 {
 		if (!m_do_jump)
@@ -738,7 +769,6 @@ void temp_Board::move_from(int start, int dest)
 			{
 				m_board.at(move_table[start].rmove) = _PLAYABLE_;
 			}
-
 		}
 
 

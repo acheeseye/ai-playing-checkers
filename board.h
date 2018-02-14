@@ -15,7 +15,10 @@
 //for std::string
 #include <utility>
 //for std::pair
-#include<list>
+#include <list>
+#include <fstream>
+// for std::ofstream
+// for std::ifstream
 
 //List of piece types
 enum {
@@ -109,6 +112,9 @@ public:
 	int get_board_status(int board_id);
 
 	void print_moves();
+
+	void denote_endgame(std::string player, std::ofstream & to_file);
+	void process_output(int idx, std::ofstream & to_file);
 private:
 	//Current state of the board, same as above
 	std::vector<int> m_board;
