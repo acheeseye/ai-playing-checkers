@@ -82,6 +82,10 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [x] TODO: Visually execute the winning move before `board.is_over()` evaluates to `true`.
 - [x] TODO: Examine rules to determine what should happen when a given player is unable to make any moves (currently the player who is not unable to make moves auto-wins). This happens when a player has one piece left, that piece is in a corner or up against the wall, and it is the other player's turn to move.
 - "The player who cannot move, because he has no pieces, or because all of his pieces are blocked, loses the game." http://www.chesslab.com/rules/CheckerComments.html
+### Version 4.4:
+- Right arrow key now generates a random move for whosever turn it is.
+- Resource files (`*.png` and `*.ttf` files) are now stored in the `res` directory.
+- [ ] TODO: Make a directory to store the gameplay files/change the storing directory for the `std::ofstream`.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
