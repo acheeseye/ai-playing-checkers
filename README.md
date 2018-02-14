@@ -73,7 +73,8 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Allows (ish) for both players to be random AI (when `black_is_ai` and `red_is_ai` are both set to true and there is only one piece remaining from either side, the game crashes).
 - Above seems to be resolved (?). Just did a game that ended with 0 black pieces.
 - Added a delay between each move for viewing.
-- [ ] TODO: Save the moves made and win status and output it to a (text?) file.
+- [x] TODO: Save the moves made and win status and output it to a (text?) file.
+- When the program is run, a game file (`.txt`) is created; the generated file name contains the current date and time. The file contents are space-delimited and each line contains `r` or `b` followed by the move it took, except for the last line which is either `R` or `B` depending on who won the game.
 ### Version 4.3:
 - Identified issue causing crash where both players are to be random AI and only one piece is remaining on either side, it was because of attempted division by 0 when randomizing. Issue is now resolved.
 - Added images and replaced `CircleShape piece` with `Sprite piece`.
