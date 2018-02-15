@@ -105,6 +105,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [ ] TODO: Create class `connectors` that take an input and apply a weight and bias to it accordingly.
 - [ ] TODO: Contemplate if `connectors` need to be a class or if this should be internally handled by the `NNNodes` objects.
 - [ ] TODO: Do some timing optimizations (simplified sigmoid calculation?).
+- - [This](http://www.meta-calculator.com/?panel-102-graph&data-bounds-xMin=-8&data-bounds-xMax=8&data-bounds-yMin=-11&data-bounds-yMax=11&data-equations-0=%22y%3D1%2F(1%20%2B%20e%5E(-x))%22&data-equations-1=%22y%3D(0.5*(x%2F1%2Bx))%2B0.5%22&data-rand=undefined&data-hideGrid=false) graph page (click add equations and add the two the plot it I think) shows the difference between the sigmoid function and the "faster and approximated" function mentioned [here](https://stackoverflow.com/questions/10732027/fast-sigmoid-algorithm) by Nosyara. I don't believe it will be a useful approximation.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
