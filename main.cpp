@@ -14,6 +14,7 @@
 using std::cout;
 using std::endl;
 using std::cin;
+using std::streamsize;
 #include <vector>
 using std::vector;
 #include <string>
@@ -22,6 +23,8 @@ using std::to_string;
 #include <fstream>
 using std::ofstream;
 //using std::ifstream;
+#include <limits>
+using std::numeric_limits;
 
 int mouse_selected_index_converter(int mouse_selected_index, int mouse_index_x, int mouse_index_y)
 {
@@ -100,7 +103,7 @@ int main() {
 	temp_Board board(_RED_);
 	board.write_board_to_file(to_file_for_cmprss);
 
-	if (!to_file.is_open()) 
+	if (!to_file.is_open() || !to_file_for_cmprss.is_open()) 
 	{
 		cout << "*********************************************************" << endl;
 		cout << "ERROR OPENING FILE: PROBABLY NOT WRITING GAME DATA" << endl;
@@ -117,7 +120,7 @@ int main() {
 	int ai_wait_time = 300;
 
 	bool draw_selector = false;
-	bool red_is_ai = false;
+	bool red_is_ai = true;
 	bool black_is_ai = false;
 	bool last_move = false;
 
@@ -192,6 +195,8 @@ int main() {
 
 	srand(time(NULL));
 
+	board.process_output(to_file);
+
 	while (window.isOpen())
 	{
 		// this is for ai wait time only, may remove
@@ -209,16 +214,16 @@ int main() {
 		if (window_loop_cycles > ai_wait_time) {
 			if (red_is_ai && board.get_Player() == _RED_ && board.get_move_list().size() > 0) {
 				next_move = rand() % board.get_move_list().size();
-				board.process_output(next_move, to_file);
 				board.move_piece(next_move);
+				board.process_output(to_file);
 				board.write_board_to_file(to_file_for_cmprss);
 				window_loop_cycles = 0;
 			}
 		
 			if (black_is_ai && board.get_Player() == _BLACK_ && board.get_move_list().size() > 0) {
 				next_move = rand() % board.get_move_list().size();
-				board.process_output(next_move, to_file);
 				board.move_piece(next_move);
+				board.process_output(to_file);
 				board.write_board_to_file(to_file_for_cmprss);
 				window_loop_cycles = 0;
 			}
@@ -245,16 +250,16 @@ int main() {
 						break;
 					}
 					else {
-						board.process_output(next_move, to_file);
 						board.move_piece(next_move);
+						board.process_output(to_file);
 						board.write_board_to_file(to_file_for_cmprss);
 					}
 				}
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 				{
 					next_move = rand() % board.get_move_list().size();
-					board.process_output(next_move, to_file);
 					board.move_piece(next_move);
+					board.process_output(to_file);
 					board.write_board_to_file(to_file_for_cmprss);
 				}
 			}
@@ -308,8 +313,8 @@ int main() {
 			{
 				//cout << "move attempted is valid" << endl;
 				int move_id = it - moves.begin();
-				board.process_output(move_id, to_file);
 				board.move_piece(move_id);
+				board.process_output(to_file);
 				board.write_board_to_file(to_file_for_cmprss);
 
 			}
@@ -427,7 +432,7 @@ int main() {
 		{
 			if (last_move)
 			{
-				board.denote_endgame(player, to_file);
+				//board.denote_endgame(player, to_file);
 				cout << "GAME ENDED. RETURNED TO CONSOLE." << endl;
 				break;
 			}
@@ -435,11 +440,13 @@ int main() {
 		}
 	}
 
-	// update to show last move and ask to close?
-	std::cout << "game over, press 'x' to close game window" << std::endl;
 	to_file.close();
 	to_file_for_cmprss.close();
 
-	while (cin.get() != 'x');
+	cout << endl << "GAME OVER >> press ENTER to exit" << endl;
+	cin.clear();
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	while (cin.get() != '\n');
+
 	return 0;
 }

@@ -712,36 +712,38 @@ void temp_Board::store_move(std::vector<int> move_made)
 }
 
 
-void temp_Board::denote_endgame(string player, std::ofstream & to_file)
+/*void temp_Board::denote_endgame(string player, std::ofstream & to_file)
 {
-	if (player == "RED WINS")
-	{
-		to_file << "R";
-	}
-	else
-	{
-		to_file << "B";
-	}
-}
+	if (player == "RED WINS") { to_file << "R"; }
+	else { to_file << "B"; }
+}*/
 
 
-void temp_Board::process_output(int idx, std::ofstream & to_file)
+void temp_Board::process_output(std::ofstream & to_file)
 {
-	if (get_Player() == _BLACK_)
+	for (int i = 0; i < 32; ++i)
 	{
-		to_file << "b ";
+		if (i != 31)
+		{
+			to_file << get_board_status(i) << ",";
+		}
+		else if(!is_over())
+		{
+			to_file << get_board_status(i) << endl;
+		}
+		else
+		{
+			to_file << get_board_status(i);
+		}
 	}
-	else
-	{
-		to_file << "r ";
-	}
+	/*if (get_Player() == _BLACK_) { to_file << "b "; }
+	else { to_file << "r "; }
 	for (int j = 0; j < m_possible_move_list.at(idx).size(); ++j)
 	{
-		if (j != 0 && j != m_possible_move_list.at(idx).size())
-			to_file << " ";
+		if (j != 0 && j != m_possible_move_list.at(idx).size()) { to_file << " "; }
 		to_file << m_possible_move_list.at(idx).at(j);
 	}
-	to_file << endl;
+	to_file << endl;*/
 }
 
 void temp_Board::write_board_to_file(std::ofstream & to_file)

@@ -113,8 +113,8 @@ public:
 
 	void print_moves();
 
-	void denote_endgame(std::string player, std::ofstream & to_file);
-	void process_output(int idx, std::ofstream & to_file);
+	//void denote_endgame(std::string player, std::ofstream & to_file); // necessary? winner can be inferred by rewritten process_output
+	void process_output(std::ofstream & to_file);
 	void write_board_to_file(std::ofstream & to_file);
 private:
 	//Current state of the board, same as above
