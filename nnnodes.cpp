@@ -45,6 +45,9 @@ void NNNodes::calculate_and_set_output(vector<double> inputs)
 
 double NNNodes::sigmoid()
 {
-	m_output = 0.5 * (m_input_sum * m_sigmoid_activation / (1 + abs(m_input_sum*m_sigmoid_activation))) + 0.5;
+	//m_output = 0.5 * (m_input_sum * m_sigmoid_activation / (1 + abs(m_input_sum*m_sigmoid_activation))) + 0.5;
+	
+	//this function allows the sigmoid to reach (approach) -1.0 ~ 1.0 rather than 0.0 ~ 1.0
+	m_output = 2 / (1 + exp(-m_input_sum*m_sigmoid_activation)) - 1;
 	return m_output;
 }

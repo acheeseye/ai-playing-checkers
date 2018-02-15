@@ -115,6 +115,7 @@ public:
 
 	void denote_endgame(std::string player, std::ofstream & to_file);
 	void process_output(int idx, std::ofstream & to_file);
+	void write_board_to_file(std::ofstream & to_file);
 private:
 	//Current state of the board, same as above
 	std::vector<int> m_board;
