@@ -72,7 +72,6 @@ int main() {
 	//brunette26.set_node_count(4, layer_4_nc);
 
 	//Game of checkers using temp_Board
-	temp_Board board(_RED_);
 
 	struct tm timeinfo;
 	time_t now = time(0);
@@ -97,6 +96,9 @@ int main() {
 
 	std::ofstream to_file_for_cmprss;
 	to_file_for_cmprss.open(compressed_board_status_file_name, std::ofstream::out | std::ofstream::binary);
+
+	temp_Board board(_RED_);
+	board.write_board_to_file(to_file_for_cmprss);
 
 	if (!to_file.is_open()) 
 	{

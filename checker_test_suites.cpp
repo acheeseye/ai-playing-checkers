@@ -322,9 +322,10 @@
 //TEST_CASE("Testing for class NNNodes construction", "[One parameter]")
 //{
 //	int layer_id = 0;
+//	int dummy_next_layer_node_count = 10;
 //	bool ctor_flag;
 //	try {
-//		NNNodes node0(layer_id);
+//		NNNodes node0(layer_id, dummy_next_layer_node_count);
 //		ctor_flag = false;
 //	}
 //	catch (...)
@@ -337,14 +338,14 @@
 //		REQUIRE(ctor_flag == false);
 //	}
 //
-//	NNNodes node0(layer_id);
+//	NNNodes node0(layer_id, dummy_next_layer_node_count);
 //
 //	{
 //		INFO("Constructing NNNode with layer_id = 0");
 //		REQUIRE(node0.get_layer_id() == 0);
 //	}
 //
-//	NNNodes node1(layer_id);
+//	NNNodes node1(layer_id, dummy_next_layer_node_count);
 //	{
 //		INFO("Construction another NNNodes with layer_id = 0");
 //		REQUIRE(node1.get_layer_id() == 0);
@@ -380,7 +381,7 @@
 //	}
 //}
 //
-//TEST_CASE("Testing for class NeuralNetwork construction", "[One parameter]")
+//TEST_CASE("Testing for class NeuralNetwork", "[Construction two parameter]")
 //{
 //	int layer_count = 5;
 //	NeuralNetwork brunette26(5, _RED_);
@@ -402,5 +403,16 @@
 //		REQUIRE(brunette26.get_node_count(2) == 40);
 //		REQUIRE(brunette26.get_node_count(3) == 10);
 //		REQUIRE(brunette26.get_node_count(4) == 1);
+//	}
+//
+//	brunette26.init_nodes();
+//
+//	{
+//		INFO("NNNode connector count must be correct");
+//		REQUIRE(brunette26.get_node(0, 0).get_connector_count() == 32);
+//		REQUIRE(brunette26.get_node(1, 0).get_connector_count() == 40);
+//		REQUIRE(brunette26.get_node(2, 0).get_connector_count() == 10);
+//		REQUIRE(brunette26.get_node(3, 0).get_connector_count() == 1);
+//		REQUIRE(brunette26.get_node(4, 0).get_connector_count() == 0);
 //	}
 //}

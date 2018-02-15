@@ -4,14 +4,20 @@
 using std::cout;
 using std::endl;
 
-NNNodes::NNNodes(int layer_id)
+NNNodes::NNNodes(int layer_id, int connector_count):
+	m_layer_id(layer_id)
 {
-	m_layer_id = layer_id;
+	m_output_connectors.resize(connector_count);
 }
 
 int NNNodes::get_layer_id()
 {
 	return m_layer_id;
+}
+
+int NNNodes::get_connector_count()
+{
+	return m_output_connectors.size();
 }
 
 double NNNodes::get_output()
@@ -34,7 +40,7 @@ void NNNodes::set_sigmoid_activation(double value)
 	m_sigmoid_activation = value;
 }
 
-void NNNodes::calculate_and_set_output(vector<double> inputs)
+void NNNodes::calculate_and_set_output(vector<double> & inputs)
 {
 	m_input_sum = 0.0; // doubles need to be initialized first
 	for (auto i = 0; i < inputs.size(); ++i) {

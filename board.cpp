@@ -798,8 +798,8 @@ void temp_Board::write_board_to_file(std::ofstream & to_file)
 		string store_this = to_string(condensed_board_row_info);
 		data += store_this;
 		data += delimiter;
-		to_file << data;
 	}
+	to_file << data;
 }
 
 
