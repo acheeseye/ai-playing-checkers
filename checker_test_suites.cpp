@@ -16,10 +16,15 @@
 
 
 #include "board.h"
-#include "piece.h"
+#include "NeuralNetwork.h"
+#include "NNNodes.h"
 #include <iostream>
 using std::cout;
 using std::endl;
+#include <vector>
+using std::vector;
+#include <math.h>
+using std::exp;
 
 
 #define CATCH_CONFIG_FAST_COMPILE
@@ -32,30 +37,47 @@ using std::endl;
 
 TEST_CASE("Default Constructor","[Default Constructor]")
 {
-	temp_Board board;
+	temp_Board board(_RED_);
 	int number_of_moves = board.get_move_list().size();
-	
-	INFO("Should be 7 available moves");
-	REQUIRE(number_of_moves == 7);
 
-	board.move_piece(0);
-	number_of_moves = board.get_move_list().size();
-	INFO("Should be 7 available moves");
-	REQUIRE(number_of_moves == 7);
+	{
+		INFO("Player should be red");
+		REQUIRE(board.get_Player() == _RED_);
+	}
 
-	board.move_piece(2);
-	number_of_moves = board.get_move_list().size();
-	INFO("Should be 1 move (jump required");
-	REQUIRE(number_of_moves == 1);
+	{
+		INFO("Should be 7 available moves");
+		REQUIRE(number_of_moves == 7);
+	}
 
-	temp_Board board2 = board;
-	board2.move_piece(board2.get_move_list().size());
-	INFO("Board 2 should remain unchanged since move is out of range");
-	REQUIRE(board2 == board);
+	{
+		board.move_piece(0);
+		number_of_moves = board.get_move_list().size();
+		INFO("Should be 7 available moves");
+		REQUIRE(number_of_moves == 7);
+	}
 
-	board2.move_piece(-5);
-	INFO("Board 2 should remain unchange since move is out of range");
-	REQUIRE(board2 == board);
+	{
+		INFO("Player should be black");
+		REQUIRE(board.get_Player() == _BLACK_);
+	}
+
+	{
+		board.move_piece(2);
+		number_of_moves = board.get_move_list().size();
+		INFO("Should be 8 moves");
+		REQUIRE(number_of_moves == 8);
+	}
+
+	{
+		temp_Board board2 = board;
+		board2.move_piece(board2.get_move_list().size());
+		INFO("Board 2 should remain unchanged since move is out of range");
+		REQUIRE(board2 == board);
+		board2.move_piece(-5);
+		INFO("Board 2 should remain unchange since move is out of range");
+		REQUIRE(board2 == board);
+	}
 
 }
 
@@ -82,8 +104,6 @@ TEST_CASE("Jumps", "[Jumps]")
 		move.resize(2);
 		move.at(0) = 17;
 		move.at(1) = 10;
-		draw_board(board1);
-		board1.print_moves();
 		REQUIRE(board1.get_move_list().size() == 1);
 		REQUIRE(board1.get_move_list().at(0) == move);
 	}
@@ -97,10 +117,7 @@ TEST_CASE("Jumps", "[Jumps]")
 	boardState.at(6) = _RED_MAN_;
 	{
 		temp_Board board2(boardState, _BLACK_);
-		draw_board(board2);
-		board2.print_moves();
 		board2.move_piece(0);
-		draw_board(board2);
 	}
 
 	for (int i = 0; i < 32; ++i)
@@ -113,17 +130,11 @@ TEST_CASE("Jumps", "[Jumps]")
 	boardState.at(24) = _BLACK_MAN_;
 	{
 		temp_Board board2(boardState, _RED_);
-		draw_board(board2);
-		board2.print_moves();
 		board2.move_piece(0);
-		draw_board(board2);
 	}
 	{
 		temp_Board board2(boardState, _RED_);
-		//draw_board(board2);
-		//board2.print_moves();
 		board2.move_piece(1);
-		//draw_board(board2);
 	}
 
 	for (int i = 0; i < 32; ++i)
@@ -141,7 +152,6 @@ TEST_CASE("Jumps", "[Jumps]")
 	boardState.at(21) = _RED_KING_;
 	boardState.at(22) = _RED_MAN_;
 	boardState.at(23) = _RED_KING_;
-	//boardState.at()
 	{
 		temp_Board board2(boardState, _BLACK_);
 		INFO("Jumping nightmare, should be 9 possible moves");
@@ -169,11 +179,6 @@ TEST_CASE("Jumps", "[Jumps]")
 		temp_Board board2(boardState, _RED_);
 		INFO("Jumping nighmare, should be 9 possible moves");
 		REQUIRE(board2.get_move_list().size() == 9);
-		//draw_board(board2);
-		//board2.move_piece(2);
-		//board2.print_moves();
-		//draw_board(board2);
-		//board2.print_moves();
 	}
 
 	for (int i = 0;i < 32;++i)
@@ -213,8 +218,6 @@ TEST_CASE("Jumps", "[Jumps]")
 	boardState.at(18) = _RED_MAN_;
 	{
 		temp_Board board2(boardState, _BLACK_);
-		draw_board(board2);
-		board2.print_moves();
 	}
 
 	boardState.at(9) = _BLACK_MAN_;
@@ -224,8 +227,6 @@ TEST_CASE("Jumps", "[Jumps]")
 	boardState.at(18) = _BLACK_MAN_;
 	{
 		temp_Board board2(boardState, _RED_);
-		draw_board(board2);
-		board2.print_moves();
 	}
 
 	boardState.at(9) = _RED_MAN_;
@@ -235,8 +236,6 @@ TEST_CASE("Jumps", "[Jumps]")
 	boardState.at(18) = _RED_MAN_;
 	{
 		temp_Board board2(boardState, _BLACK_);
-		draw_board(board2);
-		board2.print_moves();
 	}
 
 	boardState.at(9) = _BLACK_MAN_;
@@ -246,8 +245,6 @@ TEST_CASE("Jumps", "[Jumps]")
 	boardState.at(18) = _BLACK_MAN_;
 	{
 		temp_Board board2(boardState, _RED_);
-		draw_board(board2);
-		board2.print_moves();
 	}
 
 	for (int i = 0;i < 32;i++)
@@ -276,7 +273,106 @@ TEST_CASE("Jumps", "[Jumps]")
 	boardState.at(31) = _BLACK_MAN_;
 	{
 		temp_Board board2(boardState, _RED_);
-		draw_board(board2);
-		board2.print_moves();
+	}
+}
+
+TEST_CASE("Proof of faster Sigmoid calculation")
+{
+	vector<double> dummy_input{ 0.1, 0.1156, 0, 0.923 };
+	double sum = 0.0;
+	double sigmoid_activation = 0.1;
+	for (auto i = 0; i < dummy_input.size(); ++i) sum += dummy_input[i];
+
+	//calculation one:
+	double result = 1 / (1 + exp((-sum) * sigmoid_activation));
+	int rounder = 10000;
+	int tmp_result = result * rounder;
+	result = (double)tmp_result / (double)rounder;
+
+	{
+		INFO("Normal calculation of Sigmoid output");
+		REQUIRE(true);
+	}
+
+	//calculation two:
+	double result_two = 0.5 * (sum * sigmoid_activation / (1 + abs(sum*sigmoid_activation))) + 0.5;
+	tmp_result = result_two * rounder;
+	result_two = (double)tmp_result / (double)rounder;
+	{
+		INFO("Apprently faster approximation of Sigmoid output");
+		REQUIRE(result_two == result);
+	}
+}
+
+TEST_CASE("Testing for class NNNodes construction", "[One parameter]")
+{
+	int layer_id = 0;
+	bool ctor_flag;
+	try {
+		NNNodes node0(layer_id);
+		ctor_flag = false;
+	}
+	catch (...)
+	{
+		ctor_flag = true;
+	}
+
+	{
+		INFO("Construction try catch");
+		REQUIRE(ctor_flag == false);
+	}
+
+	NNNodes node0(layer_id);
+
+	{
+		INFO("Constructing NNNode with layer_id = 0");
+		REQUIRE(node0.get_layer_id() == 0);
+	}
+
+	NNNodes node1(layer_id);
+	{
+		INFO("Construction another NNNodes with layer_id = 0");
+		REQUIRE(node1.get_layer_id() == 0);
+	}
+
+	double sigmoid_activation = 0.5;
+	node0.set_sigmoid_activation(sigmoid_activation);
+
+	{
+		INFO("Check for correct sigmoid activation set");
+		REQUIRE(node0.get_sigmoid_activation() == 0.5);
+	}
+
+	vector<double> dummy_input{ 0.1, 0.1156, 0, 0.923 };
+	node0.calculate_and_set_output(dummy_input);
+	cout << node0.get_output() << endl;
+	{
+		INFO("Calculate input sum with input of 0.1, 0.1156, 0, 0.923");
+		REQUIRE(node0.get_input_sum() == 1.1386);
+	}
+}
+
+TEST_CASE("Testing for class NeuralNetwork construction", "[One parameter]")
+{
+	int layer_count = 5;
+	NeuralNetwork brunette26(5);
+	{
+		INFO("NN construction size layer count as 5");
+		REQUIRE(brunette26.get_max_layer_count() == 5);
+	}
+
+	brunette26.set_node_count(0, 4);
+	brunette26.set_node_count(1, 32);
+	brunette26.set_node_count(2, 40);
+	brunette26.set_node_count(3, 10);
+	brunette26.set_node_count(4, 1);
+
+	{
+		INFO("NN node counts: 4, 32, 40, 10, 1");
+		REQUIRE(brunette26.get_node_count(0) == 4);
+		REQUIRE(brunette26.get_node_count(1) == 32);
+		REQUIRE(brunette26.get_node_count(2) == 40);
+		REQUIRE(brunette26.get_node_count(3) == 10);
+		REQUIRE(brunette26.get_node_count(4) == 1);
 	}
 }

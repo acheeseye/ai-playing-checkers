@@ -21,8 +21,8 @@ int main(int argc, char *argv[])
 	if (!catchresult)  // Continue only if no command-line error
 	{
 		// Run test suites
-		std::cout << "Tests for checkers program" << std::endl;
-		std::cout << "CS 405- Intro to AI" << std::endl;
+		std::cout << "Tests for AI playing checkers program" << std::endl;
+		std::cout << "CS 405/605 Intro to AI" << std::endl;
 		catchresult = session.run();
 		std::cout << "End of tests for checkers program" << std::endl;
 	}
