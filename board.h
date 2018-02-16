@@ -101,6 +101,9 @@ public:
 	bool operator==(const temp_Board &) const;
 	std::vector<std::vector<int>>& get_move_list();
 
+	double piece_count_eval();
+
+
 	void non_jump_moves();
 	void jump_moves_start();
 	void jump_recurse(temp_Board board_state, std::vector<int> next_move); //pass by VALUE not reference

@@ -913,3 +913,22 @@ void draw_board(const temp_Board & board)
 		cout << endl;
 	}
 }
+
+double temp_Board::piece_count_eval()
+{
+	double p_red = 0;
+	double p_black = 0;
+
+	for (int i = 0;i < m_board.size();i++)
+	{
+		if (m_board.at(i) == _BLACK_MAN_ || m_board.at(i) == _BLACK_KING_)
+		{
+			p_black++;
+		}
+		else if (m_board.at(i) == _RED_MAN_ || m_board.at(i) == _RED_KING_)
+		{
+			p_red++;
+		}
+	}
+	return p_black - p_red;
+}
