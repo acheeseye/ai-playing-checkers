@@ -17,10 +17,16 @@ using std::signbit;
 using std::find;
 #include <string>
 using std::string;
+using std::to_string;
 #include <iostream>
 using std::cout;
 using std::endl;
+#include <fstream>
+using std::ofstream;
+//using std::ifstream;
 #include <stdexcept>
+#include <bitset>
+using std::bitset;
 
 //***********************************************************
 //Functions for temp_Board
@@ -414,9 +420,6 @@ void temp_Board::non_jump_moves()
 				}
 			}
 		}
-
-
-
 	}
 }
 
@@ -672,10 +675,7 @@ void temp_Board::move_piece(int move_number, bool switch_turns)
 			{
 				m_board.at(move_table[start].rmove) = _PLAYABLE_;
 			}
-
 		}
-		
-
 	}
 		
 	if (m_current_player == _BLACK_)
@@ -711,6 +711,100 @@ void temp_Board::store_move(std::vector<int> move_made)
 	m_moves_made.push_back(move_made);
 }
 
+
+/*void temp_Board::denote_endgame(string player, std::ofstream & to_file)
+{
+	if (player == "RED WINS") { to_file << "R"; }
+	else { to_file << "B"; }
+}*/
+
+
+void temp_Board::process_output(std::ofstream & to_file)
+{
+	for (int i = 0; i < 32; ++i)
+	{
+		if (i != 31)
+		{
+			to_file << get_board_status(i) << ",";
+		}
+		else if(!is_over())
+		{
+			to_file << get_board_status(i) << endl;
+		}
+		else
+		{
+			to_file << get_board_status(i);
+		}
+	}
+	/*if (get_Player() == _BLACK_) { to_file << "b "; }
+	else { to_file << "r "; }
+	for (int j = 0; j < m_possible_move_list.at(idx).size(); ++j)
+	{
+		if (j != 0 && j != m_possible_move_list.at(idx).size()) { to_file << " "; }
+		to_file << m_possible_move_list.at(idx).at(j);
+	}
+	to_file << endl;*/
+}
+
+void temp_Board::write_board_to_file(std::ofstream & to_file)
+{
+	if (m_board.size() != 32) throw std::exception("Board has incorrect size");
+	string data = "";
+	string delimiter = ",";
+
+	//first 4 bits are not used
+	//next 12 bits are divided into 4 x 3 bits
+	//each section of 3 bits represent board status
+	//100 == playable
+	//000 == black man
+	//001 == black king
+	//010 == red man
+	//011 == red king
+	unsigned short shifted_mask_storer = 0;
+	unsigned short playable_bit_mask = 0x4;			// 0000 0000 0000 0100
+	unsigned short black_man_bit_mask = 0;			// 0000 0000 0000 0000
+	unsigned short black_king_bit_mask = 0x1;		// 0000 0000 0000 0001
+	unsigned short red_man_bit_mask = 0x2;			// 0000 0000 0000 0010
+	unsigned short red_king_bit_mask = 0x3;			// 0000 0000 0000 0011
+
+	for (auto row = 0; row < 8; ++row)
+	{
+		unsigned short condensed_board_row_info = 0;
+		for (auto column_id = 0; column_id < 4; ++column_id)
+		{
+			int reverse_column_id = column_id + (3 + (-2) * column_id);
+			unsigned short tmp_mask_holder;
+			switch(m_board.at(row*4 + column_id))
+			{
+			case _PLAYABLE_:
+				tmp_mask_holder = playable_bit_mask;
+				break;
+			case _RED_MAN_:
+				tmp_mask_holder = red_man_bit_mask;
+				break;
+			case _RED_KING_:
+				tmp_mask_holder = red_king_bit_mask;
+				break;
+			case _BLACK_MAN_:
+				tmp_mask_holder = black_man_bit_mask;
+				break;
+			case _BLACK_KING_:
+				tmp_mask_holder = black_king_bit_mask;
+				break;
+			}
+			// TODO: use extra four bits as delimiter? (1111)
+			// if so, add four to left shift amount (100 100 100 100 1111)
+			shifted_mask_storer = tmp_mask_holder << reverse_column_id * 3;
+			condensed_board_row_info = shifted_mask_storer | condensed_board_row_info;
+		}
+		string store_this = to_string(condensed_board_row_info);
+		data += store_this;
+		data += delimiter;
+	}
+	to_file << data;
+}
+
+
 void temp_Board::move_from(int start, int dest)
 {
 		if (!m_do_jump)
@@ -738,7 +832,6 @@ void temp_Board::move_from(int start, int dest)
 			{
 				m_board.at(move_table[start].rmove) = _PLAYABLE_;
 			}
-
 		}
 
 

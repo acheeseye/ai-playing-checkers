@@ -5,6 +5,7 @@
 // Created Jan 23, 2018
 
 #include "board.h"
+#include "NeuralNetwork.h"
 #include <random>
 #include <time.h>
 #include <SFML\Graphics.hpp>
@@ -13,11 +14,17 @@
 using std::cout;
 using std::endl;
 using std::cin;
+using std::streamsize;
 #include <vector>
 using std::vector;
 #include <string>
 using std::string;
 using std::to_string;
+#include <fstream>
+using std::ofstream;
+//using std::ifstream;
+#include <limits>
+using std::numeric_limits;
 
 int mouse_selected_index_converter(int mouse_selected_index, int mouse_index_x, int mouse_index_y)
 {
@@ -36,10 +43,73 @@ int mouse_selected_index_converter(int mouse_selected_index, int mouse_index_x, 
 		return return_index;
 }
 
+string adjust_time(int unit);
+string adjust_time(int unit)
+{
+	string str;
+	if (unit < 10)
+	{
+		str = "0" + to_string(unit);
+	}
+	else
+	{
+		str = to_string(unit);
+	}
+	return str;
+}
+
 int main() {
 
+	//int NN_layers = 5;
+	//int layer_0_nc = 4;
+	//int layer_1_nc = 32;
+	//int layer_2_nc = 40;
+	//int layer_3_nc = 10;
+	//int layer_4_nc = 1;
+
+	//NeuralNetwork brunette26(NN_layers);
+	//brunette26.set_node_count(0, layer_0_nc);
+	//brunette26.set_node_count(1, layer_1_nc);
+	//brunette26.set_node_count(2, layer_2_nc);
+	//brunette26.set_node_count(3, layer_3_nc);
+	//brunette26.set_node_count(4, layer_4_nc);
+
 	//Game of checkers using temp_Board
+
+	struct tm timeinfo;
+	time_t now = time(0);
+	localtime_s(&timeinfo, &now);
+
+	string year = to_string(1900 + timeinfo.tm_year);
+	string month = adjust_time(1 + timeinfo.tm_mon);
+	string day = adjust_time(timeinfo.tm_mday);
+
+	string hour = adjust_time(timeinfo.tm_hour);
+	string minute = adjust_time(timeinfo.tm_min);
+	string second = adjust_time(timeinfo.tm_sec);
+
+	//sorry, for my version I have to enter the "ai-playing-checkers" direcotry to open the files
+	//just remove the "ai-playing-checkers" part of the string for it to work for you (probably)
+	string file_name = "ai-playing-checkers\\games_played\\game_" + year + month + day + '_' + hour + minute + second + ".txt";
+	string compressed_board_status_file_name = 
+		"ai-playing-checkers\\compressed_game_data\\cmprss_game_" + year + month + day + '_' + hour + minute + second + ".txt";
+
+	std::ofstream to_file;
+	to_file.open(file_name, std::ofstream::out | std::ofstream::app);
+
+	std::ofstream to_file_for_cmprss;
+	to_file_for_cmprss.open(compressed_board_status_file_name, std::ofstream::out | std::ofstream::binary);
+
 	temp_Board board(_RED_);
+	board.write_board_to_file(to_file_for_cmprss);
+
+	if (!to_file.is_open() || !to_file_for_cmprss.is_open()) 
+	{
+		cout << "*********************************************************" << endl;
+		cout << "ERROR OPENING FILE: PROBABLY NOT WRITING GAME DATA" << endl;
+		cout << "PLEASE CHECK IF THE FILE NAME IS CORRECT FOR YOUR VERSION" << endl;
+		cout << "*********************************************************" << endl;
+	}
 
 	int next_move;
 
@@ -52,6 +122,7 @@ int main() {
 	bool draw_selector = false;
 	bool red_is_ai = true;
 	bool black_is_ai = false;
+	bool last_move = false;
 
 	unsigned int board_size = 8;
 	unsigned int board_width = 700;
@@ -80,50 +151,55 @@ int main() {
 
 
 	sf::Font font;
-	if (!font.loadFromFile("cour.ttf"))
+
+	//sorry, for my version I have to enter the "ai-playing-checkers" direcotry to open the files
+	//just remove the "ai-playing-checkers/" part of the string for it to work for you (probably)
+	if (!font.loadFromFile("ai-playing-checkers/res/cour.ttf"))
 	{
 		cout << "font load failed" << endl;
 	}
 
 	sf::Texture red_king;
-	if (!red_king.loadFromFile("red_king.png"))
+	if (!red_king.loadFromFile("ai-playing-checkers/res/red_king.png"))
 	{
 		cout << "red_king load failed" << endl;
 	}
 	red_king.setSmooth(true);
 
 	sf::Texture red_soldier;
-	if (!red_soldier.loadFromFile("red_soldier.png"))
+	if (!red_soldier.loadFromFile("ai-playing-checkers/res/red_soldier.png"))
 	{
 		cout << "red_soldier load failed" << endl;
 	}
 	red_soldier.setSmooth(true);
 
 	sf::Texture black_king;
-	if (!black_king.loadFromFile("black_king.png"))
+	if (!black_king.loadFromFile("ai-playing-checkers/res/black_king.png"))
 	{
 		cout << "black_king load failed" << endl;
 	}
 	black_king.setSmooth(true);
 
 	sf::Texture black_soldier;
-	if (!black_soldier.loadFromFile("black_soldier.png"))
+	if (!black_soldier.loadFromFile("ai-playing-checkers/res/black_soldier.png"))
 	{
 		cout << "black_soldier load failed" << endl;
 	}
 	black_soldier.setSmooth(true);
 
 	sf::Texture unseen_piece;
-	if (!unseen_piece.loadFromFile("empty.png"))
+	if (!unseen_piece.loadFromFile("ai-playing-checkers/res/empty.png"))
 	{
 		cout << "unseen_piece load failed" << endl;
 	}
 
 	srand(time(NULL));
 
-	//while (false)
+	board.process_output(to_file);
+
 	while (window.isOpen())
 	{
+		// this is for ai wait time only, may remove
 		window_loop_cycles++;
 
 		sf::Event event;
@@ -137,21 +213,26 @@ int main() {
 
 		if (window_loop_cycles > ai_wait_time) {
 			if (red_is_ai && board.get_Player() == _RED_ && board.get_move_list().size() > 0) {
-				board.print_moves();
 				next_move = rand() % board.get_move_list().size();
 				board.move_piece(next_move);
+				board.process_output(to_file);
+				board.write_board_to_file(to_file_for_cmprss);
 				window_loop_cycles = 0;
 			}
 		
 			if (black_is_ai && board.get_Player() == _BLACK_ && board.get_move_list().size() > 0) {
-				board.print_moves();
 				next_move = rand() % board.get_move_list().size();
 				board.move_piece(next_move);
+				board.process_output(to_file);
+				board.write_board_to_file(to_file_for_cmprss);
 				window_loop_cycles = 0;
 			}
 		}
 
-
+		
+		//*************************************************************************
+		// EVENT POLLER -- ADD RUNTIME EVENTS HERE
+		//*************************************************************************
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::KeyPressed)
@@ -170,7 +251,16 @@ int main() {
 					}
 					else {
 						board.move_piece(next_move);
+						board.process_output(to_file);
+						board.write_board_to_file(to_file_for_cmprss);
 					}
+				}
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+				{
+					next_move = rand() % board.get_move_list().size();
+					board.move_piece(next_move);
+					board.process_output(to_file);
+					board.write_board_to_file(to_file_for_cmprss);
 				}
 			}
 			if (event.type == sf::Event::MouseButtonPressed)
@@ -186,9 +276,16 @@ int main() {
 					mouse_selected_index, mouse_index_x, mouse_index_y);
 			}
 			if (event.type == sf::Event::Closed)
+			{
 				window.close();
+			}
 		}
+		//*************************************************************************
+		// END OF EVENT POLLER
+		//*************************************************************************
 
+
+		// Board Selector Set Up
 		if (selected_board_index != 33) { // location selected is valid
 			if (selected_board_index == start_piece_id) {
 				start_piece_id = 33;
@@ -206,6 +303,7 @@ int main() {
 			cout << "start selected: " << start_piece_id << " end selected: " << end_piece_id << endl;
 		}
 
+
 		if (start_piece_id != 33 && end_piece_id != 33)
 		{
 			vector<int> attempted_move{ start_piece_id, end_piece_id };
@@ -216,14 +314,18 @@ int main() {
 				//cout << "move attempted is valid" << endl;
 				int move_id = it - moves.begin();
 				board.move_piece(move_id);
+				board.process_output(to_file);
+				board.write_board_to_file(to_file_for_cmprss);
+
 			}
 			//else cout << "move attempted is INVALID" << endl;
 			start_piece_id = 33;
 			end_piece_id = 33;
 		}
 
+		//*************************************************************************
+		//*************************************************************************
 		window.clear();
-
 		window.draw(board_base);
 		bool playable_slot = false;
 		sf::Vector2f selector_draw_position;
@@ -317,7 +419,6 @@ int main() {
 				player = "RED WINS";
 				player_text.setFillColor(sf::Color::Red);
 			}
-			cout << "GAME ENDED. RETURNED TO CONSOLE." << endl;
 		}
 
 		player_text.setString(player);
@@ -327,105 +428,25 @@ int main() {
 
 		window.display();
 
-		if (board.is_over()) {
-			break;
+		if (board.is_over())
+		{
+			if (last_move)
+			{
+				//board.denote_endgame(player, to_file);
+				cout << "GAME ENDED. RETURNED TO CONSOLE." << endl;
+				break;
+			}
+			last_move = true;
 		}
 	}
 
-	// update to show last move and ask to close?
-	std::cout << "game over, enter 'x' to exit" << std::endl;
-	while (cin.get() != 'x');
-	return 0;
+	to_file.close();
+	to_file_for_cmprss.close();
 
-	std::cout << "This is a game of checkers." << std::endl;
-	std::cout << "Printed below the board is the list of move options" << std::endl;
-	std::cout << "Choose a move to begin game, type -1 to end game" << std::endl;
-	while (!board.is_over())
-	{
-		int next_move;
-		draw_board(board);
-		board.print_moves();
-
-		if (board.get_Player() == _BLACK_)
-		{
-			std::cout << "Player: " << board.get_Player() << std::endl;
-			std::cout << "Move choice:";
-			std::cin >> next_move;
-		}
-		else
-		{
-			next_move = rand() % board.get_move_list().size();
-			std::cout << "computer did move:" <<next_move<< std::endl;
-			std::cout << "computer did move" << std::endl;
-		}
-		
-		//apparently, setting next move equal to something insanely large like
-		//11111111111111111111111111111111111111
-		//or plugging in characters such as 'a' will cause std::cin.fail() to be
-		//true causing the program to enter an infinite loop. This next if statement
-		//fixes this.
-		if (std::cin.bad() || std::cin.fail())
-		{
-			std::cin.clear();
-			std::cin.get();
-		}
-
-		if (next_move == -1)
-		{
-			break;
-		}
-		board.move_piece(next_move);
-	}
-	std::cout << "game over, press 'x' to exit" << std::endl;
+	cout << endl << "GAME OVER >> press ENTER to exit" << endl;
 	cin.clear();
-	cin.get();
-	while (cin.get() != 'x');
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	while (cin.get() != '\n');
+
 	return 0;
-
-
-
-	/*
-	Board board0(8, 8, _BLACK_);
-
-	int p1_piece0 = 12;
-
-	//move 0 -- print initial board & info
-	board0.print_board();
-	//board0.move_piece(92, 79);
-	//board0.move_piece(57, 68);
-	//board0.move_piece(79, 66);
-	//board0.move_piece(79, 57);
-
-	//this:
-	//92 79 57 68 79 57 55 68
-	//produces a disappearing r piece
-	//92 79 57 68 79 57 55 68 90 79 68 90
-
-//SERIES OF TESTS -- I'M NOT SURE HOW TO USE CATCH AT THE MOMENT
-
-	//TODO: generate correct jumped over piece id
-	while (!board0.game_ended()) {
-		board0.generate_valid_actions();
-		board0.print_all_current_possible_moves();
-		int current;
-		int destination;
-		cout << "Enter the next move (0 to print board info, 1 to stop game): ";
-		cin >> current >> destination;
-		if (current == 0) {
-			board0.print_moves_made();
-			board0.print_all_current_possible_jumps();
-			board0.print_all_current_possible_moves();
-			print_info(board0);
-		}
-		else if (current == 1) {
-			break;
-		}
-		else {
-			board0.move_piece(current, destination);
-			cout << "INSTRUCTION ENDED\n\n";
-		}
-	}
-
-	cout << endl;
-	*/
 }
