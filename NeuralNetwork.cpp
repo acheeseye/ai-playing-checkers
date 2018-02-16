@@ -1,6 +1,5 @@
 #include "NeuralNetwork.h"
-#include "board.h"
-// For enumerated values
+#include "nnnodes.h";
 
 #include <iostream>
 using std::cout;
@@ -71,17 +70,8 @@ double NeuralNetwork::board_evaluation(string & file_name)
 	}
 	cout << "file open success" << endl << endl;
 
-	vector<double> NN_first_layer_input;
+	vector<string> board_input;
 
-<<<<<<< HEAD
-	while (!in_file.eof())
-||||||| merged common ancestors
-	while (in_file >> s)
-	{
-	}
-
-	for (auto i = 0; i < board_input.size(); ++i)
-=======
 	vector<vector<int>> board_record;
 
 	while (getline(in_file, str))
@@ -90,30 +80,7 @@ double NeuralNetwork::board_evaluation(string & file_name)
 	}
 
 	for (auto i = 0; i < board_input.size(); ++i)
->>>>>>> 93f4875fdea0911e1cc9502e2c8475388d7e89f6
 	{
-<<<<<<< HEAD
-		char c_iter;
-		std::getline(in_file, s);
-		if (s == "") break;
-		for (auto i = 0; i < s.size(); ++i)
-		{
-			c_iter = s[i];
-			if (c_iter == '0') NN_first_layer_input.push_back(0);
-			else if (c_iter == '1') NN_first_layer_input.push_back(1 * multiplier);
-			else if (c_iter == 'k') NN_first_layer_input.push_back(m_own_king_value * multiplier);
-			else if (c_iter == '-')
-			{
-				if (s[i + 1] == '1') NN_first_layer_input.push_back(-1 * multiplier);
-				else if (s[i + i] == 'k') NN_first_layer_input.push_back(m_enemy_king_value * multiplier);
-				++i;
-			}
-		}
-		propagate_NN(NN_first_layer_input);
-		cout << "BOARDEVAL: " << get_final_output() << endl;
-		NN_first_layer_input.clear();
-||||||| merged common ancestors
-=======
 		stringstream ss(board_input[i]);
 		vector<int> move_record;
 		int token;
@@ -137,7 +104,6 @@ double NeuralNetwork::board_evaluation(string & file_name)
 			cout << board_record[j][k] << " ";
 		}
 		cout << endl;
->>>>>>> 93f4875fdea0911e1cc9502e2c8475388d7e89f6
 	}
 
 	in_file.close();

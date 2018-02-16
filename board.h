@@ -101,6 +101,9 @@ public:
 	bool operator==(const temp_Board &) const;
 	std::vector<std::vector<int>>& get_move_list();
 
+	double piece_count_eval();
+
+
 	void non_jump_moves();
 	void jump_moves_start();
 	void jump_recurse(temp_Board board_state, std::vector<int> next_move); //pass by VALUE not reference
@@ -113,19 +116,9 @@ public:
 
 	void print_moves();
 
-<<<<<<< HEAD
-	void denote_endgame(std::string player, std::ofstream & to_file);
-	void process_output(int idx, std::ofstream & to_file);
-	void write_board_to_file(std::ofstream & to_file, std::ofstream & to_file_readable);
-||||||| merged common ancestors
-	void denote_endgame(std::string player, std::ofstream & to_file);
-	void process_output(int idx, std::ofstream & to_file);
-	void write_board_to_file(std::ofstream & to_file);
-=======
 	//void denote_endgame(std::string player, std::ofstream & to_file); // necessary? winner can be inferred by rewritten process_output
 	void process_output(std::ofstream & to_file);
 	void write_board_to_file(std::ofstream & to_file);
->>>>>>> 93f4875fdea0911e1cc9502e2c8475388d7e89f6
 private:
 	//Current state of the board, same as above
 	std::vector<int> m_board;
