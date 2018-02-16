@@ -16,7 +16,6 @@
 
 
 #include "board.h"
-#include "piece.h"
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -32,7 +31,7 @@ using std::endl;
 
 TEST_CASE("Default Constructor","[Default Constructor]")
 {
-	temp_Board board;
+	temp_Board board(_BLACK_);
 	int number_of_moves = board.get_move_list().size();
 	
 	INFO("Should be 7 available moves");
