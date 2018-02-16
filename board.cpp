@@ -744,10 +744,11 @@ void temp_Board::process_output(int idx, std::ofstream & to_file)
 	to_file << endl;
 }
 
-void temp_Board::write_board_to_file(std::ofstream & to_file)
+void temp_Board::write_board_to_file(std::ofstream & to_file, std::ofstream & to_file_readable)
 {
 	if (m_board.size() != 32) throw std::exception("Board has incorrect size");
 	string data = "";
+	string readable_data = "";
 	string delimiter = ",";
 
 	//first 4 bits are not used
@@ -776,22 +777,28 @@ void temp_Board::write_board_to_file(std::ofstream & to_file)
 			{
 			case _PLAYABLE_:
 				tmp_mask_holder = playable_bit_mask;
+				readable_data += "0";
 				break;
 			case _RED_MAN_:
 				tmp_mask_holder = red_man_bit_mask;
+				readable_data += "-1";
 				break;
 			case _RED_KING_:
 				tmp_mask_holder = red_king_bit_mask;
+				readable_data += "-k";
 				break;
 			case _BLACK_MAN_:
 				tmp_mask_holder = black_man_bit_mask;
+				readable_data += "1";
 				break;
 			case _BLACK_KING_:
 				tmp_mask_holder = black_king_bit_mask;
+				readable_data += "k";
 				break;
 			}
 			// TODO: use extra four bits as delimiter? (1111)
 			// if so, add four to left shift amount (100 100 100 100 1111)
+			
 			shifted_mask_storer = tmp_mask_holder << reverse_column_id * 3;
 			condensed_board_row_info = shifted_mask_storer | condensed_board_row_info;
 		}
@@ -799,6 +806,7 @@ void temp_Board::write_board_to_file(std::ofstream & to_file)
 		data += store_this;
 		data += delimiter;
 	}
+	to_file_readable << readable_data << "\n";
 	to_file << data;
 }
 

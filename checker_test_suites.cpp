@@ -17,7 +17,7 @@
 //
 //#include "board.h"
 //#include "NeuralNetwork.h"
-//#include "NNNodes.h"
+//#include "double.h"
 //#include <iostream>
 //using std::cout;
 //using std::endl;
@@ -319,13 +319,13 @@
 ////	}
 ////}
 //
-//TEST_CASE("Testing for class NNNodes construction", "[One parameter]")
+//TEST_CASE("Testing for class double construction", "[One parameter]")
 //{
 //	int layer_id = 0;
 //	int dummy_next_layer_node_count = 10;
 //	bool ctor_flag;
 //	try {
-//		NNNodes node0(layer_id, dummy_next_layer_node_count);
+//		double node0(layer_id, dummy_next_layer_node_count);
 //		ctor_flag = false;
 //	}
 //	catch (...)
@@ -338,16 +338,16 @@
 //		REQUIRE(ctor_flag == false);
 //	}
 //
-//	NNNodes node0(layer_id, dummy_next_layer_node_count);
+//	double node0(layer_id, dummy_next_layer_node_count);
 //
 //	{
 //		INFO("Constructing NNNode with layer_id = 0");
 //		REQUIRE(node0.get_layer_id() == 0);
 //	}
 //
-//	NNNodes node1(layer_id, dummy_next_layer_node_count);
+//	double node1(layer_id, dummy_next_layer_node_count);
 //	{
-//		INFO("Construction another NNNodes with layer_id = 0");
+//		INFO("Construction another double with layer_id = 0");
 //		REQUIRE(node1.get_layer_id() == 0);
 //	}
 //
