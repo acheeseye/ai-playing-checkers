@@ -779,23 +779,23 @@ void temp_Board::write_board_to_file(std::ofstream & to_file, std::ofstream & to
 			{
 			case _PLAYABLE_:
 				tmp_mask_holder = playable_bit_mask;
-				readable_data += "0";
+				readable_data += "0 ";
 				break;
 			case _RED_MAN_:
 				tmp_mask_holder = red_man_bit_mask;
-				readable_data += "-1";
+				readable_data += "-1 ";
 				break;
 			case _RED_KING_:
 				tmp_mask_holder = red_king_bit_mask;
-				readable_data += "-k";
+				readable_data += "-k ";
 				break;
 			case _BLACK_MAN_:
 				tmp_mask_holder = black_man_bit_mask;
-				readable_data += "1";
+				readable_data += "1 ";
 				break;
 			case _BLACK_KING_:
 				tmp_mask_holder = black_king_bit_mask;
-				readable_data += "k";
+				readable_data += "k ";
 				break;
 			}
 			// TODO: use extra four bits as delimiter? (1111)
