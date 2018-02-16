@@ -95,12 +95,13 @@ This is a project dedicated to creating and training an AI to play pro level che
 ### Version 5.1:
 - New `temp_Board` function `write_board_to_file` that takes a file name and write the board status of all 32 positions for every single move made in a compressed binary style.  
 
-||Playable|Red Solider|Red King|Black Solider|Black King|  
+||Playable|Red Soldier|Red King|Black Soldier|Black King|  
 |---|---|---|---|---|---|  
 |Binary|`100`|`010`|`011`|`000`|`001`|  
 |Hex|`0x4`|`0x2`|`0x3`|`0x0`|`0x1`|  
 - The data is stored by rows and each row is denoted by a unsigned short (16-bit) and the first 4 bits are not used. For example, the decimal value `1170` is `0000010010010010` in binary, and is broken up into `0000` `010` `010` `010` `010` where the 3-bit sections represent the piece type (in the table above).
 - I am unsure if storing them as binary/hex will cost less memory, please alter accordingly if you please.
+- Integers are stored memory in binary format already.
 - `NNNodes` objects now use a new sigmoid function for processing inputs. This allows for the range of inputs/output to be in the range of -1 and 1.
 - [x] TODO: Create class `connectors` that take an input and apply a weight and bias to it accordingly.
 - [x] TODO: Contemplate if `connectors` need to be a class or if this should be internally handled by the `NNNodes` objects.
@@ -111,8 +112,10 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Each `NNNodes` in the `NeuralNetwork` has the correct amount of `Connectors` to the next layer.
 - `Connectors` generate randomized values correctly.
 - Working on reading game data for function `NeuralNetwork::board_evaluation`.
-- [ ] Somehow parse the ugly bullshit I've created as compressed game data OR
-- [ ] Write new function to store game data with 32 numbers per game move and read that file instead.
+- [ ] ~~Somehow parse the ugly bullshit I've created as compressed game data OR~~
+- [x] Write new function to store game data with 32 numbers per game move and read that file instead.
+- `process_output` rewritten to do that, code has been added to `board_evaluation` to read in, parse, and store the data.
+- [ ] TODO: Iterate through files in directory?
 - [ ] TODO: Instead of defaulting `Connectors` to next layer only, allow user to pass in `layer_id` for diversified connection.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
