@@ -118,7 +118,7 @@ public:
 
 	//void denote_endgame(std::string player, std::ofstream & to_file); // necessary? winner can be inferred by rewritten process_output
 	void process_output(std::ofstream & to_file);
-	void write_board_to_file(std::ofstream & to_file);
+	void write_board_to_file(std::ofstream & to_file, std::ofstream & to_file_readable);
 private:
 	//Current state of the board, same as above
 	std::vector<int> m_board;

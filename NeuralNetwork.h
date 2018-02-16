@@ -1,26 +1,23 @@
 #ifndef _INCLUDED_NEURALNETWORK_H_
 #define _INCLUDED_NEURALNETWORK_H_
 
-#include "nnnodes.h"
-
 #include <vector>
 
 class NeuralNetwork
 {
-	typedef vector<NNNodes> layer_type;
+	typedef std::vector<double> layer_type;
 public:
 	NeuralNetwork(int layers, int player);
 	int get_max_layer_count();
 	int get_node_count(int layer_id);
 
 	std::vector<layer_type> get_all_layers();
-	NNNodes get_node(int layer_id, int node_id);
+	double get_node(int layer_id, int node_id);
 
 	double board_evaluation(std::string & file_name);
 
 	void set_node_count(int layer_id, int node_count);
 	void set_king_value(double king_value);
-	void init_nodes();
 
 private:
 	int m_max_layer_count;
