@@ -1,13 +1,16 @@
 #include "NeuralNetwork.h"
 #include "nnnodes.h";
 
-#include <string>
-using std::string;
-#include <fstream>
-using std::ifstream;
 #include <iostream>
 using std::cout;
 using std::endl;
+#include <string>
+using std::string;
+using std::getline;
+#include <fstream>
+using std::ifstream;
+#include <sstream>
+using std::stringstream;
 #include <vector>
 
 typedef vector<NNNodes> layer_type;
@@ -44,23 +47,50 @@ NNNodes NeuralNetwork::get_node(int layer_id, int node_id)
 double NeuralNetwork::board_evaluation(string & file_name)
 {
 	ifstream in_file;
-	string s;
+	string str;
 	in_file.open(file_name);
+
 	if (!in_file) 
 	{
 		cout << "CANNOT OPEN FILE WITH FUNCTION NeuralNetwork::board_evaluation" << endl;
 		return 0;
 	}
-	cout << "file open success" << endl;
+	cout << "file open success" << endl << endl;
 
 	vector<string> board_input;
 
-	while (in_file >> s)
+	vector<vector<int>> board_record;
+
+	while (getline(in_file, str))
 	{
+		board_input.push_back(str);
 	}
 
 	for (auto i = 0; i < board_input.size(); ++i)
 	{
+		stringstream ss(board_input[i]);
+		vector<int> move_record;
+		int token;
+
+		while (ss >> token)
+		{
+			move_record.push_back(token);
+
+			if (ss.peek() == ',')
+			{
+				ss.ignore();
+			}
+		}
+		board_record.push_back(move_record);
+	}
+
+	for (int j = 0; j < board_record.size(); ++j) // this loop just here to show file was parsed correctly
+	{
+		for (int k = 0; k < 32; ++k)
+		{
+			cout << board_record[j][k] << " ";
+		}
+		cout << endl;
 	}
 
 	in_file.close();
