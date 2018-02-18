@@ -121,9 +121,10 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Classes `Connector` and `NNNodes` removed for simplicity.
 - Class `NeuralNetwork` now computes the "board evaluation" (I don't know what else to call it).
 - Class `NeuralNetwork` now require more modular initialization.
-- [ ] Perhaps create a thin wrapper for default initialization (or a multi-parametered function).
-- [ ] Fix an issue where `init_weights_and_sigmoid` needs `set_player` to be called first.
-- [ ] Test calculated output to be random?
+- [ ] TODO: Perhaps create a thin wrapper for default initialization (or a multi-parametered function).
+- [ ] TODO: Fix an issue where `init_weights_and_sigmoid` needs `set_player` to be called first.
+- [ ] TODO: Test calculated output to be random?
+- [ ] TODO: Write `NeuralNetwork` king value, weights, and sigma to a file.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
