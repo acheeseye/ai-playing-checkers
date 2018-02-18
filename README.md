@@ -117,6 +117,12 @@ This is a project dedicated to creating and training an AI to play pro level che
 - `process_output` rewritten to do that, code has been added to `board_evaluation` to read in, parse, and store the data.
 - [ ] TODO: Iterate through files in directory?
 - [ ] TODO: Instead of defaulting `Connectors` to next layer only, allow user to pass in `layer_id` for diversified connection.
+### Version 5.3
+- Classes `Connector` and `NNNodes` removed for simplicity.
+- Class `NeuralNetwork` now computes the "board evaluation" (I don't know what else to call it).
+- Class `NeuralNetwork` now require more modular initialization.
+- [ ] Perhaps create a thin wrapper for default initialization (or a multi-parametered function).
+- [ ] Fix an issue where `init_weights_and_sigmoid` needs `set_player` to be called first.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
