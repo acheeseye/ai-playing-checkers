@@ -6,6 +6,7 @@
 
 #include "board.h"
 
+#include <SFML\Graphics.hpp>
 #include <vector>
 using std::vector;
 #include <utility>
@@ -349,7 +350,7 @@ void temp_Board::jump_moves_start()
 void temp_Board::non_jump_moves()
 {
 	int position, uleft, uright, dleft, dright;
-	int juleft, juright, jdleft, jdright;
+	//int juleft, juright, jdleft, jdright;
 	for (int i = 0;i < 32; ++i)
 	{
 		position = m_board.at(i);
@@ -719,96 +720,45 @@ void temp_Board::store_move(std::vector<int> move_made)
 }*/
 
 
-void temp_Board::process_output(std::ofstream & to_file)
-{
-	for (int i = 0; i < 32; ++i)
-	{
-		if (i != 31)
-		{
-			to_file << get_board_status(i) << ",";
-		}
-		else if(!is_over())
-		{
-			to_file << get_board_status(i) << endl;
-		}
-		else
-		{
-			to_file << get_board_status(i);
-		}
-	}
-	/*if (get_Player() == _BLACK_) { to_file << "b "; }
-	else { to_file << "r "; }
-	for (int j = 0; j < m_possible_move_list.at(idx).size(); ++j)
-	{
-		if (j != 0 && j != m_possible_move_list.at(idx).size()) { to_file << " "; }
-		to_file << m_possible_move_list.at(idx).at(j);
-	}
-	to_file << endl;*/
-}
-
-void temp_Board::write_board_to_file(std::ofstream & to_file, std::ofstream & to_file_readable)
+void temp_Board::write_board_to_file(std::ofstream & to_file)
 {
 	if (m_board.size() != 32) throw std::exception("Board has incorrect size");
 	string data = "";
-	string readable_data = "";
-	string delimiter = ",";
-
-	//first 4 bits are not used
-	//next 12 bits are divided into 4 x 3 bits
-	//each section of 3 bits represent board status
-	//100 == playable
-	//000 == black man
-	//001 == black king
-	//010 == red man
-	//011 == red king
-	unsigned short shifted_mask_storer = 0;
-	unsigned short playable_bit_mask = 0x4;			// 0000 0000 0000 0100
-	unsigned short black_man_bit_mask = 0;			// 0000 0000 0000 0000
-	unsigned short black_king_bit_mask = 0x1;		// 0000 0000 0000 0001
-	unsigned short red_man_bit_mask = 0x2;			// 0000 0000 0000 0010
-	unsigned short red_king_bit_mask = 0x3;			// 0000 0000 0000 0011
 
 	for (auto row = 0; row < 8; ++row)
 	{
-		unsigned short condensed_board_row_info = 0;
 		for (auto column_id = 0; column_id < 4; ++column_id)
 		{
 			int reverse_column_id = column_id + (3 + (-2) * column_id);
-			unsigned short tmp_mask_holder;
+			
 			switch(m_board.at(row*4 + column_id))
 			{
 			case _PLAYABLE_:
-				tmp_mask_holder = playable_bit_mask;
-				readable_data += "0 ";
+				data += "0";
 				break;
 			case _RED_MAN_:
-				tmp_mask_holder = red_man_bit_mask;
-				readable_data += "-1 ";
+				data += "-1";
 				break;
 			case _RED_KING_:
-				tmp_mask_holder = red_king_bit_mask;
-				readable_data += "-k ";
+				data += "-k";
 				break;
 			case _BLACK_MAN_:
-				tmp_mask_holder = black_man_bit_mask;
-				readable_data += "1 ";
+				data += "1";
 				break;
 			case _BLACK_KING_:
-				tmp_mask_holder = black_king_bit_mask;
-				readable_data += "k ";
+				data += "k";
 				break;
 			}
-			// TODO: use extra four bits as delimiter? (1111)
-			// if so, add four to left shift amount (100 100 100 100 1111)
-			
-			shifted_mask_storer = tmp_mask_holder << reverse_column_id * 3;
-			condensed_board_row_info = shifted_mask_storer | condensed_board_row_info;
+			if ((row * 4) + column_id < 31) // space delimited, but no trailing space
+			{
+				data += " ";
+			}
+			else if (!is_over()) // newline after each move, but no trailing newline
+			{
+				data += '\n';
+			}
 		}
-		string store_this = to_string(condensed_board_row_info);
-		data += store_this;
-		data += delimiter;
 	}
-	to_file_readable << readable_data << "\n";
 	to_file << data;
 }
 
@@ -922,12 +872,19 @@ void draw_board(const temp_Board & board)
 	}
 }
 
-double temp_Board::piece_count_eval()
+int temp_Board::piece_count_eval()
 {
-	double p_red = 0;
-	double p_black = 0;
+	pair<int, int> count = count_pieces();
 
-	for (int i = 0;i < m_board.size();i++)
+	return count.first - count.second;
+}
+
+pair<int, int> temp_Board::count_pieces()
+{
+	int p_red = 0;
+	int p_black = 0;
+
+	for (int i = 0; i < m_board.size(); i++)
 	{
 		if (m_board.at(i) == _BLACK_MAN_ || m_board.at(i) == _BLACK_KING_)
 		{
@@ -938,5 +895,6 @@ double temp_Board::piece_count_eval()
 			p_red++;
 		}
 	}
-	return p_black - p_red;
+
+	return make_pair(p_black, p_red);
 }

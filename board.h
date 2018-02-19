@@ -9,6 +9,7 @@
 #ifndef _INCLUDED_BOARD_H_
 #define _INCLUDED_BOARD_H_
 
+#include <SFML\Graphics.hpp>
 #include <vector>
 //for std::vector
 #include <string>
@@ -101,7 +102,8 @@ public:
 	bool operator==(const temp_Board &) const;
 	std::vector<std::vector<int>>& get_move_list();
 
-	double piece_count_eval();
+	int piece_count_eval();
+	std::pair<int, int> count_pieces();
 
 
 	void non_jump_moves();
@@ -117,8 +119,8 @@ public:
 	void print_moves();
 
 	//void denote_endgame(std::string player, std::ofstream & to_file); // necessary? winner can be inferred by rewritten process_output
-	void process_output(std::ofstream & to_file);
-	void write_board_to_file(std::ofstream & to_file, std::ofstream & to_file_readable);
+	void write_board_to_file(std::ofstream & to_file);
+
 private:
 	//Current state of the board, same as above
 	std::vector<int> m_board;

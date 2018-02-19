@@ -1,4 +1,4 @@
-#include "NeuralNetwork.h"
+/*#include "NeuralNetwork.h"
 #include "board.h"
 
 #include <iostream>
@@ -67,4 +67,4 @@ int main()
 	while (cin.get() != '\n');
 
 	return 0;
-}
+}*/
