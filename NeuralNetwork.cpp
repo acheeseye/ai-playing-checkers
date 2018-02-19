@@ -9,10 +9,12 @@ using std::string;
 using std::getline;
 #include <fstream>
 using std::ifstream;
+using std::ofstream;
 #include <sstream>
 using std::stringstream;
 #include <vector>
 using std::vector;
+using std::max_element;
 #include <random>
 using std::mt19937;
 #include <queue>
@@ -34,7 +36,7 @@ NeuralNetwork::NeuralNetwork(const std::vector<int> & layer_and_node_count) :
 		int weights_between_layers = m_all_layers_node_count[i] * m_all_layers_node_count[i + 1];
 		m_weight_count += weights_between_layers;
 	}
-
+	m_current_layer.reserve(*max_element(m_all_layers_node_count.begin(), m_all_layers_node_count.end()));
 	default_set();
 }
 
@@ -73,12 +75,14 @@ void NeuralNetwork::set_sigma(double sigma)
 //NTR
 void NeuralNetwork::default_set()
 {
-	m_player = _BLACK_;
+	m_player = _RED_;
 	m_king_value_min = 1.0;
 	m_king_value_max = 3.0;
 	m_weight_min = -0.2;
 	m_weight_max = 0.2;
-	m_sigma = 4;
+	m_sigma = 0.05;
+	m_generate_file_status = false;
+	m_topology_file_destination = "ai-playing-checkers\\nn_topologies\\brunette26_topology_gen0.txt";
 }
 
 //NTR
@@ -87,6 +91,7 @@ void NeuralNetwork::init()
 	init_king();
 	init_weights();
 	init_sigma();
+	if (m_generate_file_status == true) write_topology();
 }
 
 //NTR
@@ -100,7 +105,6 @@ void NeuralNetwork::init_weights()
 	{
 		m_all_weights.push_back(uniform_dist(e1));
 	}
-	//m_all_weights_copy = m_all_weights;
 }
 
 //NTR
@@ -168,6 +172,12 @@ void NeuralNetwork::set_input_layer(int board_id)
 	}
 }
 
+//NTR
+void NeuralNetwork::set_generate_file(bool b)
+{
+	m_generate_file_status = b;
+}
+
 //TIMING low
 double NeuralNetwork::apply_sigma(double input_sum, int node_id)
 {
@@ -220,6 +230,20 @@ void NeuralNetwork::init_sigma()
 	}
 }
 
+//NTR
+void NeuralNetwork::write_topology()
+{
+	ofstream output_file;
+	output_file.open(m_topology_file_destination, ofstream::out | ofstream::app);
+	if (!output_file.is_open()) throw std::exception("NeuralNetwork::write_topology cannot open output file");
+	output_file << m_king_value << '\n';
+	for (auto weight_id = 0; weight_id < m_weight_count; ++weight_id)
+	{
+		output_file << m_all_weights[weight_id] << " " << m_all_sigma[weight_id] << "\n";
+	}
+	output_file.close();
+}
+
 //TIMING low
 void NeuralNetwork::calculate_output()
 {
@@ -246,6 +270,7 @@ int NeuralNetwork::get_board_count()
 	return m_board_record.size();
 }
 
+//NTR
 int NeuralNetwork::get_weight_count()
 {
 	return m_all_weights.size();

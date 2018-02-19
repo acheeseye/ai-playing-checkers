@@ -22,14 +22,12 @@ int main()
 	vector<int> nn_info1{ 32, 100, 50, 30, 10, 1 }; //6 layers & >10,000 weights
 	NeuralNetwork nn0(nn_info);
 	NeuralNetwork nn1(nn_info1);
-	nn0.set_player(_RED_);
-	nn1.set_player(_RED_);
 	nn0.init();
 	nn1.init();
 	nn0.set_board_record_with("ai-playing-checkers\\readable_game_data\\readable_game_20180215_184621.txt");
 	nn1.set_board_record_with("ai-playing-checkers\\readable_game_data\\readable_game_20180215_184621.txt");
-	cout.precision(6);
 
+	cout.precision(6);
 	cout << "nn0 weights: " << nn0.get_weight_count() << endl;
 	for (volatile int i = 0; i < 10; ++i) { //not sure about volatile int usage, but no optimization?
 		double t_sum = 0;
@@ -48,7 +46,6 @@ int main()
 	}
 
 	cout << endl;
-
 	cout << "nn1 weights: " << nn1.get_weight_count() << endl;
 	for (volatile int i = 0; i < 10; ++i) { //not sure about volatile int usage, but no optimization?
 		double t_sum = 0;
