@@ -128,7 +128,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [ ] ~~Somehow parse the ugly bullshit I've created as compressed game data OR~~
 - [x] Write new function to store game data with 32 numbers per game move and read that file instead.
 - `process_output` rewritten to do that, code has been added to `board_evaluation` to read in, parse, and store the data.
-- [ ] TODO: Iterate through files in directory?
+- [ ] TODO: Iterate through files in directory? (so that names don't have to be hard-coded)
 - [ ] ~~TODO: Instead of defaulting `Connectors` to next layer only, allow user to pass in `layer_id` for diversified connection~~. Class `Connectors` no longer exists.
 ### Version 5.3
 - Classes `Connector` and `NNNodes` removed for simplicity.
@@ -138,14 +138,15 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [ ] TODO: Fix an issue where `init_weights_and_sigmoid` needs `set_player` to be called first.
 - [ ] TODO: Test calculated output to be random?
 - [ ] TODO: Write `NeuralNetwork` king value, weights, and sigma to a file.
-- Class `NerualNetwork` now applies sigmoid function (forgot about this in the previous commit).
+- Class `NeuralNetwork` now applies sigmoid function (forgot about this in the previous commit).
 - Fixed an issue where `NeuralNetwork` would initialize new weights per board evaluation instead of using the previous ones.
 - [ ] TODO: Might need testing for above to be sure.
 - Timing done in `NeuralNetwork_main.cpp` for average BEF/sec and BEF/15 sec: averaging around 700~900 BEF per second (that's OK??)
 - `NeuralNetwork_main.cpp` now also tests the timing for a six layer >10,000 weights `NeuralNetwork` and prints the related calculations (requirements 1 & 2 fulfilled for PROJ2 deliverables).
 - `NeuralNetwork` now writes its topology values to file `brunette26_topology_gen0.txt` within the `nn_topologies` with first line as the `m_king_value` and the subsequent lines as a pair of weight and its corresponding sigma value.
   - User must use `NeuralNetwork::set_generate_file(true)` to write the topology, as it is set to false on default.
-  - [ ] TODO: Figure out how to name the different topologies (same as convention for games played?).
+  - [ ] TODO: Figure out how to name the different topologies (same as convention for games played? yes, can do that).
+- [x] TODO: Live piece count displayed.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
