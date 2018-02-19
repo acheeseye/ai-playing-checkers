@@ -26,6 +26,14 @@ NeuralNetwork::NeuralNetwork(const std::vector<int> & layer_and_node_count) :
 	{
 		m_all_layers_node_count.push_back(layer_and_node_count[i]);
 	}
+	m_weight_count = 0;
+	for (auto i = 0; i < m_layer_count - 1; ++i)
+	{
+		int weights_between_layers = m_all_layers_node_count[i] * m_all_layers_node_count[i + 1];
+		m_weight_count += weights_between_layers;
+	}
+
+	default_set();
 }
 
 void NeuralNetwork::set_player(int player)
@@ -33,9 +41,10 @@ void NeuralNetwork::set_player(int player)
 	m_player = player;
 }
 
-void NeuralNetwork::set_king_value(double king_value)
+void NeuralNetwork::set_king_value_range(double k_min, double k_max)
 {
-	m_king_value = king_value;
+	m_king_value_min = k_min;
+	m_king_value_max = k_max;
 }
 
 void NeuralNetwork::set_weight_range(double min, double max)
@@ -50,28 +59,39 @@ void NeuralNetwork::set_weight_range(double min, double max)
 	m_weight_max = max;
 }
 
-void NeuralNetwork::set_sigmoid(double sigmoid)
+void NeuralNetwork::set_sigma(double sigma)
 {
-	m_sigmoid = sigmoid;
+	m_sigma = sigma;
 }
 
-void NeuralNetwork::init_weights_and_sigmoid()
+void NeuralNetwork::default_set()
+{
+	m_player = _BLACK_;
+	m_king_value_min = 1.0;
+	m_king_value_max = 3.0;
+	m_weight_min = -0.2;
+	m_weight_max = 0.2;
+	m_sigma = 4;
+}
+
+void NeuralNetwork::init()
+{
+	init_king();
+	init_weights();
+	init_sigma();
+}
+
+void NeuralNetwork::init_weights()
 {
 	std::random_device r;
 	std::default_random_engine e1(r());
 	std::uniform_real_distribution<double> uniform_dist(m_weight_min, m_weight_max);
 
-	int weight_count = 0;
-	for (auto i = 0; i < m_layer_count - 1; ++i)
-	{
-		int weights_between_layers = m_all_layers_node_count[i] * m_all_layers_node_count[i + 1];
-		weight_count += weights_between_layers;
-	}
-	for (auto i = 0; i < weight_count; ++i)
+	for (auto i = 0; i < m_weight_count; ++i)
 	{
 		m_all_weights.push(uniform_dist(e1));
-		m_all_sigmoid.push_back(m_sigmoid);
 	}
+	m_all_weights_copy = m_all_weights;
 }
 
 void NeuralNetwork::set_board_record_with(const std::string & file_name)
@@ -137,6 +157,11 @@ void NeuralNetwork::set_input_layer(int board_id)
 	}
 }
 
+double NeuralNetwork::apply_sigma(double input_sum, int node_id)
+{
+	return (2 / (1 + exp(-input_sum * m_all_sigma[node_id])) - 1);
+}
+
 void NeuralNetwork::set_next_layer_input()
 {
 	double input_sum = 0.0;
@@ -154,7 +179,9 @@ void NeuralNetwork::set_next_layer_input()
 			m_all_weights.pop();
 			input_sum += next_layer_single_node_input;
 		}
-		input_buffer.push_back(input_sum);
+		double node_output = apply_sigma(input_sum, next_layer_node_id);
+		if (node_output > 1.0 || node_output < -1.0) throw std::exception("Input sum exceeds expected sigmoid output");
+		input_buffer.push_back(node_output);
 	}
 
 	m_input_layer.resize(next_layer_node_count);
@@ -162,8 +189,30 @@ void NeuralNetwork::set_next_layer_input()
 	m_current_layer_id++;
 }
 
+void NeuralNetwork::init_king()
+{
+	std::random_device r;
+	std::default_random_engine e1(r());
+	std::uniform_real_distribution<double> uniform_dist(m_king_value_min, m_king_value_max);
+	m_king_value = uniform_dist(e1);
+}
+
+void NeuralNetwork::init_sigma()
+{
+	for (auto i = 0; i < m_weight_count; ++i) 
+	{
+		m_all_sigma.push_back(m_sigma);
+	}
+}
+
+void NeuralNetwork::refill_weights()
+{
+	m_all_weights = m_all_weights_copy;
+}
+
 void NeuralNetwork::calculate_output()
 {
+	if (m_all_weights.empty()) refill_weights();
 	for (auto i = 0; i < m_layer_count - 1 /*first layer does not need computation*/; ++i)
 	{
 		set_next_layer_input();
@@ -171,9 +220,15 @@ void NeuralNetwork::calculate_output()
 	if (m_input_layer.size() != 1) 
 		throw std::exception("Layer access invalid in NeuralNetwork::calculate_output");
 	m_output = m_input_layer[0];
+	m_current_layer_id = 0;
 }
 
 double NeuralNetwork::get_output()
 {
 	return m_output;
+}
+
+int NeuralNetwork::get_board_count()
+{
+	return m_board_record.size();
 }
