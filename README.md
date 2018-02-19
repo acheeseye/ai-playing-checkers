@@ -1,8 +1,20 @@
 # AI PLAYING CHECKERS
 This is a project dedicated to creating and training an AI to play pro level checkers/draughts for UAF CS 405/605.  
+# Deliverables
+- PROJ2
+  - [x] Create a neural network with random weights. (2/18, JH)
+  - [x] Solve the neural network. (2/18, JH)
+  - [ ] Add a minimax search with a piece count evaluation function.
+- PROJ3
+  - [ ] Modify random neural network to specified uniformly distributed range.
+  - [ ] Given neural network, create offspring.
+  - [ ] Test program to check correctly generated gaussian pseudo-random values.
+  - [ ] Test program to check offsprings lie on the gaussian curve.
+# Useful Resources
+- [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
+- [Here](https://msdn.microsoft.com/en-us/library/chh3fb0k.aspx) is documentation for pragma optimize to get more accurate timing.
 # IMPORTANT  
 - ***NOTE*** According to PROJ3 rubric, the sigma is set to 0.05. However, if this is [graphed](https://www.google.com/search?ei=KlWKWrvGJor8jwOp3brIBg&q=graph+of+2%2F%281%2Be%5E-0.05x%29+-+1&oq=graph+of+2%2F%281%2Be%5E-0.05x%29+-+1&gs_l=psy-ab.12...12136.13716.0.15643.7.7.0.0.0.0.145.618.1j4.5.0....0...1c.1.64.psy-ab..2.1.145...0i8i30k1.0.8Yt_gsXJtwg), you can see that the activation slope is not steep. This caused the BEF to spit out numbers extremely close to 0 (because inputs are \[-1, 1] and weights are \[-0.2, 0.2]). This is the "starting point" for the network but for visible results I hard set sigma to 5 for now.
-- ~~[Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.~~
 - ***PLEASE*** check if the file name for the output file and file location for the resource files are correct for your version. You may need to remove the `ai-playing-checkers` portion of the name (my VS creates a separate directory for the `.cpp` and `.h` files and that directory is the master for me; I am not sure how to make the `.sln` read the files from the same directory instead).
 - BEF/sec = 700~900. Does this need optimization?
 # Versions
@@ -107,7 +119,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [x] TODO: Create class `connectors` that take an input and apply a weight and bias to it accordingly.
 - [x] TODO: Contemplate if `connectors` need to be a class or if this should be internally handled by the `NNNodes` objects.
 - [ ] TODO: Do some timing optimizations (simplified sigmoid calculation?).
-- - [This](http://www.meta-calculator.com/?panel-102-graph&data-bounds-xMin=-8&data-bounds-xMax=8&data-bounds-yMin=-11&data-bounds-yMax=11&data-equations-0=%22y%3D1%2F(1%20%2B%20e%5E(-x))%22&data-equations-1=%22y%3D(0.5*(x%2F1%2Bx))%2B0.5%22&data-rand=undefined&data-hideGrid=false) graph page (click add equations and add the two the plot it I think) shows the difference between the sigmoid function and the "faster and approximated" function mentioned [here](https://stackoverflow.com/questions/10732027/fast-sigmoid-algorithm) by Nosyara. I don't believe it will be a useful approximation.
+  - [This](http://www.meta-calculator.com/?panel-102-graph&data-bounds-xMin=-8&data-bounds-xMax=8&data-bounds-yMin=-11&data-bounds-yMax=11&data-equations-0=%22y%3D1%2F(1%20%2B%20e%5E(-x))%22&data-equations-1=%22y%3D(0.5*(x%2F1%2Bx))%2B0.5%22&data-rand=undefined&data-hideGrid=false) graph page (click add equations and add the two the plot it I think) shows the difference between the sigmoid function and the "faster and approximated" function mentioned [here](https://stackoverflow.com/questions/10732027/fast-sigmoid-algorithm) by Nosyara. I don't believe it will be a useful approximation.
 ### Version 5.2
 - New class `Connector` with randomized weights.
 - Each `NNNodes` in the `NeuralNetwork` has the correct amount of `Connectors` to the next layer.
@@ -130,6 +142,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Fixed an issue where `NeuralNetwork` would initialize new weights per board evaluation instead of using the previous ones.
 - [ ] TODO: Might need testing for above to be sure.
 - Timing done in `NeuralNetwork_main.cpp` for average BEF/sec and BEF/15 sec: averaging around 700~900 BEF per second (that's OK??)
+- `NeuralNetwork_main.cpp` now also tests the timing for a six layer >10,000 weights `NeuralNetwork` and prints the related calculations (requirements 1 & 2 fulfilled for PROJ2 deliverables).
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
