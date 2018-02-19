@@ -104,6 +104,7 @@ public:
 
 	int piece_count_eval();
 	std::pair<int, int> count_pieces();
+	void handle_count(std::string & pieces, sf::Text & pieces_text);
 
 
 	void non_jump_moves();

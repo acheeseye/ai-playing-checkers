@@ -35,7 +35,7 @@ using std::bitset;
 temp_Board::temp_Board(int starting_player) :m_current_player(starting_player)
 {
 	m_board.resize(32);
-	for (int i = 0; i < 32;++i)
+	for (int i = 0; i < 32; ++i)
 	{
 		if (i < 12)
 			m_board.at(i) = _RED_MAN_;
@@ -63,7 +63,7 @@ temp_Board::temp_Board(std::vector<int> board, int player)
 	m_board.resize(32);
 	if (board.size() != 32)
 		board.resize(32);
-	for (int i = 0;i < 32;++i)
+	for (int i = 0; i < 32; ++i)
 	{
 		if (board.at(i) != _BLACK_MAN_&& board.at(i) != _RED_MAN_ && board.at(i) != _BLACK_KING_ && board.at(i) != _RED_KING_)
 		{
@@ -77,7 +77,7 @@ temp_Board::temp_Board(std::vector<int> board, int player)
 bool temp_Board::operator==(const temp_Board & board) const
 {
 	bool flag = true;
-	for (int i = 0;i < 32;++i)
+	for (int i = 0; i < 32; ++i)
 	{
 		flag &= (board.m_board == this->m_board);
 	}
@@ -111,8 +111,8 @@ void temp_Board::jump_moves_start()
 	int juleft, juright, jdleft, jdright;
 	m_do_jump = false;
 
-	
-	for (int i = 0;i < 32;++i)
+
+	for (int i = 0; i < 32; ++i)
 	{
 		position = m_board.at(i);
 		std::vector<int> move;
@@ -126,7 +126,7 @@ void temp_Board::jump_moves_start()
 			if (position != _RED_MAN_ && position != _RED_KING_)
 				continue;
 		}
-		
+
 		if (position == _RED_MAN_)
 		{
 			if (move_table[i].ljmp != -1)
@@ -153,7 +153,7 @@ void temp_Board::jump_moves_start()
 				if (jdright == _PLAYABLE_ && (dright == _BLACK_MAN_ || dright == _BLACK_KING_))
 				{
 					m_do_jump = true;
-					
+
 					//
 					move.push_back(i);
 					move.push_back(move_table[i].rjmp);
@@ -173,7 +173,7 @@ void temp_Board::jump_moves_start()
 				if (jdleft == _PLAYABLE_ && (dleft == _BLACK_MAN_ || dleft == _BLACK_KING_))
 				{
 					m_do_jump = true;
-					
+
 					//
 					move.push_back(i);
 					move.push_back(move_table[i].ljmp);
@@ -190,7 +190,7 @@ void temp_Board::jump_moves_start()
 				if (jdright == _PLAYABLE_ && (dright == _BLACK_MAN_ || dright == _BLACK_KING_))
 				{
 					m_do_jump = true;
-					
+
 					//
 					move.push_back(i);
 					move.push_back(move_table[i].rjmp);
@@ -207,7 +207,7 @@ void temp_Board::jump_moves_start()
 				if (juleft == _PLAYABLE_ && (uleft == _BLACK_MAN_ || uleft == _BLACK_KING_))
 				{
 					m_do_jump = true;
-					
+
 					//
 					move.push_back(i);
 					move.push_back(31 - move_table[31 - i].rjmp);
@@ -224,7 +224,7 @@ void temp_Board::jump_moves_start()
 				if (juright == _PLAYABLE_ && (uright == _BLACK_MAN_ || uright == _BLACK_KING_))
 				{
 					m_do_jump = true;
-					
+
 					//
 					move.push_back(i);
 					move.push_back(31 - move_table[31 - i].ljmp);
@@ -237,7 +237,7 @@ void temp_Board::jump_moves_start()
 		}
 		else if (position == _BLACK_MAN_)
 		{
-			
+
 			if (move_table[31 - i].rjmp != -1)
 			{
 				juleft = m_board.at(31 - move_table[31 - i].rjmp);
@@ -245,7 +245,7 @@ void temp_Board::jump_moves_start()
 				if (juleft == _PLAYABLE_ && (uleft == _RED_MAN_ || uleft == _RED_KING_))
 				{
 					m_do_jump = true;
-					
+
 					//
 					move.push_back(i);
 					move.push_back(31 - move_table[31 - i].rjmp);
@@ -262,7 +262,7 @@ void temp_Board::jump_moves_start()
 				if (juright == _PLAYABLE_ && (uright == _RED_MAN_ || uright == _RED_KING_))
 				{
 					m_do_jump = true;
-					
+
 					//
 					move.push_back(i);
 					move.push_back(31 - move_table[31 - i].ljmp);
@@ -282,7 +282,7 @@ void temp_Board::jump_moves_start()
 				if (jdleft == _PLAYABLE_ && (dleft == _RED_MAN_ || dleft == _RED_KING_))
 				{
 					m_do_jump = true;
-					
+
 					//
 					move.push_back(i);
 					move.push_back(move_table[i].ljmp);
@@ -299,7 +299,7 @@ void temp_Board::jump_moves_start()
 				if (jdright == _PLAYABLE_ && (dright == _RED_MAN_ || dright == _RED_KING_))
 				{
 					m_do_jump = true;
-					
+
 					//
 					move.push_back(i);
 					move.push_back(move_table[i].rjmp);
@@ -316,7 +316,7 @@ void temp_Board::jump_moves_start()
 				if (juleft == _PLAYABLE_ && (uleft == _RED_MAN_ || uleft == _RED_KING_))
 				{
 					m_do_jump = true;
-					
+
 					//
 					move.push_back(i);
 					move.push_back(31 - move_table[31 - i].rjmp);
@@ -333,7 +333,7 @@ void temp_Board::jump_moves_start()
 				if (juright == _PLAYABLE_ && (uright == _RED_MAN_ || uright == _RED_KING_))
 				{
 					m_do_jump = true;
-					
+
 					//
 					move.push_back(i);
 					move.push_back(31 - move_table[31 - i].ljmp);
@@ -351,7 +351,7 @@ void temp_Board::non_jump_moves()
 {
 	int position, uleft, uright, dleft, dright;
 	//int juleft, juright, jdleft, jdright;
-	for (int i = 0;i < 32; ++i)
+	for (int i = 0; i < 32; ++i)
 	{
 		position = m_board.at(i);
 		if (m_current_player == _BLACK_)
@@ -428,12 +428,12 @@ void temp_Board::jump_recurse(temp_Board board, std::vector<int> next_move)
 {
 	int position, uleft, uright, dleft, dright;
 	int juleft, juright, jdleft, jdright;
-	board.move_from(next_move.at(next_move.size()-2), next_move.at(next_move.size() - 1));
+	board.move_from(next_move.at(next_move.size() - 2), next_move.at(next_move.size() - 1));
 
-	int  i = next_move.at(next_move.size()-1);
+	int  i = next_move.at(next_move.size() - 1);
 	position = board.m_board.at(i);
 	std::vector<int> move;
-	
+
 	bool is_leaf = true;
 	if (position == _RED_MAN_)
 	{
@@ -575,7 +575,7 @@ void temp_Board::jump_recurse(temp_Board board, std::vector<int> next_move)
 		}
 		if (move_table[i].rjmp != -1)
 		{
-			jdright =board.m_board.at(move_table[i].rjmp);
+			jdright = board.m_board.at(move_table[i].rjmp);
 			dright = board.m_board.at(move_table[i].rmove);
 			if (jdright == _PLAYABLE_ && (dright == _RED_MAN_ || dright == _RED_KING_))
 			{
@@ -625,11 +625,11 @@ void temp_Board::jump_recurse(temp_Board board, std::vector<int> next_move)
 
 void temp_Board::print_moves()
 {
-	for (int i = 0; i < m_possible_move_list.size();++i)
+	for (int i = 0; i < m_possible_move_list.size(); ++i)
 	{
 		std::cout << i << ":";
 		std::cout << "(";
-		for (int j = 0; j < m_possible_move_list.at(i).size();++j)
+		for (int j = 0; j < m_possible_move_list.at(i).size(); ++j)
 		{
 			if (j != 0)
 				std::cout << ",";
@@ -642,12 +642,12 @@ void temp_Board::print_moves()
 
 void temp_Board::move_piece(int move_number, bool switch_turns)
 {
-	if (move_number<0 || move_number>= m_possible_move_list.size())
+	if (move_number<0 || move_number >= m_possible_move_list.size())
 		return;
 	std::vector<int> moves = m_possible_move_list.at(move_number);
 	int start;
 	int des;
-	for (int i = 0;i < moves.size()-1; ++i)
+	for (int i = 0; i < moves.size() - 1; ++i)
 	{
 		start = moves.at(i);
 		des = moves.at(i + 1);
@@ -678,22 +678,22 @@ void temp_Board::move_piece(int move_number, bool switch_turns)
 			}
 		}
 	}
-		
+
 	if (m_current_player == _BLACK_)
 	{
-		for (int i = 0; i < 4;++i)
+		for (int i = 0; i < 4; ++i)
 		{
 			if (m_board.at(i) == _BLACK_MAN_)
 			{
 				m_board.at(i) = _BLACK_KING_;
 			}
 		}
-		if(switch_turns)
+		if (switch_turns)
 			m_current_player = _RED_;
 	}
 	else
 	{
-		for (int i = 28; i < 32;++i)
+		for (int i = 28; i < 32; ++i)
 		{
 			if (m_board.at(i) == _RED_MAN_)
 			{
@@ -715,8 +715,8 @@ void temp_Board::store_move(std::vector<int> move_made)
 
 /*void temp_Board::denote_endgame(string player, std::ofstream & to_file)
 {
-	if (player == "RED WINS") { to_file << "R"; }
-	else { to_file << "B"; }
+if (player == "RED WINS") { to_file << "R"; }
+else { to_file << "B"; }
 }*/
 
 
@@ -730,8 +730,8 @@ void temp_Board::write_board_to_file(std::ofstream & to_file)
 		for (auto column_id = 0; column_id < 4; ++column_id)
 		{
 			int reverse_column_id = column_id + (3 + (-2) * column_id);
-			
-			switch(m_board.at(row*4 + column_id))
+
+			switch (m_board.at(row * 4 + column_id))
 			{
 			case _PLAYABLE_:
 				data += "0";
@@ -765,32 +765,32 @@ void temp_Board::write_board_to_file(std::ofstream & to_file)
 
 void temp_Board::move_from(int start, int dest)
 {
-		if (!m_do_jump)
+	if (!m_do_jump)
+	{
+		int piece = m_board.at(start);
+		m_board.at(start) = _PLAYABLE_;
+		m_board.at(dest) = piece;
+	}
+	else
+	{
+		int piece = m_board.at(start);
+		m_board.at(start) = _PLAYABLE_;
+		m_board.at(dest) = piece;
+
+		if (dest < start)
 		{
-			int piece = m_board.at(start);
-			m_board.at(start) = _PLAYABLE_;
-			m_board.at(dest) = piece;
+			std::swap(start, dest);
+		}
+
+		if (move_table[start].ljmp == dest)
+		{
+			m_board.at(move_table[start].lmove) = _PLAYABLE_;
 		}
 		else
 		{
-			int piece = m_board.at(start);
-			m_board.at(start) = _PLAYABLE_;
-			m_board.at(dest) = piece;
-
-			if (dest < start)
-			{
-				std::swap(start, dest);
-			}
-
-			if (move_table[start].ljmp == dest)
-			{
-				m_board.at(move_table[start].lmove) = _PLAYABLE_;
-			}
-			else
-			{
-				m_board.at(move_table[start].rmove) = _PLAYABLE_;
-			}
+			m_board.at(move_table[start].rmove) = _PLAYABLE_;
 		}
+	}
 
 
 	//if (m_current_player == _BLACK_)
@@ -828,11 +828,12 @@ void draw_board(const temp_Board & board)
 {
 	for (int row = -2; row < 10; ++row) {
 		for (int col = -1; col < 5; ++col) {
-			if (row < 0 || row >= 8||col<0||col>=4)
+			if (row < 0 || row >= 8 || col<0 || col >= 4)
 			{
 				std::cout << ": : ";
 				continue;
-			}else if (board.m_board[row * 4 + col] == _BLACK_MAN_)
+			}
+			else if (board.m_board[row * 4 + col] == _BLACK_MAN_)
 			{
 				if (row % 2 == 0)
 					std::cout << "  " << "b ";
@@ -897,4 +898,11 @@ pair<int, int> temp_Board::count_pieces()
 	}
 
 	return make_pair(p_black, p_red);
+}
+
+void temp_Board::handle_count(string & pieces, sf::Text & pieces_text)
+{
+	pair<int, int> curr_count = count_pieces();
+	pieces = "R: " + to_string(curr_count.second) + "\nB: " + to_string(curr_count.first);
+	pieces_text.setFillColor(sf::Color::Green);
 }

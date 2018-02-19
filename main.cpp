@@ -395,6 +395,8 @@ int main() {
 		string player = "null";
 		sf::Text player_text(player, font, 30);
 
+		string pieces = "null";
+		sf::Text pieces_text(player, font, 30);
 
 		if (board.get_Player() == _RED_) {
 			player = "RED TURN";
@@ -416,13 +418,16 @@ int main() {
 			}
 		}
 
-		
+		board.handle_count(pieces, pieces_text); // live piece count
 
 		player_text.setString(player);
+		pieces_text.setString(pieces);
 
 		player_text.setPosition(board_width + 10, 5);
+		pieces_text.setPosition(board_width + 10, 100);
 
 		window.draw(player_text);
+		window.draw(pieces_text);
 
 		window.display();
 
