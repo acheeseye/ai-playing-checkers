@@ -6,9 +6,9 @@ This is a project dedicated to creating and training an AI to play pro level che
   - [x] Solve the neural network. (2/18, JH)
   - [ ] Add a minimax search with a piece count evaluation function.
 - PROJ3
-  - [x] Modify random neural network to specified uniformly distributed range.
-  - [ ] Given neural network, create offspring.
-  - [ ] Test program to check correctly generated gaussian pseudo-random values.
+  - [x] Modify random neural network to specified uniformly distributed range. (2/18, JH)
+  - [ ] Given neural network, create offspring. **IN PROGRESS** (2/18, JH)
+  - [ ] Test program to check correctly generated gaussian pseudo-random values (non NN-related).
   - [ ] Test program to check offsprings lie on the gaussian curve.
 # Useful Resources
 - [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
