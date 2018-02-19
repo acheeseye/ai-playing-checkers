@@ -24,6 +24,7 @@ public:
 	double apply_sigma(double input_sum, int node_id);
 	double get_output();
 	int get_board_count();
+	int get_weight_count();
 
 private:
 
@@ -44,7 +45,6 @@ private:
 
 	std::vector<int> m_all_layers_node_count;
 	std::vector<double> m_all_weights;
-	std::queue<double> m_all_weights_copy;
 	std::vector<double> m_all_sigma;
 	std::vector<double> m_current_layer;
 	std::vector<std::vector<double>> m_board_record;

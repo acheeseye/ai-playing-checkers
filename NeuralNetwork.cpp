@@ -245,3 +245,8 @@ int NeuralNetwork::get_board_count()
 {
 	return m_board_record.size();
 }
+
+int NeuralNetwork::get_weight_count()
+{
+	return m_all_weights.size();
+}
