@@ -1,5 +1,15 @@
 # AI PLAYING CHECKERS
 This is a project dedicated to creating and training an AI to play pro level checkers/draughts for UAF CS 405/605.  
+# Deliverables
+- PROJ2
+  - [x] Create a neural network with random weights. (2/18, JH)
+  - [x] Solve the neural network. (2/18, JH)
+  - [ ] Add a minimax search with a piece count evaluation function.
+- PROJ3
+  - [ ] Modify random neural network to specified uniformly distributed range.
+  - [ ] Given neural network, create offspring.
+  - [ ] Test program to check correctly generated gaussian pseudo-random values.
+  - [ ] Test program to check offsprings lie on the gaussian curve.
 # Useful Resources
 - [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
 - [Here](https://msdn.microsoft.com/en-us/library/chh3fb0k.aspx) is documentation for pragma optimize to get more accurate timing.
@@ -109,7 +119,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [x] TODO: Create class `connectors` that take an input and apply a weight and bias to it accordingly.
 - [x] TODO: Contemplate if `connectors` need to be a class or if this should be internally handled by the `NNNodes` objects.
 - [ ] TODO: Do some timing optimizations (simplified sigmoid calculation?).
-- - [This](http://www.meta-calculator.com/?panel-102-graph&data-bounds-xMin=-8&data-bounds-xMax=8&data-bounds-yMin=-11&data-bounds-yMax=11&data-equations-0=%22y%3D1%2F(1%20%2B%20e%5E(-x))%22&data-equations-1=%22y%3D(0.5*(x%2F1%2Bx))%2B0.5%22&data-rand=undefined&data-hideGrid=false) graph page (click add equations and add the two the plot it I think) shows the difference between the sigmoid function and the "faster and approximated" function mentioned [here](https://stackoverflow.com/questions/10732027/fast-sigmoid-algorithm) by Nosyara. I don't believe it will be a useful approximation.
+  - [This](http://www.meta-calculator.com/?panel-102-graph&data-bounds-xMin=-8&data-bounds-xMax=8&data-bounds-yMin=-11&data-bounds-yMax=11&data-equations-0=%22y%3D1%2F(1%20%2B%20e%5E(-x))%22&data-equations-1=%22y%3D(0.5*(x%2F1%2Bx))%2B0.5%22&data-rand=undefined&data-hideGrid=false) graph page (click add equations and add the two the plot it I think) shows the difference between the sigmoid function and the "faster and approximated" function mentioned [here](https://stackoverflow.com/questions/10732027/fast-sigmoid-algorithm) by Nosyara. I don't believe it will be a useful approximation.
 ### Version 5.2
 - New class `Connector` with randomized weights.
 - Each `NNNodes` in the `NeuralNetwork` has the correct amount of `Connectors` to the next layer.
