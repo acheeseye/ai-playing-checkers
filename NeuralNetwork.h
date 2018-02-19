@@ -31,6 +31,7 @@ private:
 	int m_layer_count;
 	int m_weight_count;
 	int m_current_layer_id;
+	int m_weight_iter;
 
 	double m_king_value;
 	double m_king_value_min;
@@ -42,17 +43,16 @@ private:
 	double m_output;
 
 	std::vector<int> m_all_layers_node_count;
-	std::queue<double> m_all_weights;
+	std::vector<double> m_all_weights;
 	std::queue<double> m_all_weights_copy;
 	std::vector<double> m_all_sigma;
-	std::vector<double> m_input_layer;
+	std::vector<double> m_current_layer;
 	std::vector<std::vector<double>> m_board_record;
 
 	void set_next_layer_input();
 	void init_weights();
 	void init_king();
 	void init_sigma();
-	void refill_weights();
 };
 
 #endif // !_INCLUDED_NEURALNETWORK_H_

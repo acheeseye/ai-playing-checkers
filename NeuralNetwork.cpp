@@ -17,7 +17,9 @@ using std::vector;
 using std::mt19937;
 #include <queue>
 using std::queue;
+#include <time.h>
 
+//NTR (non timing-related)
 NeuralNetwork::NeuralNetwork(const std::vector<int> & layer_and_node_count) :
 	m_layer_count(layer_and_node_count.size()),
 	m_current_layer_id(0)
@@ -36,17 +38,20 @@ NeuralNetwork::NeuralNetwork(const std::vector<int> & layer_and_node_count) :
 	default_set();
 }
 
+//NTR
 void NeuralNetwork::set_player(int player)
 {
 	m_player = player;
 }
 
+//NTR
 void NeuralNetwork::set_king_value_range(double k_min, double k_max)
 {
 	m_king_value_min = k_min;
 	m_king_value_max = k_max;
 }
 
+//NTR
 void NeuralNetwork::set_weight_range(double min, double max)
 {
 	if (min > max)
@@ -59,11 +64,13 @@ void NeuralNetwork::set_weight_range(double min, double max)
 	m_weight_max = max;
 }
 
+//NTR
 void NeuralNetwork::set_sigma(double sigma)
 {
 	m_sigma = sigma;
 }
 
+//NTR
 void NeuralNetwork::default_set()
 {
 	m_player = _BLACK_;
@@ -74,6 +81,7 @@ void NeuralNetwork::default_set()
 	m_sigma = 4;
 }
 
+//NTR
 void NeuralNetwork::init()
 {
 	init_king();
@@ -81,6 +89,7 @@ void NeuralNetwork::init()
 	init_sigma();
 }
 
+//NTR
 void NeuralNetwork::init_weights()
 {
 	std::random_device r;
@@ -89,11 +98,12 @@ void NeuralNetwork::init_weights()
 
 	for (auto i = 0; i < m_weight_count; ++i)
 	{
-		m_all_weights.push(uniform_dist(e1));
+		m_all_weights.push_back(uniform_dist(e1));
 	}
-	m_all_weights_copy = m_all_weights;
+	//m_all_weights_copy = m_all_weights;
 }
 
+//NTR
 void NeuralNetwork::set_board_record_with(const std::string & file_name)
 {
 	// Board values are stored with _RED_ as enemy (they are negative values)
@@ -149,25 +159,28 @@ void NeuralNetwork::set_board_record_with(const std::string & file_name)
 	in_file.close();
 }
 
+//TIMING low
 void NeuralNetwork::set_input_layer(int board_id)
 {
 	for (auto i = 0; i < 32; ++i)
 	{
-		m_input_layer.push_back(m_board_record[board_id][i]);
+		m_current_layer.push_back(m_board_record[board_id][i]);
 	}
 }
 
+//TIMING low
 double NeuralNetwork::apply_sigma(double input_sum, int node_id)
 {
 	return (2 / (1 + exp(-input_sum * m_all_sigma[node_id])) - 1);
 }
 
+//TIMING high
 void NeuralNetwork::set_next_layer_input()
 {
 	double input_sum = 0.0;
 	int current_layer_node_count = m_all_layers_node_count[m_current_layer_id];
 	int next_layer_node_count = m_all_layers_node_count[m_current_layer_id + 1];
-	vector<double> input_buffer;
+	vector<double> next_layer_input_buffer;
 	
 	if (m_current_layer_id >= m_layer_count) 
 		throw std::exception("Out of range index received for NeuralNetwork::set_next_layer_input");
@@ -175,20 +188,21 @@ void NeuralNetwork::set_next_layer_input()
 	{
 		for (auto node_id = 0; node_id < current_layer_node_count; ++node_id)
 		{
-			double next_layer_single_node_input = m_input_layer[node_id] * m_all_weights.front();
-			m_all_weights.pop();
+			double next_layer_single_node_input = m_current_layer[node_id] * m_all_weights[m_weight_iter];
+			m_weight_iter++;
 			input_sum += next_layer_single_node_input;
 		}
-		double node_output = apply_sigma(input_sum, next_layer_node_id);
-		if (node_output > 1.0 || node_output < -1.0) throw std::exception("Input sum exceeds expected sigmoid output");
-		input_buffer.push_back(node_output);
+		double current_node_output = apply_sigma(input_sum, next_layer_node_id);
+		//if (node_output > 1.0 || node_output < -1.0) throw std::exception("Input sum exceeds expected sigmoid output");
+		next_layer_input_buffer.push_back(current_node_output);
 	}
 
-	m_input_layer.resize(next_layer_node_count);
-	m_input_layer = input_buffer;
 	m_current_layer_id++;
+	m_current_layer.resize(next_layer_node_count);
+	m_current_layer = next_layer_input_buffer;
 }
 
+//NTR
 void NeuralNetwork::init_king()
 {
 	std::random_device r;
@@ -197,6 +211,7 @@ void NeuralNetwork::init_king()
 	m_king_value = uniform_dist(e1);
 }
 
+//NTR
 void NeuralNetwork::init_sigma()
 {
 	for (auto i = 0; i < m_weight_count; ++i) 
@@ -205,29 +220,27 @@ void NeuralNetwork::init_sigma()
 	}
 }
 
-void NeuralNetwork::refill_weights()
-{
-	m_all_weights = m_all_weights_copy;
-}
-
+//TIMING low
 void NeuralNetwork::calculate_output()
 {
-	if (m_all_weights.empty()) refill_weights();
+	m_weight_iter = 0; //restart at 0th weight when calling set_next_layer_input
 	for (auto i = 0; i < m_layer_count - 1 /*first layer does not need computation*/; ++i)
 	{
 		set_next_layer_input();
 	}
-	if (m_input_layer.size() != 1) 
+	if (m_current_layer.size() != 1) 
 		throw std::exception("Layer access invalid in NeuralNetwork::calculate_output");
-	m_output = m_input_layer[0];
+	m_output = m_current_layer[0];
 	m_current_layer_id = 0;
 }
 
+//NTR
 double NeuralNetwork::get_output()
 {
 	return m_output;
 }
 
+//NTR
 int NeuralNetwork::get_board_count()
 {
 	return m_board_record.size();
