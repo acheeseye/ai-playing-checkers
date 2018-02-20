@@ -145,7 +145,8 @@ This is a project dedicated to creating and training an AI to play pro level che
 - `NeuralNetwork_main.cpp` now also tests the timing for a six layer >10,000 weights `NeuralNetwork` and prints the related calculations (requirements 1 & 2 fulfilled for PROJ2 deliverables).
 - `NeuralNetwork` now writes its topology values to file `brunette26_topology_gen0.txt` within the `nn_topologies` with first line as the `m_king_value` and the subsequent lines as a pair of weight and its corresponding sigma value.
   - User must use `NeuralNetwork::set_generate_file(true)` to write the topology, as it is set to false on default.
-  - [ ] TODO: Figure out how to name the different topologies (same as convention for games played? yes, can do that).
+  - [x] TODO: Figure out how to name the different topologies (same as convention for games played? yes, can do that).
+  - Topologies now have unique names in the same style as recorded games. Note that this name does _not_ correlate the recorded game file to the topology file generated for it (would it be preferable to give topologies the same date/time as the recorded game that they are generated for?).
 - [x] TODO: Live piece count displayed.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
