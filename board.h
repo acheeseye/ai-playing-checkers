@@ -144,4 +144,13 @@ private:
 											//like this to function properly.
 };
 
+class Board_tree
+{
+public:
+	Board_tree(temp_Board next_board):m_number_of_children(next_board.generate_moves().size()){}
+	friend std::vector<int> min_max_search(temp_Board current_board, int depth);
+private:
+	int m_number_of_children;
+};
+
 #endif // !_INCLUDED_BOARD_H_

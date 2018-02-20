@@ -906,3 +906,75 @@ void temp_Board::handle_count(string & pieces, sf::Text & pieces_text)
 	pieces = "R: " + to_string(curr_count.second) + "\nB: " + to_string(curr_count.first);
 	pieces_text.setFillColor(sf::Color::Green);
 }
+
+
+
+/////////////////////////////////////////////////////////////////////
+//                                                                 //
+//                                                                 //
+//               Board Tree for evaluation stuff                   //
+//                                                                 //
+/////////////////////////////////////////////////////////////////////
+
+
+//returns child and value of child
+std::vector<int> min_max_search(temp_Board current_board, int depth)
+{
+	if (depth < 0|| depth >= 20) //go back!
+	{
+		std::vector<int> answer;
+		answer.push_back(0);
+		answer.push_back(1);
+		return answer;
+	}
+	if (depth == 0)
+	{
+		std::vector<int> answer;
+		answer.push_back(0);
+		answer.push_back(current_board.piece_count_eval());
+		return answer;
+	}
+
+
+	Board_tree tree(current_board);
+	std::vector<int> max_node;
+
+	//Stuff to insure that the below move choice will not happen
+	if (current_board.get_Player() == _BLACK_)
+	{
+		max_node.push_back(0);
+		max_node.push_back(-10000);
+	}
+	else
+	{
+		max_node.push_back(0);
+		max_node.push_back(10000);
+	}
+	for (int i = 0; i < tree.m_number_of_children; i++)
+	{
+		temp_Board next_board(current_board);
+		next_board.move_piece(i);
+		std::vector<int> possible_move = min_max_search(next_board, depth - 1);
+		
+
+		//Check if new move is better than old move
+		if (current_board.get_Player() == _BLACK_)
+		{
+			if (max_node.at(1) <= possible_move.at(1))
+			{
+				max_node.at(0) = possible_move.at(0);
+				max_node.at(1) = possible_move.at(1);
+			}
+		}
+		else
+		{
+			if (max_node.at(1) >= possible_move.at(1))
+			{
+				max_node.at(0) = possible_move.at(0);
+				max_node.at(1) = possible_move.at(1);
+			}
+		}
+	}
+
+	return max_node;
+}
