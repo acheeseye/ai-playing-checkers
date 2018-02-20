@@ -4,7 +4,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - PROJ2
   - [x] Create a neural network with random weights. (2/18, JH)
   - [x] Solve the neural network. (2/18, JH)
-  - [ ] Add a minimax search with a piece count evaluation function.
+  - [x] Add a minimax search with a piece count evaluation function.
 - PROJ3
   - [x] Modify random neural network to specified uniformly distributed range. (2/18, JH)
   - [ ] Given neural network, create offspring. **IN PROGRESS** (2/18, JH)
@@ -148,6 +148,7 @@ This is a project dedicated to creating and training an AI to play pro level che
   - [x] TODO: Figure out how to name the different topologies (same as convention for games played? yes, can do that).
   - Topologies now have unique names in the same style as recorded games. Note that this name does _not_ correlate the recorded game file to the topology file generated for it (would it be preferable to give topologies the same date/time as the recorded game that they are generated for?).
 - [x] TODO: Live piece count displayed.
+- AI player now prioritizes piece count when deciding its next move.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
