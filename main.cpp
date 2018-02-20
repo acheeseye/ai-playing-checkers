@@ -4,7 +4,7 @@
 // Members: Jason Hsi, Jesse Keller, and Addeline Mitchell
 // Created Jan 23, 2018
 
-/*#include "board.h"
+#include "board.h"
 #include "NeuralNetwork.h"
 #include <random>
 #include <time.h>
@@ -62,21 +62,6 @@ string adjust_time(int unit)
 }
 
 int main() {
-
-	//int NN_layers = 5;
-	//int layer_0_nc = 4;
-	//int layer_1_nc = 32;
-	//int layer_2_nc = 40;
-	//int layer_3_nc = 10;
-	//int layer_4_nc = 1;
-
-	//NeuralNetwork brunette26(NN_layers);
-	//brunette26.set_node_count(0, layer_0_nc);
-	//brunette26.set_node_count(1, layer_1_nc);
-	//brunette26.set_node_count(2, layer_2_nc);
-	//brunette26.set_node_count(3, layer_3_nc);
-	//brunette26.set_node_count(4, layer_4_nc);
-
 	//Game of checkers using temp_Board
 
 	struct tm timeinfo;
@@ -99,6 +84,12 @@ int main() {
 	to_file.open(file_name, std::ofstream::out | std::ofstream::app);
 
 	temp_Board board(_RED_);
+	Board_tree board_tree(board);
+	vector<int> tree_result = min_max_search(board, 1);
+	for (auto n : tree_result)
+	{
+		cout << n << endl;
+	}
 	board.write_board_to_file(to_file);
 
 	if (!to_file.is_open())//|| !to_compressed_file.is_open())
@@ -208,6 +199,7 @@ int main() {
 			board_status.at(i) = board.get_board_status(i);
 		}
 
+		// AI movement
 		if (window_loop_cycles > ai_wait_time) {
 			if (red_is_ai && board.get_Player() == _RED_ && board.get_move_list().size() > 0) {
 				next_move = rand() % board.get_move_list().size();
@@ -223,7 +215,6 @@ int main() {
 				window_loop_cycles = 0;
 			}
 		}
-
 
 		//*************************************************************************
 		// EVENT POLLER -- ADD RUNTIME EVENTS HERE
@@ -277,7 +268,6 @@ int main() {
 		// END OF EVENT POLLER
 		//*************************************************************************
 
-
 		// Board Selector Set Up
 		if (selected_board_index != 33) // location selected is valid
 		{
@@ -297,7 +287,7 @@ int main() {
 			cout << "start selected: " << start_piece_id << " end selected: " << end_piece_id << endl;
 		}
 
-
+		// Piece moving
 		if (start_piece_id != 33 && end_piece_id != 33)
 		{
 			vector<int> attempted_move{ start_piece_id, end_piece_id };
@@ -308,6 +298,7 @@ int main() {
 				//cout << "move attempted is valid" << endl;
 				int move_id = it - moves.begin();
 				board.move_piece(move_id);
+				window_loop_cycles = 0;
 				board.write_board_to_file(to_file);
 
 			}
@@ -322,6 +313,8 @@ int main() {
 		window.draw(board_base);
 		bool playable_slot = false;
 		sf::Vector2f selector_draw_position;
+
+		// Main chunk of drawing
 		for (int col = 0; col < board_size; ++col)
 		{
 			for (int row = 0; row < board_size; ++row)
@@ -378,6 +371,7 @@ int main() {
 			}
 			playable_slot = !playable_slot;
 		}
+
 		// selector drawer
 		if (mouse_selected_index != 64 && start_piece_id != 33)
 		{
@@ -451,4 +445,4 @@ int main() {
 	while (cin.get() != '\n');
 
 	return 0;
-}*/
+}
