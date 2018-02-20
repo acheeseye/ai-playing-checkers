@@ -4,7 +4,7 @@
 // Members: Jason Hsi, Jesse Keller, and Addeline Mitchell
 // Created Jan 23, 2018
 
-#include "board.h"
+/*#include "board.h"
 #include "NeuralNetwork.h"
 #include <random>
 #include <time.h>
@@ -451,4 +451,4 @@ int main() {
 	while (cin.get() != '\n');
 
 	return 0;
-}
+}*/

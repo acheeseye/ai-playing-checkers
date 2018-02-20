@@ -31,6 +31,9 @@ public:
 	void init();
 	void calculate_output();
 
+	// Filename helper function
+	friend std::string adjust_time(int unit);
+
 private:
 
 	std::string m_topology_file_destination;

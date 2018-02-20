@@ -1,4 +1,4 @@
-/*#include "NeuralNetwork.h"
+#include "NeuralNetwork.h"
 #include "board.h"
 
 #include <iostream>
@@ -8,6 +8,7 @@ using std::endl;
 using std::streamsize;
 #include <string>
 using std::string;
+using std::to_string;
 #include <limits>
 using std::numeric_limits;
 #include <vector>
@@ -15,6 +16,21 @@ using std::vector;
 #include <time.h>
 
 clock_t t;
+
+
+string adjust_time(int unit)
+{
+	string str;
+	if (unit < 10)
+	{
+		str = "0" + to_string(unit);
+	}
+	else
+	{
+		str = to_string(unit);
+	}
+	return str;
+}
 
 int main()
 {
@@ -24,8 +40,8 @@ int main()
 	NeuralNetwork nn1(nn_info1);
 	nn0.init();
 	nn1.init();
-	nn0.set_board_record_with("ai-playing-checkers\\readable_game_data\\readable_game_20180215_184621.txt");
-	nn1.set_board_record_with("ai-playing-checkers\\readable_game_data\\readable_game_20180215_184621.txt");
+	nn0.set_board_record_with("ai-playing-checkers\\games_played\\game_20180219_142934.txt");
+	nn1.set_board_record_with("ai-playing-checkers\\games_played\\game_20180219_142934.txt");
 
 	cout.precision(6);
 	cout << "nn0 weights: " << nn0.get_weight_count() << endl;
@@ -67,4 +83,4 @@ int main()
 	while (cin.get() != '\n');
 
 	return 0;
-}*/
+}

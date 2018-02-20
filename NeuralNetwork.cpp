@@ -6,6 +6,7 @@ using std::cout;
 using std::endl;
 #include <string>
 using std::string;
+using std::to_string;
 using std::getline;
 #include <fstream>
 using std::ifstream;
@@ -75,6 +76,18 @@ void NeuralNetwork::set_sigma(double sigma)
 //NTR
 void NeuralNetwork::default_set()
 {
+	struct tm timeinfo;
+	time_t now = time(0);
+	localtime_s(&timeinfo, &now);
+
+	string year = to_string(1900 + timeinfo.tm_year);
+	string month = adjust_time(1 + timeinfo.tm_mon);
+	string day = adjust_time(timeinfo.tm_mday);
+
+	string hour = adjust_time(timeinfo.tm_hour);
+	string minute = adjust_time(timeinfo.tm_min);
+	string second = adjust_time(timeinfo.tm_sec);
+
 	m_player = _RED_;
 	m_king_value_min = 1.0;
 	m_king_value_max = 3.0;
@@ -82,7 +95,8 @@ void NeuralNetwork::default_set()
 	m_weight_max = 0.2;
 	m_sigma = 0.05;
 	m_generate_file_status = false;
-	m_topology_file_destination = "ai-playing-checkers\\nn_topologies\\brunette26_topology_gen0.txt";
+	m_topology_file_destination = "ai-playing-checkers\\nn_topologies\\brunette26_topology_"
+		+ year + month + day + '_' + hour + minute + second + ".txt";
 }
 
 //NTR
@@ -120,47 +134,56 @@ void NeuralNetwork::set_board_record_with(const std::string & file_name)
 	string str;
 	in_file.open(file_name);
 
-	if (!in_file) 
-		throw std::exception("File not opened in NeuralNetwork::set_board_record_with");
-	vector<string> board_tokens;
-
-	while (getline(in_file, str))
+	if (!in_file)
 	{
-		board_tokens.push_back(str);
+		//throw std::exception("File not opened in NeuralNetwork::set_board_record_with"); // causes a crash if file name is wrong
+		cout << "*********************************************************" << endl;
+		cout << "ERROR OPENING FILE: PROBABLY NOT READING GAME DATA" << endl;
+		cout << "PLEASE CHECK IF THE FILE NAME IS CORRECT FOR YOUR VERSION" << endl;
+		cout << "*********************************************************" << endl;
 	}
-
-	for (auto i = 0; i < board_tokens.size(); ++i)
+	else
 	{
-		stringstream ss(board_tokens[i]);
-		vector<double> move_record;
-		char token;
+		vector<string> board_tokens;
 
-		while (ss >> token)
+		while (getline(in_file, str))
 		{
-			if (token == ' ') ss.ignore();
-			else if (token == '-')
+			board_tokens.push_back(str);
+		}
+
+		for (auto i = 0; i < board_tokens.size(); ++i)
+		{
+			stringstream ss(board_tokens[i]);
+			vector<double> move_record;
+			char token;
+
+			while (ss >> token)
 			{
-				if (ss.peek() == '1') move_record.push_back(-1.0 * multiplier);
-				else if (ss.peek() == 'k') move_record.push_back(m_king_value * multiplier * -1.0);
-				ss.ignore();
+				if (token == ' ') ss.ignore();
+				else if (token == '-')
+				{
+					if (ss.peek() == '1') move_record.push_back(-1.0 * multiplier);
+					else if (ss.peek() == 'k') move_record.push_back(m_king_value * multiplier * -1.0);
+					ss.ignore();
+				}
+				else if (token == '0') move_record.push_back(0);
+				else if (token == '1') move_record.push_back(1 * multiplier);
+				else if (token == 'k') move_record.push_back(m_king_value * multiplier);
 			}
-			else if (token == '0') move_record.push_back(0);
-			else if (token == '1') move_record.push_back(1 * multiplier);
-			else if (token == 'k') move_record.push_back(m_king_value * multiplier);
+			m_board_record.push_back(move_record);
 		}
-		m_board_record.push_back(move_record);
-	}
 
-	for (int j = 0; j < m_board_record.size(); ++j) // this loop just here to show file was parsed correctly
-	{
-		for (int k = 0; k < 32; ++k)
+		for (int j = 0; j < m_board_record.size(); ++j) // this loop just here to show file was parsed correctly
 		{
-			//cout << board_record[j][k] << " ";
+			for (int k = 0; k < 32; ++k)
+			{
+				//cout << board_record[j][k] << " ";
+			}
+			//cout << endl;
 		}
-		//cout << endl;
-	}
 
-	in_file.close();
+		in_file.close();
+	}
 }
 
 //TIMING low
@@ -239,7 +262,14 @@ void NeuralNetwork::write_topology()
 	output_file << m_king_value << '\n';
 	for (auto weight_id = 0; weight_id < m_weight_count; ++weight_id)
 	{
-		output_file << m_all_weights[weight_id] << " " << m_all_sigma[weight_id] << "\n";
+		if (weight_id < m_weight_count - 1)
+		{
+			output_file << m_all_weights[weight_id] << " " << m_all_sigma[weight_id] << "\n";
+		}
+		else
+		{
+			output_file << m_all_weights[weight_id] << " " << m_all_sigma[weight_id]; // no trailing newline
+		}
 	}
 	output_file.close();
 }
