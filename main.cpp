@@ -4,7 +4,7 @@
 // Members: Jason Hsi, Jesse Keller, and Addeline Mitchell
 // Created Jan 23, 2018
 
-/*#include "board.h"
+#include "board.h"
 #include "NeuralNetwork.h"
 #include <random>
 #include <time.h>
@@ -210,7 +210,13 @@ int main() {
 
 		if (window_loop_cycles > ai_wait_time) {
 			if (red_is_ai && board.get_Player() == _RED_ && board.get_move_list().size() > 0) {
-				next_move = rand() % board.get_move_list().size();
+				//std::cout << "Next_Move" << std::endl;
+				std::vector<int> min_max_move = min_max_search(board, 6);
+				next_move = min_max_move.at(0);
+				int val = min_max_move.at(1);
+				//board.print_moves();
+				std::cout << next_move << " "<< val<<std::endl;
+				//next_move = rand() % board.get_move_list().size();
 				board.move_piece(next_move);
 				board.write_board_to_file(to_file);
 				window_loop_cycles = 0;
@@ -230,6 +236,7 @@ int main() {
 		//*************************************************************************
 		while (window.pollEvent(event))
 		{
+
 			if (event.type == sf::Event::KeyPressed)
 			{
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
@@ -451,4 +458,4 @@ int main() {
 	while (cin.get() != '\n');
 
 	return 0;
-}*/
+}
