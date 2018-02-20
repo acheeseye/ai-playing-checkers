@@ -106,11 +106,14 @@ int main() {
 	int end_piece_id = 33;
 	int mouse_selected_index = 64;
 	int window_loop_cycles = 0;
-	int ai_wait_time = 300;
+	int ai_wait_time = 200;
+
+	int random_move_count = 3;
+	int random_moves_made = 0;
 
 	bool draw_selector = false;
 	bool red_is_ai = true;
-	bool black_is_ai = false;
+	bool black_is_ai = true;
 	bool last_move = false;
 
 	unsigned int board_size = 8;
@@ -202,20 +205,32 @@ int main() {
 		// AI movement
 		if (window_loop_cycles > ai_wait_time) {
 			if (red_is_ai && board.get_Player() == _RED_ && board.get_move_list().size() > 0) {
-				//std::cout << "Next_Move" << std::endl;
-				std::vector<int> min_max_move = min_max_search(board, 6);
-				next_move = min_max_move.at(0);
-				int val = min_max_move.at(1);
-				//board.print_moves();
-				std::cout << next_move << " "<< val<<std::endl;
-				//next_move = rand() % board.get_move_list().size();
+				if (random_moves_made != random_move_count)
+				{
+					next_move = rand() % board.get_move_list().size();
+					random_moves_made++;
+				}
+				else {
+					std::vector<int> min_max_move = min_max_search(board, 4);
+					next_move = min_max_move.at(0);
+					int val = min_max_move.at(1);
+				}
 				board.move_piece(next_move);
 				board.write_board_to_file(to_file);
 				window_loop_cycles = 0;
 			}
 
-			if (black_is_ai && board.get_Player() == _BLACK_ && board.get_move_list().size() > 0) {
-				next_move = rand() % board.get_move_list().size();
+			else if (black_is_ai && board.get_Player() == _BLACK_ && board.get_move_list().size() > 0) {
+				if (random_moves_made != random_move_count)
+				{
+					next_move = rand() % board.get_move_list().size();
+					random_moves_made++;
+				}
+				else {
+					std::vector<int> min_max_move = min_max_search(board, 4);
+					next_move = min_max_move.at(0);
+					int val = min_max_move.at(1);
+				}
 				board.move_piece(next_move);
 				board.write_board_to_file(to_file);
 				window_loop_cycles = 0;
