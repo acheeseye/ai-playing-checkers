@@ -930,7 +930,7 @@ std::vector<int> min_max_search(temp_Board current_board, int depth)
 	if (depth == 0)
 	{
 		std::vector<int> answer;
-		answer.push_back(-1);
+		answer.push_back(0);
 		answer.push_back(current_board.piece_count_eval());
 		return answer;
 	}
@@ -954,23 +954,24 @@ std::vector<int> min_max_search(temp_Board current_board, int depth)
 	{
 		//std::cout << i << std::endl;
 		temp_Board next_board(current_board);
-		next_board.move_piece(i);
+		next_board.move_piece(i,true);
 		if (next_board.is_over())
 		{
 			if (current_board.get_Player() == _BLACK_)
 			{
 				max_node.at(0) = i;
-				max_node.at(1) = 1000;
+				max_node.at(1) = 300;
 			}
 			else
 			{
 				max_node.at(0) = i;
-				max_node.at(1) = -1000;
+				max_node.at(1) = -300;
 			}
+			break;
 		}
 
 
-		std::vector<int> possible_move = min_max_search(next_board, depth - 1);
+		std::vector<int> possible_move = min_max_search(std::move(next_board), depth - 1);
 		possible_move.at(0) = i;
 
 		//Check if new move is better than old move
