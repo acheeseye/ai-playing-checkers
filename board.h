@@ -148,7 +148,7 @@ class Board_tree
 {
 public:
 	Board_tree(temp_Board next_board):m_number_of_children(next_board.generate_moves().size()){}
-	friend std::vector<int> min_max_search(temp_Board current_board, int depth);
+	friend std::vector<int> min_max_search(temp_Board current_board, int depth); //ist entry is move, 2nd is value
 private:
 	int m_number_of_children;
 };
