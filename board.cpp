@@ -917,9 +917,9 @@ void temp_Board::handle_count(string & pieces, sf::Text & pieces_text)
 
 
 //returns child and value of child
-std::vector<int> min_max_search(temp_Board current_board, int depth)
+std::vector<int> min_max_search(temp_Board & current_board, int depth)
 {
-	if (depth < 0|| depth >= 20) //go back!
+	if (depth < 0|| depth >= 10) //if depth is negative or too large, don't run program
 	{
 		std::vector<int> answer;
 		answer.push_back(0);
@@ -931,6 +931,9 @@ std::vector<int> min_max_search(temp_Board current_board, int depth)
 		std::vector<int> answer;
 		answer.push_back(0);
 		answer.push_back(current_board.piece_count_eval());
+		//std::cout << "end of depth, value is:" << answer.at(1) << std::endl;
+		//int x;
+		//std::cin >> x;
 		return answer;
 	}
 
@@ -954,6 +957,10 @@ std::vector<int> min_max_search(temp_Board current_board, int depth)
 		//std::cout << i << std::endl;
 		temp_Board next_board(current_board);
 		next_board.move_piece(i,true);
+
+		//draw_board(next_board);
+		//std::cout << std::endl;
+
 		if (next_board.is_over())
 		{
 			if (current_board.get_Player() == _BLACK_)
@@ -970,7 +977,7 @@ std::vector<int> min_max_search(temp_Board current_board, int depth)
 		}
 
 
-		std::vector<int> possible_move = min_max_search(std::move(next_board), depth - 1);
+		std::vector<int> possible_move = min_max_search(next_board, depth - 1);
 		possible_move.at(0) = i;
 
 		//Check if new move is better than old move
@@ -992,6 +999,6 @@ std::vector<int> min_max_search(temp_Board current_board, int depth)
 		}
 	}
 	//std::cout << max_node.at(0) << max_node.at(1) << std::endl;
-
+	//std::cout << "value is:" << max_node.at(1) << std::endl;
 	return max_node;
 }
