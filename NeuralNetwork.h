@@ -6,12 +6,22 @@
 #include <queue>
 #include <string>
 
+const int GLOBAL_WEIGHT_COUNT = 1690;
+const int GLOBAL_SIGMA_COUNT = 51;
+
+const int GLOBAL_LAYER_0_NODE_COUNT = 32;
+const int GLOBAL_LAYER_1_NODE_COUNT = 40;
+const int GLOBAL_LAYER_2_NODE_COUNT = 10;
+const int GLOBAL_LAYER_3_NODE_COUNT = 1;
+const int GLOBAL_MAX_LAYER_COUNT = 4;
+
+
 class NeuralNetwork
 {
 public:
 
 	// Constructor
-	NeuralNetwork(const std::vector<int> & layer_and_node_count);
+	NeuralNetwork();
 
 	// Mutator functions
 	void set_player(int player);
@@ -53,10 +63,12 @@ private:
 	double m_sigma;
 	double m_output;
 
-	std::vector<int> m_all_layers_node_count;
-	std::vector<double> m_all_weights;
-	std::vector<double> m_all_sigma;
-	std::vector<double> m_current_layer;
+	double m_all_weights[GLOBAL_WEIGHT_COUNT];
+	double m_all_sigma[GLOBAL_SIGMA_COUNT];
+	double m_layer_0[GLOBAL_LAYER_0_NODE_COUNT];
+	double m_layer_1[GLOBAL_LAYER_1_NODE_COUNT];
+	double m_layer_2[GLOBAL_LAYER_2_NODE_COUNT];
+	double m_layer_3[GLOBAL_LAYER_3_NODE_COUNT];
 	std::vector<std::vector<double>> m_board_record;
 
 	// Private internal functions
