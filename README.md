@@ -150,6 +150,10 @@ This is a project dedicated to creating and training an AI to play pro level che
 - AI player now prioritizes piece count when deciding its next move.
 ### Version 5.4
 - `NeuralNetwork` now uses arrays for calculations instead. Uses hard coded values for sizes.
+  - Both `std::vector` and `std::array` compute at least 10 (100? forgot the numbers) times slower than using arrays, thus array computation have been chosen.
+    - I can provide the code for the tests if needed.
+  - Due to the nature of arrays, their size is statically allocated thus hard-coded global values are used for initialization.
+  - Hard-coded values apply to Blonde24 and simple test-case of 4-3-2-1 topology.
 - `NeuralNetwork` BEF/sec is now roughly 150,000 **WITHOUT** applying sigmoid.
 - [x] TODO: apply sigmoid.
 - `NeuralNetwork` BEF/sec is around 100,000 with sigmoid on my machine.
