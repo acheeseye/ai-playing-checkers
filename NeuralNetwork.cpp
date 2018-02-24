@@ -192,10 +192,10 @@ void NeuralNetwork::set_generate_file(bool b)
 	m_generate_file_status = b;
 }
 
-//TIMING low ***
-double NeuralNetwork::apply_sigma(double input_sum, int node_id)
+//TIMING medium - decreases speed by ~33%
+void NeuralNetwork::apply_sigma(double & input_sum, const int node_id)
 {
-	return (2 / (1 + exp(-input_sum * m_all_sigma[node_id])) - 1);
+	input_sum = (2 / (1 + exp(-input_sum * m_all_sigma[node_id])) - 1);
 }
 
 //TIMING high
@@ -273,10 +273,11 @@ void NeuralNetwork::write_topology()
 	output_file.close();
 }
 
-//TIMING low
+//TIMING HIGH
 void NeuralNetwork::calculate_output()
 {
 	m_weight_iter = 0; //restart at 0th weight when calling set_next_layer_input
+	m_sigma_iter = 0;
 
 	for (auto layer_1_node_id = 0; layer_1_node_id < GLOBAL_LAYER_1_NODE_COUNT; ++layer_1_node_id)
 	{
@@ -286,7 +287,9 @@ void NeuralNetwork::calculate_output()
 			layer_1_node_sum += m_layer_0[layer_0_node_id] * m_all_weights[m_weight_iter];
 			m_weight_iter++;
 		}
+		apply_sigma(layer_1_node_sum, m_sigma_iter);
 		m_layer_1[layer_1_node_id] = layer_1_node_sum;
+		m_sigma_iter++;
 	}
 
 	for (auto layer_2_node_id = 0; layer_2_node_id < GLOBAL_LAYER_2_NODE_COUNT; ++layer_2_node_id)
@@ -297,7 +300,9 @@ void NeuralNetwork::calculate_output()
 			layer_2_node_sum += m_layer_1[layer_1_node_id] * m_all_weights[m_weight_iter];
 			m_weight_iter++;
 		}
+		apply_sigma(layer_2_node_sum, m_sigma_iter);
 		m_layer_2[layer_2_node_id] = layer_2_node_sum;
+		m_sigma_iter++;
 	}
 
 	for (auto layer_3_node_id = 0; layer_3_node_id < GLOBAL_LAYER_3_NODE_COUNT; ++layer_3_node_id)
@@ -308,7 +313,9 @@ void NeuralNetwork::calculate_output()
 			layer_3_node_sum += m_layer_2[layer_2_node_id] * m_all_weights[m_weight_iter];
 			m_weight_iter++;
 		}
+		apply_sigma(layer_3_node_sum, m_sigma_iter);
 		m_layer_3[layer_3_node_id] = layer_3_node_sum;
+		m_sigma_iter++;
 	}
 
 	m_output = m_layer_3[0];
