@@ -4,6 +4,7 @@
 // members: jason hsi, jesse keller, and addeline mitchell
 // created jan 23, 2018
 
+// INCLUDES
 #include "board.h"
 #include "NeuralNetwork.h"
 #include <random>
@@ -30,7 +31,7 @@ using std::ifstream;
 using std::numeric_limits;
 #include <chrono>
 
-enum {
+enum { // THESE ARE THE DIFFERENT TYPES OF main_state
 	PLAY_CHECKERS,
 	NEURAL_NETWORK_TIMING,
 	NEURAL_NETWORK_TESTING
@@ -40,7 +41,7 @@ enum {
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = NEURAL_NETWORK_TIMING;
+int main_state = NEURAL_NETWORK_TESTING;
 //**********************************************************************************************
 //**********************************************************************************************
 
@@ -74,6 +75,19 @@ string adjust_time(int unit)
 		str = to_string(unit);
 	}
 	return str;
+}
+
+double do_calculation(double input, double weight)
+{
+	cout << input << " * " << weight << " = " << input*weight << endl;
+	return input * weight;
+}
+
+void apply_sigma_t(double & input)
+{
+	cout << "		DID SIGMA: s(" << input << ") = ";
+	input = (2 / (1 + exp(-input * GLOBAL_SIGMA_VALUE)) - 1);
+	cout << input << endl << endl;
 }
 
 int main() {
@@ -611,5 +625,69 @@ int main() {
 		while (cin.get() != '\n');
 
 		return 0;
+	}
+	else if (main_state == NEURAL_NETWORK_TESTING)
+	{
+		NeuralNetwork nn_TESTING;
+		vector<double> input_TESTING = { -1, 0, 0, 1 };
+		vector<double> weights_TESTING = {
+			0.1732, -0.0460, -0.1104, 0.1161, 0.0372,
+			0.1322, 0.1705, 0.1428, 0.888, 0.697,
+			-0.0652, 0.1425, 0.1563, 0.0889, 0.0031,
+			-0.1840, 0.0333, -0.0699, -0.0944, -0.1409 };
+		vector<double> layer_1;
+		vector<double> layer_2;
+		vector<double> layer_3;
+
+		int weight_iter = 0;
+
+		//LAYER 1
+		double layer_1_node_0_result = 0.0;
+		layer_1_node_0_result += do_calculation(input_TESTING[0], weights_TESTING[0]);
+		layer_1_node_0_result += do_calculation(input_TESTING[1], weights_TESTING[1]);
+		layer_1_node_0_result += do_calculation(input_TESTING[2], weights_TESTING[2]);
+		layer_1_node_0_result += do_calculation(input_TESTING[3], weights_TESTING[3]);
+		apply_sigma_t(layer_1_node_0_result);
+		double layer_1_node_1_result = 0.0;
+		layer_1_node_1_result += do_calculation(input_TESTING[0], weights_TESTING[4]);
+		layer_1_node_1_result += do_calculation(input_TESTING[1], weights_TESTING[5]);
+		layer_1_node_1_result += do_calculation(input_TESTING[2], weights_TESTING[6]);
+		layer_1_node_1_result += do_calculation(input_TESTING[3], weights_TESTING[7]);
+		apply_sigma_t(layer_1_node_1_result);
+		double layer_1_node_2_result = 0.0;
+		layer_1_node_2_result += do_calculation(input_TESTING[0], weights_TESTING[8]);
+		layer_1_node_2_result += do_calculation(input_TESTING[1], weights_TESTING[9]);
+		layer_1_node_2_result += do_calculation(input_TESTING[2], weights_TESTING[10]);
+		layer_1_node_2_result += do_calculation(input_TESTING[3], weights_TESTING[11]);
+		apply_sigma_t(layer_1_node_2_result);
+
+		//LAYER 2
+		double layer_2_node_0_result = 0.0;
+		layer_2_node_0_result += do_calculation(layer_1_node_0_result, weights_TESTING[12]);
+		layer_2_node_0_result += do_calculation(layer_1_node_1_result, weights_TESTING[13]);
+		layer_2_node_0_result += do_calculation(layer_1_node_2_result, weights_TESTING[14]);
+		apply_sigma_t(layer_2_node_0_result);
+		double layer_2_node_1_result = 0.0;
+		layer_2_node_1_result += do_calculation(layer_1_node_0_result, weights_TESTING[15]);
+		layer_2_node_1_result += do_calculation(layer_1_node_1_result, weights_TESTING[16]);
+		layer_2_node_1_result += do_calculation(layer_1_node_2_result, weights_TESTING[17]);
+		apply_sigma_t(layer_2_node_1_result);
+
+		//LAYER 3
+		double layer_3_node_0_result = 0.0;
+		layer_3_node_0_result += do_calculation(layer_2_node_0_result, weights_TESTING[18]);
+		layer_3_node_0_result += do_calculation(layer_2_node_1_result, weights_TESTING[19]);
+		apply_sigma_t(layer_3_node_0_result);
+
+		cout << "\nOutput with non-NeuralNetwork object: " << layer_3_node_0_result << endl;
+
+		nn_TESTING.init_TESTING(weights_TESTING);
+		nn_TESTING.calculate_output_TESTING();
+		cout << "Output with NeuralNetwork object: " << nn_TESTING.get_output() << endl;
+
+		// -1 * 0.1732 = -0.1732
+		// 0 * -0.0460 = 0
+		// 0 * -0.1104 = 0
+		// 1 * 0.0372
 	}
 }
