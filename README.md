@@ -4,7 +4,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - PROJ2
   - [x] Create a neural network with random weights. (2/18, JH)
   - [x] Solve the neural network. (2/18, JH)
-  - [x] Add a minimax search with a piece count evaluation function.
+  - [x] Add a minimax search with a piece count evaluation function. (2/XX, JK)
 - PROJ3
   - [x] Modify random neural network to specified uniformly distributed range. (2/18, JH)
   - [ ] Given neural network, create offspring. **IN PROGRESS** (2/18, JH)
@@ -16,7 +16,6 @@ This is a project dedicated to creating and training an AI to play pro level che
 # IMPORTANT  
 - ***NOTE*** According to PROJ3 rubric, the sigma is set to 0.05. However, if this is [graphed](https://www.google.com/search?ei=KlWKWrvGJor8jwOp3brIBg&q=graph+of+2%2F%281%2Be%5E-0.05x%29+-+1&oq=graph+of+2%2F%281%2Be%5E-0.05x%29+-+1&gs_l=psy-ab.12...12136.13716.0.15643.7.7.0.0.0.0.145.618.1j4.5.0....0...1c.1.64.psy-ab..2.1.145...0i8i30k1.0.8Yt_gsXJtwg), you can see that the activation slope is not steep. This caused the BEF to spit out numbers extremely close to 0 (because inputs are \[-1, 1] and weights are \[-0.2, 0.2]). This is the "starting point" for the network ~~but for visible results I hard set sigma to 5 for now~~. The value remains at 0.05 for requirements of PROJ3. Feel free to change for visible output.
 - ***PLEASE*** check if the file name for the output file and file location for the resource files are correct for your version. You may need to remove the `ai-playing-checkers` portion of the name (my VS creates a separate directory for the `.cpp` and `.h` files and that directory is the master for me; I am not sure how to make the `.sln` read the files from the same directory instead).
-- BEF/sec = 700~900. Does this need optimization?
 # Versions
 ## Version 0:  
 - All relevant current files added.
@@ -118,7 +117,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - `NNNodes` objects now use a new sigmoid function for processing inputs. This allows for the range of inputs/output to be in the range of -1 and 1.
 - [x] TODO: Create class `connectors` that take an input and apply a weight and bias to it accordingly.
 - [x] TODO: Contemplate if `connectors` need to be a class or if this should be internally handled by the `NNNodes` objects.
-- [ ] TODO: Do some timing optimizations (simplified sigmoid calculation?).
+- [x] TODO: Do some timing optimizations (simplified sigmoid calculation?).
   - [This](http://www.meta-calculator.com/?panel-102-graph&data-bounds-xMin=-8&data-bounds-xMax=8&data-bounds-yMin=-11&data-bounds-yMax=11&data-equations-0=%22y%3D1%2F(1%20%2B%20e%5E(-x))%22&data-equations-1=%22y%3D(0.5*(x%2F1%2Bx))%2B0.5%22&data-rand=undefined&data-hideGrid=false) graph page (click add equations and add the two the plot it I think) shows the difference between the sigmoid function and the "faster and approximated" function mentioned [here](https://stackoverflow.com/questions/10732027/fast-sigmoid-algorithm) by Nosyara. I don't believe it will be a useful approximation.
 ### Version 5.2
 - New class `Connector` with randomized weights.
@@ -135,9 +134,9 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Class `NeuralNetwork` now computes the "board evaluation" (Now called `calculate_output`).
 - Class `NeuralNetwork` now require more modular initialization.
 - [x] TODO: Perhaps create a thin wrapper for default initialization ~~(or a multi-parametered function)~~.
-- [ ] TODO: Fix an issue where `init_weights_and_sigmoid` needs `set_player` to be called first.
+- [x] TODO: Fix an issue where `init_weights_and_sigmoid` needs `set_player` to be called first.
 - [ ] TODO: Test calculated output to be random?
-- [ ] TODO: Write `NeuralNetwork` king value, weights, and sigma to a file.
+- [x] TODO: Write `NeuralNetwork` king value, weights, and sigma to a file.
 - Class `NeuralNetwork` now applies sigmoid function (forgot about this in the previous commit).
 - Fixed an issue where `NeuralNetwork` would initialize new weights per board evaluation instead of using the previous ones.
 - [ ] TODO: Might need testing for above to be sure.
@@ -149,6 +148,11 @@ This is a project dedicated to creating and training an AI to play pro level che
   - Topologies now have unique names in the same style as recorded games. Note that this name does _not_ correlate the recorded game file to the topology file generated for it (would it be preferable to give topologies the same date/time as the recorded game that they are generated for?).
 - [x] TODO: Live piece count displayed.
 - AI player now prioritizes piece count when deciding its next move.
+### Version 5.4
+- `NeuralNetwork` now uses arrays for calculations instead. Uses hard coded values for sizes.
+- `NeuralNetwork` BEF/sec is now roughly 150,000 **WITHOUT** applying sigmoid.
+- [ ] TODO: apply sigmoid.
+- [ ] TODO: further optimize to get to around 500,000 BEF/sec?
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
@@ -162,7 +166,8 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [ ] ~~Left arrow should move backwards?~~ I'm ok on that. (2/13, JH)
 - [x] Figuring out how to implement the neural network. (2/14, JH)
 - [x] `NeuralNetwork` should iterate through all boards (currently only one). (2/17, JH)
-- [ ] Further optimize speed for `calculate_output`? (2/18, JH)
+- [x] Further optimize speed for `calculate_output`? (2/18, JH)
+- [ ] Even more optimizie for calculate_output. (2/23, JH)
 - [ ] Asexually reproducing `brunette26`. (2/18, JH)
 - Here's a potentially helpful chart for all the playable positions:  
 
