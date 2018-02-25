@@ -160,6 +160,13 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [ ] TODO: further optimize to get to around 500,000 BEF/sec?
 - `Main.cpp` now has new states for `PLAY_CHECKERS`, `NEURAL_NETWORK_TESTING`, and `NEURAL_NETWORK_TIMING` for ease of switching between `main_modes` (thus `NeuralNetwork_main.cpp` is now merged with `main.cpp`).
 - Testing mode implemented in `NEURAL_NETWORK_TESTING`.
+### Version 5.5
+- New class `NeuralNetwork_PERF` added.
+- New class provides about estimated 130% performance of `NeuralNetwork`.
+- For some reason, `NeuralNetwork` timing became about 30% slower with recent runs (crowded `main.cpp`? new testing calculation functions added to `NeuralNetwork`? just machine things?).
+- On my(JH) machine, it is currently consistent around 95,000 BEF/sec with the sigmoid function (slightly worse than `NeuralNetwork`, but better now with `NeuralNetwork` slowing down).
+- New `main_state` `NEURAL_NETWORK_TIMING_PERF` for timing `NeuralNetwork_PERF`.
+- No current test cases for `NeuralNetwork_PERF`.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
