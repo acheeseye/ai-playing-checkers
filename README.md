@@ -150,9 +150,16 @@ This is a project dedicated to creating and training an AI to play pro level che
 - AI player now prioritizes piece count when deciding its next move.
 ### Version 5.4
 - `NeuralNetwork` now uses arrays for calculations instead. Uses hard coded values for sizes.
+  - Both `std::vector` and `std::array` compute at least 10 (100? forgot the numbers) times slower than using arrays, thus array computation have been chosen.
+    - I can provide the code for the tests if needed.
+  - Due to the nature of arrays, their size is statically allocated thus hard-coded global values are used for initialization.
+  - Hard-coded values apply to Blonde24 and simple test-case of 4-3-2-1 topology.
 - `NeuralNetwork` BEF/sec is now roughly 150,000 **WITHOUT** applying sigmoid.
-- [ ] TODO: apply sigmoid.
+- [x] TODO: apply sigmoid.
+- `NeuralNetwork` BEF/sec is around 100,000 with sigmoid on my machine.
 - [ ] TODO: further optimize to get to around 500,000 BEF/sec?
+- `Main.cpp` now has new states for `PLAY_CHECKERS`, `NEURAL_NETWORK_TESTING`, and `NEURAL_NETWORK_TIMING` for ease of switching between `main_modes` (thus `NeuralNetwork_main.cpp` is now merged with `main.cpp`).
+- Testing mode implemented in `NEURAL_NETWORK_TESTING`.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
