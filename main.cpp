@@ -7,6 +7,7 @@
 // INCLUDES
 #include "board.h"
 #include "NeuralNetwork.h"
+#include "NeuralNetwork_PERF.h"
 #include <random>
 #include <time.h>
 #include <SFML\Graphics.hpp>
@@ -34,14 +35,15 @@ using std::numeric_limits;
 enum { // THESE ARE THE DIFFERENT TYPES OF main_state
 	PLAY_CHECKERS,
 	NEURAL_NETWORK_TIMING,
-	NEURAL_NETWORK_TESTING
+	NEURAL_NETWORK_TESTING,
+	NEURAL_NETWORK_TIMING_PERF
 };
 
 //**********************************************************************************************
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = NEURAL_NETWORK_TESTING;
+int main_state = NEURAL_NETWORK_TIMING_PERF;
 //**********************************************************************************************
 //**********************************************************************************************
 
@@ -685,5 +687,172 @@ int main() {
 		// 0 * -0.0460 = 0
 		// 0 * -0.1104 = 0
 		// 1 * 0.0372
+	}
+	else if (main_state == NEURAL_NETWORK_TIMING_PERF)
+	{
+		vector<double> input = {
+		-1,-1,-1,-1,
+		-1,-1,-1,-1,
+		-1,-1,-1,-1,
+		0,0,0,0,
+		0,0,0,0,
+		1,1,1,1,
+		1,1,1,1,
+		1,1,1,1,
+		};
+
+		NeuralNetwork_PERF nn0(input);
+
+		cout.precision(6);
+		cout << "nn0 weights: " << GLOBAL_WEIGHT_COUNT << endl;
+		{
+			int times = 10;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 100;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 1000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 10000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 100000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 150000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 200000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 300000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 500000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		cout << endl;
+		cout << "'Enter' to quit . . .";
+		while (cin.get() != '\n');
+
+		return 0;
 	}
 }
