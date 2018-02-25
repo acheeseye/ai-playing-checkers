@@ -629,17 +629,14 @@ int main() {
 	else if (main_state == NEURAL_NETWORK_TESTING)
 	{
 		NeuralNetwork nn_TESTING;
+
 		vector<double> input_TESTING = { -1, 0, 0, 1 };
 		vector<double> weights_TESTING = {
 			0.1732, -0.0460, -0.1104, 0.1161, 0.0372,
 			0.1322, 0.1705, 0.1428, 0.888, 0.697,
-			-0.0652, 0.1425, 0.1563, 0.0889, 0.0031,
+			-0.0652, 0.1425, 0.1563, 0.0889, 0.1031,
 			-0.1840, 0.0333, -0.0699, -0.0944, -0.1409 };
-		vector<double> layer_1;
-		vector<double> layer_2;
-		vector<double> layer_3;
-
-		int weight_iter = 0;
+		nn_TESTING.init_TESTING(input_TESTING, weights_TESTING);
 
 		//LAYER 1
 		double layer_1_node_0_result = 0.0;
@@ -679,9 +676,8 @@ int main() {
 		layer_3_node_0_result += do_calculation(layer_2_node_1_result, weights_TESTING[19]);
 		apply_sigma_t(layer_3_node_0_result);
 
-		cout << "\nOutput with non-NeuralNetwork object: " << layer_3_node_0_result << endl;
+		cout << "\nOutput with non-NeuralNetwork calculations: " << layer_3_node_0_result << endl;
 
-		nn_TESTING.init_TESTING(weights_TESTING);
 		nn_TESTING.calculate_output_TESTING();
 		cout << "Output with NeuralNetwork object: " << nn_TESTING.get_output() << endl;
 

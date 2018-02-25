@@ -99,9 +99,9 @@ void NeuralNetwork::init()
 	if (m_generate_file_status == true) write_topology();
 }
 
-void NeuralNetwork::init_TESTING(const vector<double> & weights_TESTING)
+void NeuralNetwork::init_TESTING(const std::vector<double> & input_TESTING, const vector<double> & weights_TESTING)
 {
-	for (auto i = 0; i < 6; ++i)
+	for (auto i = 0; i < T___GLOBAL_SIGMA_COUNT; ++i)
 	{
 		m_all_sigma_TESTING[i] = GLOBAL_SIGMA_VALUE;
 	}
@@ -109,10 +109,10 @@ void NeuralNetwork::init_TESTING(const vector<double> & weights_TESTING)
 	{
 		m_all_weights_TESTING[i] = weights_TESTING[i];
 	}
-	m_layer_0_TESTING[0] = -1;
-	m_layer_0_TESTING[1] = 0;
-	m_layer_0_TESTING[2] = 0;
-	m_layer_0_TESTING[3] = 1;
+	for (auto i = 0; i < T___GLOBAL_LAYER_0_NODE_COUNT; ++i)
+	{
+		m_layer_0_TESTING[i] = input_TESTING[i]; 
+	}
 }
 
 //NTR
@@ -342,21 +342,17 @@ void NeuralNetwork::calculate_output_TESTING()
 {
 	m_weight_iter = 0; //restart at 0th weight when calling set_next_layer_input
 	m_sigma_iter = 0;
-	m_layer_0[0] = -1.0;
-	m_layer_0[1] = 0.0;
-	m_layer_0[2] = 0.0;
-	m_layer_0[3] = 1.0;
 
 	for (auto layer_1_node_id = 0; layer_1_node_id < T___GLOBAL_LAYER_1_NODE_COUNT; ++layer_1_node_id)
 	{
 		double layer_1_node_sum = 0.0;
 		for (auto layer_0_node_id = 0; layer_0_node_id < T___GLOBAL_LAYER_0_NODE_COUNT; ++layer_0_node_id)
 		{
-			layer_1_node_sum += m_layer_0[layer_0_node_id] * m_all_weights_TESTING[m_weight_iter];
+			layer_1_node_sum += m_layer_0_TESTING[layer_0_node_id] * m_all_weights_TESTING[m_weight_iter];
 			m_weight_iter++;
 		}
 		apply_sigma(layer_1_node_sum, m_sigma_iter);
-		m_layer_1[layer_1_node_id] = layer_1_node_sum;
+		m_layer_1_TESTING[layer_1_node_id] = layer_1_node_sum;
 		m_sigma_iter++;
 	}
 
@@ -365,11 +361,11 @@ void NeuralNetwork::calculate_output_TESTING()
 		double layer_2_node_sum = 0.0;
 		for (auto layer_1_node_id = 0; layer_1_node_id < T___GLOBAL_LAYER_1_NODE_COUNT; ++layer_1_node_id)
 		{
-			layer_2_node_sum += m_layer_1[layer_1_node_id] * m_all_weights_TESTING[m_weight_iter];
+			layer_2_node_sum += m_layer_1_TESTING[layer_1_node_id] * m_all_weights_TESTING[m_weight_iter];
 			m_weight_iter++;
 		}
 		apply_sigma(layer_2_node_sum, m_sigma_iter);
-		m_layer_2[layer_2_node_id] = layer_2_node_sum;
+		m_layer_2_TESTING[layer_2_node_id] = layer_2_node_sum;
 		m_sigma_iter++;
 	}
 
@@ -378,15 +374,15 @@ void NeuralNetwork::calculate_output_TESTING()
 		double layer_3_node_sum = 0.0;
 		for (auto layer_2_node_id = 0; layer_2_node_id < T___GLOBAL_LAYER_2_NODE_COUNT; ++layer_2_node_id)
 		{
-			layer_3_node_sum += m_layer_2[layer_2_node_id] * m_all_weights_TESTING[m_weight_iter];
+			layer_3_node_sum += m_layer_2_TESTING[layer_2_node_id] * m_all_weights_TESTING[m_weight_iter];
 			m_weight_iter++;
 		}
 		apply_sigma(layer_3_node_sum, m_sigma_iter);
-		m_layer_3[layer_3_node_id] = layer_3_node_sum;
+		m_layer_3_TESTING[layer_3_node_id] = layer_3_node_sum;
 		m_sigma_iter++;
 	}
 
-	m_output = m_layer_3[0];
+	m_output = m_layer_3_TESTING[0];
 }
 
 //NTR

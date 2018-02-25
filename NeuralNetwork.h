@@ -49,7 +49,7 @@ public:
 
 	// Initializer functions
 	void init();
-	void init_TESTING(const std::vector<double> & weights_TESTING);
+	void init_TESTING(const std::vector<double> & input_TESTING, const std::vector<double> & weights_TESTING);
 	void calculate_output();
 	void calculate_output_TESTING();
 
@@ -87,7 +87,7 @@ private:
 	double m_all_weights_TESTING[T___GLOBAL_WEIGHT_COUNT];
 	double m_all_sigma_TESTING[T___GLOBAL_SIGMA_COUNT];
 	double m_layer_0_TESTING[T___GLOBAL_LAYER_0_NODE_COUNT];
-	double m_layer_1_TESTING_TESTING[T___GLOBAL_LAYER_1_NODE_COUNT];
+	double m_layer_1_TESTING[T___GLOBAL_LAYER_1_NODE_COUNT];
 	double m_layer_2_TESTING[T___GLOBAL_LAYER_2_NODE_COUNT];
 	double m_layer_3_TESTING[T___GLOBAL_LAYER_3_NODE_COUNT];
 
@@ -96,7 +96,6 @@ private:
 	// Private internal functions
 	void apply_sigma(double & input_sum, const int node_id);
 	void default_set();
-	void set_next_layer_input();
 	void init_weights();
 	void init_king();
 	void init_sigma();
