@@ -8,42 +8,47 @@
 #include "board.h"
 #include "NeuralNetwork.h"
 #include "NeuralNetwork_PERF.h"
-#include <random>
+#include "offspringproducer.h"
+
 #include <time.h>
 #include <SFML\Graphics.hpp>
 
 #include <iostream>
+#include <vector>
+#include <utility>
+#include <string>
+#include <fstream>
+#include <limits>
+#include <chrono>
+#include <random>
+
+// USINGS
 using std::cout;
 using std::endl;
 using std::cin;
 using std::streamsize;
-#include <vector>
 using std::vector;
-#include <utility>
 using std::pair;
 using std::make_pair;
-#include <string>
 using std::string;
 using std::to_string;
-#include <fstream>
 using std::ofstream;
 using std::ifstream;
-#include <limits>
 using std::numeric_limits;
-#include <chrono>
 
 enum { // THESE ARE THE DIFFERENT TYPES OF main_state
 	PLAY_CHECKERS,
 	NEURAL_NETWORK_TIMING,
 	NEURAL_NETWORK_TESTING,
-	NEURAL_NETWORK_TIMING_PERF
+	NEURAL_NETWORK_TIMING_PERF,
+	NEURAL_NETWORK_OFFSPRING
 };
 
 //**********************************************************************************************
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = NEURAL_NETWORK_TIMING_PERF;
+int main_state = NEURAL_NETWORK_OFFSPRING;
 //**********************************************************************************************
 //**********************************************************************************************
 
@@ -64,7 +69,6 @@ int mouse_selected_index_converter(int mouse_selected_index, int mouse_index_x, 
 		return return_index;
 }
 
-string adjust_time(int unit);
 string adjust_time(int unit)
 {
 	string str;
@@ -690,6 +694,7 @@ int main() {
 	}
 	else if (main_state == NEURAL_NETWORK_TIMING_PERF)
 	{
+		OffspringProducer osp;
 		vector<double> input = {
 		-1,-1,-1,-1,
 		-1,-1,-1,-1,
@@ -701,7 +706,7 @@ int main() {
 		1,1,1,1,
 		};
 
-		NeuralNetwork_PERF nn0(input);
+		NeuralNetwork_PERF nn0(input, osp.generate_topology());
 
 		cout.precision(6);
 		cout << "nn0 weights: " << GLOBAL_WEIGHT_COUNT << endl;
@@ -854,5 +859,30 @@ int main() {
 		while (cin.get() != '\n');
 
 		return 0;
+	}
+	else if (main_state == NEURAL_NETWORK_OFFSPRING)
+	{
+		// due to the nature of attempting-to-unclutter-NeuralNetwork_PERF,
+		// it must take an argument during construction
+		vector<double> dummy_input = {
+			-1,-1,-1,-1,
+			-1,-1,-1,-1,
+			-1,-1,-1,-1,
+			0,0,0,0,
+			0,0,0,0,
+			1,1,1,1,
+			1,1,1,1,
+			1,1,1,1,
+		};
+
+		OffspringProducer osp;
+		osp.reset_counter();
+
+		for (auto i = 0; i < 5; ++i) {
+			vector<double> topo_holder = osp.generate_topology();
+			NeuralNetwork_PERF(dummy_input, topo_holder);
+			try { osp.record(); }
+			catch (std::exception e) { cout << "EXCEPTION CAUGHT: " << e.what() << endl; }
+		}
 	}
 }

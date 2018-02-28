@@ -4,9 +4,19 @@
 #include <iostream>
 using std::cout;
 using std::endl;
+#include <fstream>
+using std::ofstream;
+using std::ifstream;
+#include <string>
+using std::string;
+using std::to_string;
+#include <direct.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
-NeuralNetwork_PERF::NeuralNetwork_PERF(const std::vector<double>& input)
+NeuralNetwork_PERF::NeuralNetwork_PERF(const std::vector<double>& input, const std::vector<double>& topology)
 {
+	if (input.size() != GLOBAL_LAYER_0_NC) throw std::exception("INVALID INPUT SIZE");
 	for (auto i = 0; i < GLOBAL_LAYER_0_NC; ++i)
 	{
 		m_nodes[i] = input[i];
@@ -15,16 +25,14 @@ NeuralNetwork_PERF::NeuralNetwork_PERF(const std::vector<double>& input)
 	{
 		m_nodes[i] = 0;
 	}
-	std::random_device r;
-	std::default_random_engine e1(r());
-	std::uniform_real_distribution<double> uniform_dist(-0.2, 0.2);
-	for (auto i = 0; i < GLOBAL_WC; ++i)
+	m_king_val = topology[0];
+	for (auto i = 1; i < 1 + GLOBAL_WC; ++i)
 	{
-		m_weights[i] = uniform_dist(e1);
+		m_weights[i - 1] = topology[i];
 	}
-	for (auto i = 0; i < GLOBAL_SC; ++i)
+	for (auto i = 1 + GLOBAL_WC; i < 1 + GLOBAL_WC + GLOBAL_SC; ++i)
 	{
-		m_sigma[i] = 5;
+		m_sigma[i - 1 - GLOBAL_WC] = topology[i];
 	}
 }
 
