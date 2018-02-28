@@ -16,6 +16,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 # IMPORTANT  
 - ***NOTE*** According to PROJ3 rubric, the sigma is set to 0.05. However, if this is [graphed](https://www.google.com/search?ei=KlWKWrvGJor8jwOp3brIBg&q=graph+of+2%2F%281%2Be%5E-0.05x%29+-+1&oq=graph+of+2%2F%281%2Be%5E-0.05x%29+-+1&gs_l=psy-ab.12...12136.13716.0.15643.7.7.0.0.0.0.145.618.1j4.5.0....0...1c.1.64.psy-ab..2.1.145...0i8i30k1.0.8Yt_gsXJtwg), you can see that the activation slope is not steep. This caused the BEF to spit out numbers extremely close to 0 (because inputs are \[-1, 1] and weights are \[-0.2, 0.2]). This is the "starting point" for the network ~~but for visible results I hard set sigma to 5 for now~~. The value remains at 0.05 for requirements of PROJ3. Feel free to change for visible output.
 - ***PLEASE*** check if the file name for the output file and file location for the resource files are correct for your version. You may need to remove the `ai-playing-checkers` portion of the name (my VS creates a separate directory for the `.cpp` and `.h` files and that directory is the master for me; I am not sure how to make the `.sln` read the files from the same directory instead).
+- The BEF/sec obtained from the desktops in the computer labs (while running only `main.cpp`, `NeuralNetwork_PERF.cpp`, `NeuralNetwork_PERF.h`, and only the `NEURAL_NETWORK_TESTING_PERF` section of `main.cpp`) is around ***290,000*** using the g++ compiler with -O2 optimizations turned on. Non optimized BEF/sec is around ***120,000***.
 # Versions
 ## Version 0:  
 - All relevant current files added.
@@ -167,6 +168,8 @@ This is a project dedicated to creating and training an AI to play pro level che
 - On my(JH) machine, it is currently consistent around 95,000 BEF/sec with the sigmoid function (slightly worse than `NeuralNetwork`, but better now with `NeuralNetwork` slowing down).
 - New `main_state` `NEURAL_NETWORK_TIMING_PERF` for timing `NeuralNetwork_PERF`.
 - No current test cases for `NeuralNetwork_PERF`.
+- [ ] TODO: Move `GLOBAL_SIGMA_VALUE` to `NeuralNetwork_PERF` and remove `GLOBAL_WEIGHT_COUNT` from `NeuralNetwork` as it is calculated in `NeuralNetwork_PERF`.
+- [ ] TODO: Perhaps remove `NeuralNetwork` to unclutter the project solution (and perhaps helps with increasing the BEF speed?).
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
@@ -182,6 +185,10 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [x] `NeuralNetwork` should iterate through all boards (currently only one). (2/17, JH)
 - [x] Further optimize speed for `calculate_output`? (2/18, JH)
 - [ ] Even more optimizie for calculate_output. (2/23, JH)
+  - (below are timing results of `NeuralNetwork_PERF`)
+  - 90,000 BEF/sec => compiled with Visual Studio on a Surface Pro 3 with -O2 turned on
+  - 120,000 BEF/sec => compiled with g++ on the desktop in the computer lab without -O2 turned on
+  - 290,000 BEF/sec => compiled with g++ on the desktop in the computer lab with -O2 turned on
 - [ ] Asexually reproducing `brunette26`. (2/18, JH)
 - Here's a potentially helpful chart for all the playable positions:  
 
