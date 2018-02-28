@@ -136,11 +136,11 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Class `NeuralNetwork` now require more modular initialization.
 - [x] TODO: Perhaps create a thin wrapper for default initialization ~~(or a multi-parametered function)~~.
 - [x] TODO: Fix an issue where `init_weights_and_sigmoid` needs `set_player` to be called first.
-- [ ] TODO: Test calculated output to be random?
+- [x] TODO: Test calculated output to be random?
 - [x] TODO: Write `NeuralNetwork` king value, weights, and sigma to a file.
 - Class `NeuralNetwork` now applies sigmoid function (forgot about this in the previous commit).
 - Fixed an issue where `NeuralNetwork` would initialize new weights per board evaluation instead of using the previous ones.
-- [ ] TODO: Might need testing for above to be sure.
+- [ ] ~~TODO: Might need testing for above to be sure~~. No longer relevant.
 - Timing done in `NeuralNetwork_main.cpp` for average BEF/sec and BEF/15 sec: averaging around 700~900 BEF per second (that's OK??)
 - `NeuralNetwork_main.cpp` now also tests the timing for a six layer >10,000 weights `NeuralNetwork` and prints the related calculations (requirements 1 & 2 fulfilled for PROJ2 deliverables).
 - `NeuralNetwork` now writes its topology values to file `brunette26_topology_gen0.txt` within the `nn_topologies` with first line as the `m_king_value` and the subsequent lines as a pair of weight and its corresponding sigma value.
@@ -168,8 +168,22 @@ This is a project dedicated to creating and training an AI to play pro level che
 - On my(JH) machine, it is currently consistent around 95,000 BEF/sec with the sigmoid function (slightly worse than `NeuralNetwork`, but better now with `NeuralNetwork` slowing down).
 - New `main_state` `NEURAL_NETWORK_TIMING_PERF` for timing `NeuralNetwork_PERF`.
 - No current test cases for `NeuralNetwork_PERF`.
-- [ ] TODO: Move `GLOBAL_SIGMA_VALUE` to `NeuralNetwork_PERF` and remove `GLOBAL_WEIGHT_COUNT` from `NeuralNetwork` as it is calculated in `NeuralNetwork_PERF`.
+- [ ] ~~TODO: Move `GLOBAL_SIGMA_VALUE` to `NeuralNetwork_PERF` and remove `GLOBAL_WEIGHT_COUNT` from `NeuralNetwork` as it is calculated in `NeuralNetwork_PERF`~~ No longer relevant due to new topology generation. 
 - [ ] TODO: Perhaps remove `NeuralNetwork` to unclutter the project solution (and perhaps helps with increasing the BEF speed?).
+## Version 6
+- New class `OffspringProducer` added. This class
+  - generates random parent topology.
+  - records parent topology to specified directory.
+    - This currently only supports a single generation and a population of 30.
+    - King value and weights are delimited by `9999` while weights and sigma variables are delimited by `8888`.
+    - `ofstream::trunc` is used as an argument so previous topology text files will be overwritten per `main` run.
+  - read and writes to `nn_topologies\naming_status.txt` to perform network naming.
+  - does not produce offspring yet.
+- New `main_state` `NEURAL_NETWORK_OFFSPRING`.
+- Class `NeuralNetwork_PERF` topology generation moved to `OffspringProducer` for reasons:
+  - Declutter `NeuralNetwork_PERF`.
+  - Array \[] operations were somehow getting overwritten when transferring from `NeuralNetwork_PERF` to `OffspringProducer`.
+- `topo_proof_x.txt` files added as readable verification that the current version of topology generator works correctly.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
