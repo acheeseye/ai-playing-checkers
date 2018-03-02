@@ -216,19 +216,8 @@ int main() {
 			cout << "unseen_piece load failed" << endl;
 		}
 
-		if (window_loop_cycles > ai_wait_time) {
-			if (red_is_ai && board.get_Player() == _RED_ && board.get_move_list().size() > 0) {
-				//std::cout << "Next_Move" << std::endl;
-				std::vector<int> min_max_move = min_max_search(board, 5);
-				next_move = min_max_move.at(0);
-				int val = min_max_move.at(1);
-				//board.print_moves();
-				std::cout << next_move << " "<< val<<std::endl;
-				//next_move = rand() % board.get_move_list().size();
-				board.move_piece(next_move);
-				board.write_board_to_file(to_file);
-				window_loop_cycles = 0;
-			}
+		srand(time(NULL));
+
 
 		while (window.isOpen())
 		{
@@ -707,14 +696,14 @@ int main() {
 	{
 		OffspringProducer osp;
 		vector<double> input = {
-		-1,-1,-1,-1,
-		-1,-1,-1,-1,
-		-1,-1,-1,-1,
-		0,0,0,0,
-		0,0,0,0,
-		1,1,1,1,
-		1,1,1,1,
-		1,1,1,1,
+			-1,-1,-1,-1,
+			-1,-1,-1,-1,
+			-1,-1,-1,-1,
+			0,0,0,0,
+			0,0,0,0,
+			1,1,1,1,
+			1,1,1,1,
+			1,1,1,1,
 		};
 
 		NeuralNetwork_PERF nn0(input, osp.generate_topology());
