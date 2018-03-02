@@ -211,7 +211,7 @@ int main() {
 		if (window_loop_cycles > ai_wait_time) {
 			if (red_is_ai && board.get_Player() == _RED_ && board.get_move_list().size() > 0) {
 				//std::cout << "Next_Move" << std::endl;
-				std::vector<int> min_max_move = min_max_search(board, 6);
+				std::vector<int> min_max_move = min_max_search(board, 5);
 				next_move = min_max_move.at(0);
 				int val = min_max_move.at(1);
 				//board.print_moves();
