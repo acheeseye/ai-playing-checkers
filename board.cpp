@@ -911,7 +911,6 @@ void temp_Board::handle_count(string & pieces, sf::Text & pieces_text)
 
 /////////////////////////////////////////////////////////////////////
 //                                                                 //
-//                                                                 //
 //               Board Tree for evaluation stuff                   //
 //                                                                 //
 /////////////////////////////////////////////////////////////////////

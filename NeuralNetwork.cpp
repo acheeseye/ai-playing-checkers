@@ -21,23 +21,14 @@ using std::mt19937;
 #include <queue>
 using std::queue;
 #include <time.h>
+#include <chrono>
 
 //NTR (non timing-related)
-NeuralNetwork::NeuralNetwork(const std::vector<int> & layer_and_node_count) :
-	m_layer_count(layer_and_node_count.size()),
-	m_current_layer_id(0)
+NeuralNetwork::NeuralNetwork() :
+	m_layer_count(GLOBAL_LAYER_0_NODE_COUNT),
+	m_current_layer_id(0),
+	m_weight_count(GLOBAL_WEIGHT_COUNT)
 {
-	for (auto i = 0; i < m_layer_count; ++i)
-	{
-		m_all_layers_node_count.push_back(layer_and_node_count[i]);
-	}
-	m_weight_count = 0;
-	for (auto i = 0; i < m_layer_count - 1; ++i)
-	{
-		int weights_between_layers = m_all_layers_node_count[i] * m_all_layers_node_count[i + 1];
-		m_weight_count += weights_between_layers;
-	}
-	m_current_layer.reserve(*max_element(m_all_layers_node_count.begin(), m_all_layers_node_count.end()));
 	default_set();
 }
 
@@ -47,7 +38,7 @@ void NeuralNetwork::set_player(int player)
 	m_player = player;
 }
 
-//NTR
+//NTR (maybe needs error checking for min > max, perhaps later)
 void NeuralNetwork::set_king_value_range(double k_min, double k_max)
 {
 	m_king_value_min = k_min;
@@ -93,7 +84,7 @@ void NeuralNetwork::default_set()
 	m_king_value_max = 3.0;
 	m_weight_min = -0.2;
 	m_weight_max = 0.2;
-	m_sigma = 0.05;
+	m_sigma = GLOBAL_SIGMA_VALUE;
 	m_generate_file_status = false;
 	m_topology_file_destination = "ai-playing-checkers\\nn_topologies\\brunette26_topology_"
 		+ year + month + day + '_' + hour + minute + second + ".txt";
@@ -108,6 +99,22 @@ void NeuralNetwork::init()
 	if (m_generate_file_status == true) write_topology();
 }
 
+void NeuralNetwork::init_TESTING(const std::vector<double> & input_TESTING, const vector<double> & weights_TESTING)
+{
+	for (auto i = 0; i < T___GLOBAL_SIGMA_COUNT; ++i)
+	{
+		m_all_sigma_TESTING[i] = GLOBAL_SIGMA_VALUE;
+	}
+	for (auto i = 0; i < T___GLOBAL_WEIGHT_COUNT; ++i)
+	{
+		m_all_weights_TESTING[i] = weights_TESTING[i];
+	}
+	for (auto i = 0; i < T___GLOBAL_LAYER_0_NODE_COUNT; ++i)
+	{
+		m_layer_0_TESTING[i] = input_TESTING[i]; 
+	}
+}
+
 //NTR
 void NeuralNetwork::init_weights()
 {
@@ -117,7 +124,7 @@ void NeuralNetwork::init_weights()
 
 	for (auto i = 0; i < m_weight_count; ++i)
 	{
-		m_all_weights.push_back(uniform_dist(e1));
+		m_all_weights[i] = uniform_dist(e1);
 	}
 }
 
@@ -191,7 +198,7 @@ void NeuralNetwork::set_input_layer(int board_id)
 {
 	for (auto i = 0; i < 32; ++i)
 	{
-		m_current_layer.push_back(m_board_record[board_id][i]);
+		m_layer_0[i] = m_board_record[board_id][i];
 	}
 }
 
@@ -201,39 +208,48 @@ void NeuralNetwork::set_generate_file(bool b)
 	m_generate_file_status = b;
 }
 
-//TIMING low
-double NeuralNetwork::apply_sigma(double input_sum, int node_id)
+//TIMING medium - decreases speed by ~33%
+void NeuralNetwork::apply_sigma(double & input_sum, const int node_id)
 {
-	return (2 / (1 + exp(-input_sum * m_all_sigma[node_id])) - 1);
+	input_sum = (2 / (1 + exp(-input_sum * m_all_sigma_TESTING[node_id])) - 1);
+
 }
 
 //TIMING high
-void NeuralNetwork::set_next_layer_input()
-{
-	double input_sum = 0.0;
-	int current_layer_node_count = m_all_layers_node_count[m_current_layer_id];
-	int next_layer_node_count = m_all_layers_node_count[m_current_layer_id + 1];
-	vector<double> next_layer_input_buffer;
-	
-	if (m_current_layer_id >= m_layer_count) 
-		throw std::exception("Out of range index received for NeuralNetwork::set_next_layer_input");
-	for (auto next_layer_node_id = 0; next_layer_node_id < next_layer_node_count; ++next_layer_node_id)
-	{
-		for (auto node_id = 0; node_id < current_layer_node_count; ++node_id)
-		{
-			double next_layer_single_node_input = m_current_layer[node_id] * m_all_weights[m_weight_iter];
-			m_weight_iter++;
-			input_sum += next_layer_single_node_input;
-		}
-		double current_node_output = apply_sigma(input_sum, next_layer_node_id);
-		//if (node_output > 1.0 || node_output < -1.0) throw std::exception("Input sum exceeds expected sigmoid output");
-		next_layer_input_buffer.push_back(current_node_output);
-	}
-
-	m_current_layer_id++;
-	m_current_layer.resize(next_layer_node_count);
-	m_current_layer = next_layer_input_buffer;
-}
+//void NeuralNetwork::set_next_layer_input()
+//{
+//	auto begin = std::chrono::high_resolution_clock::now();
+//
+//	double input_sum = 0.0;
+//	int current_layer_node_count = m_all_layers_node_count[m_current_layer_id];
+//	int next_layer_node_count = m_all_layers_node_count[m_current_layer_id + 1];
+//	vector<double> next_layer_input_buffer;
+//	
+//	if (m_current_layer_id >= m_layer_count) 
+//		throw std::exception("Out of range index received for NeuralNetwork::set_next_layer_input");
+//	for (auto next_layer_node_id = 0; next_layer_node_id < next_layer_node_count; ++next_layer_node_id)
+//	{
+//		for (auto node_id = 0; node_id < current_layer_node_count; ++node_id)
+//		{
+//			double next_layer_single_node_input = m_current_layer[node_id] * m_all_weights[m_weight_iter];
+//			m_weight_iter++;
+//			input_sum += next_layer_single_node_input;
+//		}
+//		
+//		//double current_node_output = input_sum;
+//		double current_node_output = apply_sigma(input_sum, next_layer_node_id);
+//		//if (node_output > 1.0 || node_output < -1.0) throw std::exception("Input sum exceeds expected sigmoid output");
+//		next_layer_input_buffer.push_back(current_node_output);
+//	}
+//
+//	m_current_layer_id++;
+//	m_current_layer.resize(next_layer_node_count);
+//	m_current_layer = next_layer_input_buffer;
+//
+//	auto end = std::chrono::high_resolution_clock::now();
+//	cout << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / (double)1000000000 << " sec"<< endl;
+//
+//}
 
 //NTR
 void NeuralNetwork::init_king()
@@ -247,9 +263,9 @@ void NeuralNetwork::init_king()
 //NTR
 void NeuralNetwork::init_sigma()
 {
-	for (auto i = 0; i < m_weight_count; ++i) 
+	for (auto i = 0; i < GLOBAL_SIGMA_COUNT; ++i) 
 	{
-		m_all_sigma.push_back(m_sigma);
+		m_all_sigma[i] = m_sigma;
 	}
 }
 
@@ -274,18 +290,99 @@ void NeuralNetwork::write_topology()
 	output_file.close();
 }
 
-//TIMING low
+//TIMING HIGH
 void NeuralNetwork::calculate_output()
 {
 	m_weight_iter = 0; //restart at 0th weight when calling set_next_layer_input
-	for (auto i = 0; i < m_layer_count - 1 /*first layer does not need computation*/; ++i)
+	m_sigma_iter = 0;
+
+	for (auto layer_1_node_id = 0; layer_1_node_id < GLOBAL_LAYER_1_NODE_COUNT; ++layer_1_node_id)
 	{
-		set_next_layer_input();
+		double layer_1_node_sum = 0.0;
+		for (auto layer_0_node_id = 0; layer_0_node_id < GLOBAL_LAYER_0_NODE_COUNT; ++layer_0_node_id)
+		{
+			layer_1_node_sum += m_layer_0[layer_0_node_id] * m_all_weights[m_weight_iter];
+			m_weight_iter++;
+		}
+		apply_sigma(layer_1_node_sum, m_sigma_iter);
+		m_layer_1[layer_1_node_id] = layer_1_node_sum;
+		m_sigma_iter++;
 	}
-	if (m_current_layer.size() != 1) 
-		throw std::exception("Layer access invalid in NeuralNetwork::calculate_output");
-	m_output = m_current_layer[0];
-	m_current_layer_id = 0;
+
+	for (auto layer_2_node_id = 0; layer_2_node_id < GLOBAL_LAYER_2_NODE_COUNT; ++layer_2_node_id)
+	{
+		double layer_2_node_sum = 0.0;
+		for (auto layer_1_node_id = 0; layer_1_node_id < GLOBAL_LAYER_1_NODE_COUNT; ++layer_1_node_id)
+		{
+			layer_2_node_sum += m_layer_1[layer_1_node_id] * m_all_weights[m_weight_iter];
+			m_weight_iter++;
+		}
+		apply_sigma(layer_2_node_sum, m_sigma_iter);
+		m_layer_2[layer_2_node_id] = layer_2_node_sum;
+		m_sigma_iter++;
+	}
+
+	for (auto layer_3_node_id = 0; layer_3_node_id < GLOBAL_LAYER_3_NODE_COUNT; ++layer_3_node_id)
+	{
+		double layer_3_node_sum = 0.0;
+		for (auto layer_2_node_id = 0; layer_2_node_id < GLOBAL_LAYER_2_NODE_COUNT; ++layer_2_node_id)
+		{
+			layer_3_node_sum += m_layer_2[layer_2_node_id] * m_all_weights[m_weight_iter];
+			m_weight_iter++;
+		}
+		apply_sigma(layer_3_node_sum, m_sigma_iter);
+		m_layer_3[layer_3_node_id] = layer_3_node_sum;
+		m_sigma_iter++;
+	}
+
+	m_output = m_layer_3[0];
+}
+
+void NeuralNetwork::calculate_output_TESTING()
+{
+	m_weight_iter = 0; //restart at 0th weight when calling set_next_layer_input
+	m_sigma_iter = 0;
+
+	for (auto layer_1_node_id = 0; layer_1_node_id < T___GLOBAL_LAYER_1_NODE_COUNT; ++layer_1_node_id)
+	{
+		double layer_1_node_sum = 0.0;
+		for (auto layer_0_node_id = 0; layer_0_node_id < T___GLOBAL_LAYER_0_NODE_COUNT; ++layer_0_node_id)
+		{
+			layer_1_node_sum += m_layer_0_TESTING[layer_0_node_id] * m_all_weights_TESTING[m_weight_iter];
+			m_weight_iter++;
+		}
+		apply_sigma(layer_1_node_sum, m_sigma_iter);
+		m_layer_1_TESTING[layer_1_node_id] = layer_1_node_sum;
+		m_sigma_iter++;
+	}
+
+	for (auto layer_2_node_id = 0; layer_2_node_id < T___GLOBAL_LAYER_2_NODE_COUNT; ++layer_2_node_id)
+	{
+		double layer_2_node_sum = 0.0;
+		for (auto layer_1_node_id = 0; layer_1_node_id < T___GLOBAL_LAYER_1_NODE_COUNT; ++layer_1_node_id)
+		{
+			layer_2_node_sum += m_layer_1_TESTING[layer_1_node_id] * m_all_weights_TESTING[m_weight_iter];
+			m_weight_iter++;
+		}
+		apply_sigma(layer_2_node_sum, m_sigma_iter);
+		m_layer_2_TESTING[layer_2_node_id] = layer_2_node_sum;
+		m_sigma_iter++;
+	}
+
+	for (auto layer_3_node_id = 0; layer_3_node_id < T___GLOBAL_LAYER_3_NODE_COUNT; ++layer_3_node_id)
+	{
+		double layer_3_node_sum = 0.0;
+		for (auto layer_2_node_id = 0; layer_2_node_id < T___GLOBAL_LAYER_2_NODE_COUNT; ++layer_2_node_id)
+		{
+			layer_3_node_sum += m_layer_2_TESTING[layer_2_node_id] * m_all_weights_TESTING[m_weight_iter];
+			m_weight_iter++;
+		}
+		apply_sigma(layer_3_node_sum, m_sigma_iter);
+		m_layer_3_TESTING[layer_3_node_id] = layer_3_node_sum;
+		m_sigma_iter++;
+	}
+
+	m_output = m_layer_3_TESTING[0];
 }
 
 //NTR
@@ -303,5 +400,5 @@ int NeuralNetwork::get_board_count()
 //NTR
 int NeuralNetwork::get_weight_count()
 {
-	return m_all_weights.size();
+	return GLOBAL_WEIGHT_COUNT;
 }

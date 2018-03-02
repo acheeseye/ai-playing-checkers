@@ -6,12 +6,32 @@
 #include <queue>
 #include <string>
 
+const double GLOBAL_SIGMA_VALUE = 5;
+
+const int GLOBAL_WEIGHT_COUNT = 1690;
+const int GLOBAL_SIGMA_COUNT = 51;
+const int GLOBAL_LAYER_0_NODE_COUNT = 32;
+const int GLOBAL_LAYER_1_NODE_COUNT = 40;
+const int GLOBAL_LAYER_2_NODE_COUNT = 10;
+const int GLOBAL_LAYER_3_NODE_COUNT = 1;
+const int GLOBAL_MAX_LAYER_COUNT = 4;
+
+const int T___GLOBAL_WEIGHT_COUNT = 20;
+const int T___GLOBAL_SIGMA_COUNT = 6;
+const int T___GLOBAL_LAYER_0_NODE_COUNT = 4;
+const int T___GLOBAL_LAYER_1_NODE_COUNT = 3;
+const int T___GLOBAL_LAYER_2_NODE_COUNT = 2;
+const int T___GLOBAL_LAYER_3_NODE_COUNT = 1;
+const int T___GLOBAL_MAX_LAYER_COUNT = 4;
+
+
+
 class NeuralNetwork
 {
 public:
 
 	// Constructor
-	NeuralNetwork(const std::vector<int> & layer_and_node_count);
+	NeuralNetwork();
 
 	// Mutator functions
 	void set_player(int player);
@@ -29,7 +49,9 @@ public:
 
 	// Initializer functions
 	void init();
+	void init_TESTING(const std::vector<double> & input_TESTING, const std::vector<double> & weights_TESTING);
 	void calculate_output();
+	void calculate_output_TESTING();
 
 	// Filename helper function
 	friend std::string adjust_time(int unit);
@@ -43,7 +65,9 @@ private:
 	int m_layer_count;
 	int m_current_layer_id;
 	int m_weight_count;
+
 	int m_weight_iter;
+	int m_sigma_iter;
 
 	double m_king_value;
 	double m_king_value_min;
@@ -53,16 +77,25 @@ private:
 	double m_sigma;
 	double m_output;
 
-	std::vector<int> m_all_layers_node_count;
-	std::vector<double> m_all_weights;
-	std::vector<double> m_all_sigma;
-	std::vector<double> m_current_layer;
+	double m_all_weights[GLOBAL_WEIGHT_COUNT];
+	double m_all_sigma[GLOBAL_SIGMA_COUNT];
+	double m_layer_0[GLOBAL_LAYER_0_NODE_COUNT];
+	double m_layer_1[GLOBAL_LAYER_1_NODE_COUNT];
+	double m_layer_2[GLOBAL_LAYER_2_NODE_COUNT];
+	double m_layer_3[GLOBAL_LAYER_3_NODE_COUNT];
+
+	double m_all_weights_TESTING[T___GLOBAL_WEIGHT_COUNT];
+	double m_all_sigma_TESTING[T___GLOBAL_SIGMA_COUNT];
+	double m_layer_0_TESTING[T___GLOBAL_LAYER_0_NODE_COUNT];
+	double m_layer_1_TESTING[T___GLOBAL_LAYER_1_NODE_COUNT];
+	double m_layer_2_TESTING[T___GLOBAL_LAYER_2_NODE_COUNT];
+	double m_layer_3_TESTING[T___GLOBAL_LAYER_3_NODE_COUNT];
+
 	std::vector<std::vector<double>> m_board_record;
 
 	// Private internal functions
-	double apply_sigma(double input_sum, int node_id);
+	void apply_sigma(double & input_sum, const int node_id);
 	void default_set();
-	void set_next_layer_input();
 	void init_weights();
 	void init_king();
 	void init_sigma();
