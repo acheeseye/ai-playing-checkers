@@ -184,6 +184,7 @@ This is a project dedicated to creating and training an AI to play pro level che
   - Declutter `NeuralNetwork_PERF`.
   - Array \[] operations were somehow getting overwritten when transferring from `NeuralNetwork_PERF` to `OffspringProducer`.
 - `topo_proof_x.txt` files added as readable verification that the current version of topology generator works correctly.
+- Added separate Gaussian number generator with graphs. This can be found in `gnugraph` along with further documentation for the generator.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
