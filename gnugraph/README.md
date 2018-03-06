@@ -18,3 +18,4 @@ The gnugraph files can be found here along with the accompanying `LICENSE`.
   - You're currently reading this file, which documents changes made to the gnugraph project as well as describes how it was used for this checkers project.
 - The graphs...
   - ... can be found in `gaussian_graphs`.
+  - These graphs are intended to be histograms, although they are shown as line plots.
