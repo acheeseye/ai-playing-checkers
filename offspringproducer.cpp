@@ -63,7 +63,7 @@ void OffspringProducer::record()
 	fin.open(naming_file, ifstream::in);
 	if (!fin.is_open())
 	{
-		throw std::exception("OPEING \"naming_status.txt\" FAILED");
+		throw std::exception("OPENING \"naming_status.txt\" FAILED");
 	}
 	fin >> generation >> id;
 	fin.close();
