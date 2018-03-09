@@ -45,15 +45,16 @@ const std::string GLOBAL_OFFSPRING_PROOF = "ai-playing-checkers\\nn_topologies\\
 class OffspringProducer {
 public:
 	OffspringProducer();
-	std::vector<double> generate_ranom_topology();
-	void record();
+	std::vector<double> generate_random_topology();
+	void set_topology(const std::string & parent_file);
 	void produce_offspring(const std::string & parent_file);
+	void record();
 	void reset_counter();
 	void advance_gen();
 private:
 	std::vector<double> m_topology;
+	std::vector<std::string> m_survived_parent;
 
-	void set_parent(const std::string & parent_file);
 };
 
 #endif // !_INCLUDED_OFFSPRINGPRODUCER_H_

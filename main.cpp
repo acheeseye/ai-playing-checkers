@@ -706,7 +706,7 @@ int main() {
 		1,1,1,1,
 		};
 
-		NeuralNetwork_PERF nn0(input, osp.generate_ranom_topology());
+		NeuralNetwork_PERF nn0(input, osp.generate_random_topology());
 
 		cout.precision(6);
 		cout << "nn0 weights: " << GLOBAL_WEIGHT_COUNT << endl;
@@ -880,7 +880,7 @@ int main() {
 		osp.reset_counter();
 
 		for (auto i = 0; i < 1; ++i) {
-			vector<double> topo_holder = osp.generate_ranom_topology();
+			vector<double> topo_holder = osp.generate_random_topology();
 
 			NeuralNetwork_PERF(dummy_input, topo_holder);
 			try { osp.record(); }

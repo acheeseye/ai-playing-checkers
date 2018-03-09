@@ -21,10 +21,11 @@ using std::vector;
 OffspringProducer::OffspringProducer()
 {
 	m_topology.resize(GLOBAL_TOPOLOGY_SIZE);
+	m_survived_parent.resize(GLOBAL_MAX_POPULATION_PER_GEN / 2);
 }
 
 // No-throw
-std::vector<double> OffspringProducer::generate_ranom_topology()
+std::vector<double> OffspringProducer::generate_random_topology()
 {
 	int topo_iter = 0;
 	std::random_device r;
@@ -97,10 +98,9 @@ void OffspringProducer::record()
 	fout.close();
 }
 
-// parent topology must be set first, or else produces wrong child
 void OffspringProducer::produce_offspring(const std::string & parent_file)
 {
-	set_parent(parent_file);
+	set_topology(parent_file);
 
 	std::random_device r;
 	std::default_random_engine e1(r());
@@ -161,7 +161,7 @@ void OffspringProducer::advance_gen()
 	fout.close();
 }
 
-void OffspringProducer::set_parent(const std::string & parent_file)
+void OffspringProducer::set_topology(const std::string & parent_file)
 {
 	ifstream fin;
 	fin.open(parent_file, ifstream::in);
