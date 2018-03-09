@@ -8,7 +8,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - PROJ3
   - [x] Modify random neural network to specified uniformly distributed range. (2/18, JH)
   - [ ] Given neural network, create offspring. **IN PROGRESS** (2/18, JH)
-  - [ ] Test program to check correctly generated gaussian pseudo-random values (non NN-related).
+  - [x] Test program to check correctly generated gaussian pseudo-random values (non NN-related).
   - [ ] Test program to check offsprings lie on the gaussian curve.
 # Useful Resources
 - [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
@@ -184,6 +184,7 @@ This is a project dedicated to creating and training an AI to play pro level che
   - Declutter `NeuralNetwork_PERF`.
   - Array \[] operations were somehow getting overwritten when transferring from `NeuralNetwork_PERF` to `OffspringProducer`.
 - `topo_proof_x.txt` files added as readable verification that the current version of topology generator works correctly.
+- Added separate Gaussian number generator with graphs. This can be found in `gnugraph` along with further documentation for the generator.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
