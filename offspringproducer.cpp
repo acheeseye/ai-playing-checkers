@@ -81,7 +81,7 @@ void OffspringProducer::record()
 	// NOTE: _mkdir returns a NON-ZERO if it is successful, thus if 0 (==false), unsuccessful
 	// info.st_mode & S_IFDIR == true if directory exists
 	if (_mkdir(dir_name_wrap) && !(info.st_mode & S_IFDIR)) throw std::exception("DIRECTORY CREATION FAILED");
-	if (id >= GLOBAL_MAX_POPULATION_PER_GEN) throw std::exception("MAXIMUM NERUAL NETWORK COUNT REACHED FOR CURRENT GENERATION");
+	if (id >= GLOBAL_MAX_POPULATION_PER_GEN) throw std::exception("MAXIMUM NEURAL NETWORK COUNT REACHED FOR CURRENT GENERATION");
 
 	fout.open(out_filename, ofstream::out | ofstream::trunc);
 	if (!fout.is_open()) throw std::exception("OPENING TOPOLOGY FILE TO WRITE FAILED");
@@ -148,7 +148,7 @@ void OffspringProducer::advance_gen()
 	fin.open(GLOBAL_NAMING_FILE, ifstream::in);
 	if (!fin.is_open())
 	{
-		throw std::exception("OPEING \"naming_status.txt\" FAILED");
+		throw std::exception("OPENING \"naming_status.txt\" FAILED");
 	}
 	fin >> generation >> id;
 	fin.close();
@@ -165,7 +165,7 @@ void OffspringProducer::set_topology(const std::string & parent_file)
 {
 	ifstream fin;
 	fin.open(parent_file, ifstream::in);
-	if (!fin.is_open()) throw std::exception("Cannot open parent file in set_parent");
+	if (!fin.is_open()) throw std::exception("Cannot open parent file in set_parent.");
 
 	double input;
 	int topo_iter = 0;
