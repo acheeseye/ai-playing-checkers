@@ -759,6 +759,10 @@ void temp_Board::write_board_to_file(std::ofstream & to_file)
 			}
 		}
 	}
+	if (is_over()) {
+		if (m_current_player == _BLACK_) data += "\n-100"; //red wins
+		else data += "\n100"; //black wins
+	}
 	to_file << data;
 }
 
@@ -791,28 +795,6 @@ void temp_Board::move_from(int start, int dest)
 			m_board.at(move_table[start].rmove) = _PLAYABLE_;
 		}
 	}
-
-
-	//if (m_current_player == _BLACK_)
-	//{
-	//	for (int i = 0; i < 4;++i)
-	//	{
-	//		if (m_board.at(i) == _BLACK_MAN_)
-	//		{
-	//			m_board.at(i) = _BLACK_KING_;
-	//		}
-	//	}
-	//}
-	//else
-	//{
-	//	for (int i = 28; i < 32;++i)
-	//	{
-	//		if (m_board.at(i) == _RED_MAN_)
-	//		{
-	//			m_board.at(i) = _RED_KING_;
-	//		}
-	//	}
-	//}
 }
 
 int temp_Board::get_Player() { return m_current_player; }

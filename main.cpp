@@ -48,7 +48,7 @@ enum { // THESE ARE THE DIFFERENT TYPES OF main_state
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = NEURAL_NETWORK_OFFSPRING;
+int main_state = PLAY_CHECKERS;
 //**********************************************************************************************
 //**********************************************************************************************
 
