@@ -20,34 +20,37 @@ using std::vector;
 // No-throw
 OffspringProducer::OffspringProducer()
 {
-	m_parent_topology.resize(GLOBAL_TOPOLOGY_SIZE);
+	m_topology.resize(GLOBAL_TOPOLOGY_SIZE);
 }
 
-std::vector<double> OffspringProducer::generate_topology()
+// No-throw
+std::vector<double> OffspringProducer::generate_ranom_topology()
 {
 	int topo_iter = 0;
 	std::random_device r;
 	std::default_random_engine e1(r());
-	{
+
+	{	// setting king value
 		std::uniform_real_distribution<double> uniform_dist(1, 3);
-		m_parent_topology[topo_iter] = uniform_dist(e1);
+		m_topology[topo_iter] = uniform_dist(e1);
 		topo_iter++;
 	}
-	{
+
+	{	// setting all weights
 		std::uniform_real_distribution<double> uniform_dist(-0.2, 0.2);
 		for (auto i = 0; i < GLOBAL_WC; ++i)
 		{
-			m_parent_topology[topo_iter] = uniform_dist(e1);
+			m_topology[topo_iter] = uniform_dist(e1);
 			topo_iter++;
 		}
 	}
-
+		// setting all sigma
 	for (auto i = 0; i < GLOBAL_SC; ++i)
 	{
-		m_parent_topology[topo_iter] = 5;
+		m_topology[topo_iter] = GLOBAL_SIGMA_VALUE;
 		topo_iter++;
 	}
-	return m_parent_topology;
+	return m_topology;
 }
 
 // Basic guarantee
@@ -56,11 +59,10 @@ void OffspringProducer::record()
 	struct stat info;
 	ifstream fin;
 	ofstream fout;
-	string naming_file = "ai-playing-checkers\\nn_topologies\\naming_status.txt";
 	int generation;
 	int id;
 
-	fin.open(naming_file, ifstream::in);
+	fin.open(GLOBAL_NAMING_FILE, ifstream::in);
 	if (!fin.is_open())
 	{
 		throw std::exception("OPEING \"naming_status.txt\" FAILED");
@@ -78,25 +80,53 @@ void OffspringProducer::record()
 	// NOTE: _mkdir returns a NON-ZERO if it is successful, thus if 0 (==false), unsuccessful
 	// info.st_mode & S_IFDIR == true if directory exists
 	if (_mkdir(dir_name_wrap) && !(info.st_mode & S_IFDIR)) throw std::exception("DIRECTORY CREATION FAILED");
-	if (id >= 30) throw std::exception("MAXIMUM NERUAL NETWORK COUNT REACHED FOR CURRENT GENERATION");
+	if (id >= GLOBAL_MAX_POPULATION_PER_GEN) throw std::exception("MAXIMUM NERUAL NETWORK COUNT REACHED FOR CURRENT GENERATION");
 
 	fout.open(out_filename, ofstream::out | ofstream::trunc);
 	if (!fout.is_open()) throw std::exception("OPENING TOPOLOGY FILE TO WRITE FAILED");
-	fout << m_parent_topology[0] << " 9999 ";
-	for (auto i = 1; i < 1 + GLOBAL_WC; ++i) fout << m_parent_topology[i] << ' ';
-	fout << "8888 ";
-	for (auto i = 1 + GLOBAL_WC; i < 1 + GLOBAL_WC + GLOBAL_SC; ++i) fout << m_parent_topology[i] << ' ';
+
+	fout << m_topology[0] << "\n999999\n";
+	for (auto i = GLOBAL_WEIGHT_START; i < GLOBAL_SIGMA_START - 1; ++i) fout << m_topology[i] << '\n';
+	fout << "888888\n";
+	for (auto i = GLOBAL_SIGMA_START; i < GLOBAL_SIGMA_START + GLOBAL_SC; ++i) fout << m_topology[i] << '\n';
+	fout << "777777";
 	fout.close();
 
-	// if naming_file is not openable, function will have exited by this point 
-	// (don't need to check if fout can open naming_file)
-	fout.open(naming_file, ofstream::out | ofstream::trunc);
+	fout.open(GLOBAL_NAMING_FILE, ofstream::out | ofstream::trunc);
 	fout << generation << " " << id + 1;
 	fout.close();
 }
 
-void OffspringProducer::produce()
+// parent topology must be set first, or else produces wrong child
+void OffspringProducer::produce_offspring(const std::string & parent_file)
 {
+	set_parent(parent_file);
+
+	std::random_device r;
+	std::default_random_engine e1(r());
+
+	{	// king evolve
+		std::uniform_real_distribution<double> uniform_dist(-0.1, 0.1);
+		double uniform_king_change = uniform_dist(e1);
+		m_topology[0] += uniform_king_change;
+	}
+
+	{	// sigma evolve for weight evolve
+		std::normal_distribution<double> distrubution(0, 1);
+		for (auto i = GLOBAL_SIGMA_START; i <= GLOBAL_SIGMA_END; ++i)
+		{
+			m_topology[i] *= exp(GLOBAL_TAU*distrubution(e1));
+		}
+	}
+
+	{	// weight evolve
+		int sigma_iter = GLOBAL_SIGMA_START;
+		std::normal_distribution<double> distrubution(0, 1);
+		for (auto i = GLOBAL_WEIGHT_START; i <= GLOBAL_WEIGHT_END; ++i)
+		{
+			m_topology[i] += m_topology[sigma_iter++] * distrubution(e1);
+		}
+	}
 }
 
 void OffspringProducer::reset_counter()
@@ -106,4 +136,45 @@ void OffspringProducer::reset_counter()
 	fout.open(pathname, ofstream::out | ofstream::trunc);
 	fout << "0 0";
 	fout.close();
+}
+
+void OffspringProducer::advance_gen()
+{
+	ifstream fin;
+	ofstream fout;
+	int generation;
+	int id;
+
+	fin.open(GLOBAL_NAMING_FILE, ifstream::in);
+	if (!fin.is_open())
+	{
+		throw std::exception("OPEING \"naming_status.txt\" FAILED");
+	}
+	fin >> generation >> id;
+	fin.close();
+
+	id = 0;
+	generation++;
+
+	fout.open(GLOBAL_NAMING_FILE, ofstream::out | ofstream::trunc);
+	fout << generation << " " << id;
+	fout.close();
+}
+
+void OffspringProducer::set_parent(const std::string & parent_file)
+{
+	ifstream fin;
+	fin.open(parent_file, ifstream::in);
+	if (!fin.is_open()) throw std::exception("Cannot open parent file in set_parent");
+
+	double input;
+	int topo_iter = 0;
+	while (true) {
+		fin >> input;
+		if (input == 999999 || input == 888888) continue;
+		if (input == 777777) break;
+		m_topology[topo_iter++] = input;
+	}
+
+	fin.close();
 }

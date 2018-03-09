@@ -17,6 +17,7 @@ using std::to_string;
 NeuralNetwork_PERF::NeuralNetwork_PERF(const std::vector<double>& input, const std::vector<double>& topology)
 {
 	if (input.size() != GLOBAL_LAYER_0_NC) throw std::exception("INVALID INPUT SIZE");
+	// input layer set
 	for (auto i = 0; i < GLOBAL_LAYER_0_NC; ++i)
 	{
 		m_nodes[i] = input[i];
@@ -30,21 +31,16 @@ NeuralNetwork_PERF::NeuralNetwork_PERF(const std::vector<double>& input, const s
 	{
 		m_weights[i - 1] = topology[i];
 	}
-	for (auto i = 1 + GLOBAL_WC; i < 1 + GLOBAL_WC + GLOBAL_SC; ++i)
-	{
-		m_sigma[i - 1 - GLOBAL_WC] = topology[i];
-	}
 }
 
 void NeuralNetwork_PERF::apply_sigma(double & input_sum)
 {
-	input_sum = (2 / (1 + exp(-input_sum * m_sigma[m_sigma_iter])) - 1);
+	input_sum = (2 / (1 + exp(-input_sum)) - 1);
 }
 
 void NeuralNetwork_PERF::calculate()
 {
 	m_weight_iter = 0;
-	m_sigma_iter = 0;
 
 	for (int l_1 = 0; l_1 < GLOBAL_LAYER_1_NC; ++l_1)
 	{
@@ -54,7 +50,6 @@ void NeuralNetwork_PERF::calculate()
 			m_weight_iter++;
 		}
 		apply_sigma(m_nodes[GLOBAL_LAYER_0_NC + l_1]);
-		m_sigma_iter++;
 	}
 
 	for (int l_2 = 0; l_2 < GLOBAL_LAYER_2_NC; ++l_2)
@@ -65,7 +60,6 @@ void NeuralNetwork_PERF::calculate()
 			m_weight_iter++;
 		}
 		apply_sigma(m_nodes[GLOBAL_LAYER_1_NC + l_2]);
-		m_sigma_iter++;
 	}
 
 	for (int l_3 = 0; l_3 < GLOBAL_LAYER_3_NC; ++l_3)
@@ -76,6 +70,5 @@ void NeuralNetwork_PERF::calculate()
 			m_weight_iter++;
 		}
 		apply_sigma(m_nodes[GLOBAL_LAYER_2_NC + l_3]);
-		m_sigma_iter++;
 	}
 }

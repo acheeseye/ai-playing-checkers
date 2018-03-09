@@ -740,13 +740,13 @@ void temp_Board::write_board_to_file(std::ofstream & to_file)
 				data += "-1";
 				break;
 			case _RED_KING_:
-				data += "-k";
+				data += "-2";
 				break;
 			case _BLACK_MAN_:
 				data += "1";
 				break;
 			case _BLACK_KING_:
-				data += "k";
+				data += "2";
 				break;
 			}
 			if ((row * 4) + column_id < 31) // space delimited, but no trailing space

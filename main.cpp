@@ -92,7 +92,7 @@ double do_calculation(double input, double weight)
 void apply_sigma_t(double & input)
 {
 	cout << "		DID SIGMA: s(" << input << ") = ";
-	input = (2 / (1 + exp(-input * GLOBAL_SIGMA_VALUE)) - 1);
+	input = (2 / (1 + exp(-input)) - 1);
 	cout << input << endl << endl;
 }
 
@@ -706,7 +706,7 @@ int main() {
 		1,1,1,1,
 		};
 
-		NeuralNetwork_PERF nn0(input, osp.generate_topology());
+		NeuralNetwork_PERF nn0(input, osp.generate_ranom_topology());
 
 		cout.precision(6);
 		cout << "nn0 weights: " << GLOBAL_WEIGHT_COUNT << endl;
@@ -875,14 +875,20 @@ int main() {
 			1,1,1,1,
 		};
 
+		string parent_file = "ai-playing-checkers\\nn_topologies\\GEN0\\nn0_brunette26_topology.txt";
 		OffspringProducer osp;
 		osp.reset_counter();
 
-		for (auto i = 0; i < 5; ++i) {
-			vector<double> topo_holder = osp.generate_topology();
+		for (auto i = 0; i < 1; ++i) {
+			vector<double> topo_holder = osp.generate_ranom_topology();
+
 			NeuralNetwork_PERF(dummy_input, topo_holder);
 			try { osp.record(); }
 			catch (std::exception e) { cout << "EXCEPTION CAUGHT: " << e.what() << endl; }
+			for (auto j = 0; j < 5; ++j) {
+				osp.produce_offspring(parent_file);
+				osp.record();
+			}
 		}
 	}
 }

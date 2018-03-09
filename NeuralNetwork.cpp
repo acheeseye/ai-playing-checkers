@@ -1,4 +1,5 @@
 #include "NeuralNetwork.h"
+#include "OffspringProducer.h"
 #include "board.h"
 
 #include <iostream>
@@ -84,7 +85,6 @@ void NeuralNetwork::default_set()
 	m_king_value_max = 3.0;
 	m_weight_min = -0.2;
 	m_weight_max = 0.2;
-	m_sigma = GLOBAL_SIGMA_VALUE;
 	m_generate_file_status = false;
 	m_topology_file_destination = "ai-playing-checkers\\nn_topologies\\brunette26_topology_"
 		+ year + month + day + '_' + hour + minute + second + ".txt";
@@ -101,10 +101,6 @@ void NeuralNetwork::init()
 
 void NeuralNetwork::init_TESTING(const std::vector<double> & input_TESTING, const vector<double> & weights_TESTING)
 {
-	for (auto i = 0; i < T___GLOBAL_SIGMA_COUNT; ++i)
-	{
-		m_all_sigma_TESTING[i] = GLOBAL_SIGMA_VALUE;
-	}
 	for (auto i = 0; i < T___GLOBAL_WEIGHT_COUNT; ++i)
 	{
 		m_all_weights_TESTING[i] = weights_TESTING[i];
