@@ -9,12 +9,14 @@
 #include "NeuralNetwork.h"
 #include "NeuralNetwork_PERF.h"
 #include "offspringproducer.h"
+#include "GnuGraph.h"
 
 #include <time.h>
 #include <SFML\Graphics.hpp>
 
 #include <iostream>
 #include <vector>
+#include <map>
 #include <utility>
 #include <string>
 #include <fstream>
@@ -35,13 +37,19 @@ using std::to_string;
 using std::ofstream;
 using std::ifstream;
 using std::numeric_limits;
+using std::normal_distribution;
+using std::random_device;
+using std::mt19937;
+using std::map;
+
 
 enum { // THESE ARE THE DIFFERENT TYPES OF main_state
 	PLAY_CHECKERS,
 	NEURAL_NETWORK_TIMING,
 	NEURAL_NETWORK_TESTING,
 	NEURAL_NETWORK_TIMING_PERF,
-	NEURAL_NETWORK_OFFSPRING
+	NEURAL_NETWORK_OFFSPRING,
+	GAUSSIAN_GRAPHING
 };
 
 //**********************************************************************************************
@@ -115,13 +123,8 @@ int main() {
 		//just remove the "ai-playing-checkers" part of the string for it to work for you (probably)
 		string file_name = "ai-playing-checkers\\games_played\\game_" + year + month + day + '_' + hour + minute + second + ".txt";
 
-		std::ofstream to_file;
-		to_file.open(file_name, std::ofstream::out | std::ofstream::app);
-
-		temp_Board board(_RED_);
-		Board_tree board_tree(board);
-		vector<int> tree_result = min_max_search(board, 1);
-		board.write_board_to_file(to_file);
+		ofstream to_file;
+		to_file.open(file_name, ofstream::out | ofstream::app);
 
 		if (!to_file.is_open())//|| !to_compressed_file.is_open())
 		{
@@ -130,6 +133,11 @@ int main() {
 			cout << "PLEASE CHECK IF THE FILE NAME IS CORRECT FOR YOUR VERSION" << endl;
 			cout << "*********************************************************" << endl;
 		}
+
+		temp_Board board(_RED_);
+		Board_tree board_tree(board);
+		vector<int> tree_result = min_max_search(board, 1);
+		board.write_board_to_file(to_file);
 
 		int next_move;
 
@@ -242,7 +250,7 @@ int main() {
 						random_moves_made++;
 					}
 					else {
-						std::vector<int> min_max_move = min_max_search(board, 4);
+						vector<int> min_max_move = min_max_search(board, 4);
 						next_move = min_max_move.at(0);
 						int val = min_max_move.at(1);
 					}
@@ -258,7 +266,7 @@ int main() {
 						random_moves_made++;
 					}
 					else {
-						std::vector<int> min_max_move = min_max_search(board, 4);
+						vector<int> min_max_move = min_max_search(board, 4);
 						next_move = min_max_move.at(0);
 						int val = min_max_move.at(1);
 					}
@@ -281,7 +289,9 @@ int main() {
 					}
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
 					{
-						cout << "GUI OVERRIDE. ENTER MOVE ID OR q TO EXIT OVERRIDE: ";
+						cout << "GUI OVERRIDE; POSSIBLE MOVES LISTED." << endl;
+						board.print_moves();
+						cout << "ENTER MOVE ID OR q TO EXIT OVERRIDE: ";
 						cin >> next_move;
 						if (next_move == 'q')
 						{
@@ -891,4 +901,44 @@ int main() {
 			}
 		}
 	}
+	else if (main_state == GAUSSIAN_GRAPHING)
+	{
+		GnuGraph graph("C:/Program Files/gnuplot/bin/gnuplot.exe"); // provide path to executable
+		
+		vector<double> g_vals, width;
+		map<double, double> vals;
+		
+		random_device rnd;
+		mt19937 e2(rnd());
+		
+		normal_distribution<> gauss(0, 1);
+		
+		for (int i = 0; i < 1000; ++i)
+		{
+			++vals[round(gauss(e2))];
+		}
+		
+		for (auto & p : vals)
+		{
+			cout << p.first << ' ' << string(p.second / 200, '*') << '\n';
+			
+			g_vals.push_back(p.second);
+			width.push_back(p.first);
+		}
+		
+		const string output = graph.plot(width, g_vals, "gauss check");
+		cout << output << '\n'; // print any errors to console
+		
+		cout << "press ENTER to quit" << endl;
+		//cin.clear();
+		//cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		while (cin.get() != '\n');
+		
+		return 0;
+	}
+
+	cout << "You should not be here." << endl;
+	cout << endl << "press ENTER to quit" << endl;
+	while (cin.get() != '\n');
+	return 0;
 }
