@@ -11,15 +11,15 @@
 
 #include <SFML\Graphics.hpp>
 #include <vector>
-//for std::vector
+using std::vector;
 #include <string>
-//for std::string
+using std::string;
 #include <utility>
-//for std::pair
+using std::pair;
 #include <list>
 #include <fstream>
-// for std::ofstream
-// for std::ifstream
+using std::ofstream;
+using std::ifstream;
 
 //List of piece types
 enum {
@@ -95,23 +95,23 @@ class temp_Board
 {
 public:
 	temp_Board(int starting_player); //default constructor
-	temp_Board(std::vector<int> board, int player);
+	temp_Board(vector<int> board, int player);
 	temp_Board(temp_Board &) = default; //copy constructor, useful for recursion
 
-	std::vector<std::vector<int>> & generate_moves(); //generates list of moves
+	vector<vector<int>> & generate_moves(); //generates list of moves
 	bool operator==(const temp_Board &) const;
-	std::vector<std::vector<int>>& get_move_list();
+	vector<vector<int>>& get_move_list();
 
 	int piece_count_eval();
-	std::pair<int, int> count_pieces();
-	void handle_count(std::string & pieces, sf::Text & pieces_text);
+	pair<int, int> count_pieces();
+	void handle_count(string & pieces, sf::Text & pieces_text);
 
 
 	void non_jump_moves();
 	void jump_moves_start();
-	void jump_recurse(temp_Board board_state, std::vector<int> next_move); //pass by VALUE not reference
+	void jump_recurse(temp_Board board_state, vector<int> next_move); //pass by VALUE not reference
 	void move_piece(int move, bool switch_turns = true);
-	void store_move(std::vector<int> move_made);
+	void store_move(vector<int> move_made);
 
 	bool is_over();
 	int get_Player();
@@ -120,20 +120,25 @@ public:
 	void print_moves();
 
 	//void denote_endgame(std::string player, std::ofstream & to_file); // necessary? winner can be inferred by rewritten process_output
-	void write_board_to_file(std::ofstream & to_file);
+	void write_board_to_file(ofstream & to_file);
+
+	// replay functions
+	void set_board_status(vector<int> board_state);
+	void handle_replay_count(vector<int> board_state, string & pieces, sf::Text & pieces_text);
+	pair<int, int> count_replay_pieces(vector<int> board_state);
 
 private:
 	//Current state of the board, same as above
-	std::vector<int> m_board;
+	vector<int> m_board;
 	int m_current_player;
 	bool m_do_jump;//member variables storing whether a jump is available
-	std::vector<std::vector<int>> m_moves_made;
+	vector<vector<int>> m_moves_made;
 
 	//List of possible moves, notice that the type
 	//is a list. This allows for repeated jumping to be
 	//represented (i.e (24,17,8) would represent the piece
 	//on 24 jumping to 17, then to 8).
-	std::vector<std::vector<int>> m_possible_move_list;
+	vector<vector<int>> m_possible_move_list;
 public:
 	void friend draw_board(const temp_Board &);
 private:
@@ -148,7 +153,7 @@ class Board_tree
 {
 public:
 	Board_tree(temp_Board next_board):m_number_of_children(next_board.generate_moves().size()){}
-	friend std::vector<int> min_max_search(temp_Board & current_board, int depth); //ist entry is move, 2nd is value
+	friend vector<int> min_max_search(temp_Board & current_board, int depth); //ist entry is move, 2nd is value
 private:
 	int m_number_of_children;
 };

@@ -867,15 +867,15 @@ pair<int, int> temp_Board::count_pieces()
 	int p_red = 0;
 	int p_black = 0;
 
-	for (int i = 0; i < m_board.size(); i++)
+	for (int i = 0; i < m_board.size(); ++i)
 	{
 		if (m_board.at(i) == _BLACK_MAN_ || m_board.at(i) == _BLACK_KING_)
 		{
-			p_black++;
+			++p_black;
 		}
 		else if (m_board.at(i) == _RED_MAN_ || m_board.at(i) == _RED_KING_)
 		{
-			p_red++;
+			++p_red;
 		}
 	}
 
@@ -983,4 +983,46 @@ std::vector<int> min_max_search(temp_Board & current_board, int depth)
 	//std::cout << max_node.at(0) << max_node.at(1) << std::endl;
 	//std::cout << "value is:" << max_node.at(1) << std::endl;
 	return max_node;
+}
+
+
+/////////////////////////////////////////////////////////////////////
+//                                                                 //
+//                  Stuff for replaying boards                     //
+//                                                                 //
+/////////////////////////////////////////////////////////////////////
+void temp_Board::set_board_status(vector<int> board_state)
+{
+	for (auto i = 0; i < 32; ++i)
+	{
+		m_board.at(i) = board_state.at(i);
+	}
+}
+
+void temp_Board::handle_replay_count(vector<int> board_state, string & pieces, sf::Text & pieces_text)
+{
+	pair<int, int> curr_count = count_replay_pieces(board_state);
+
+	pieces = "R: " + to_string(curr_count.second) + "\nB: " + to_string(curr_count.first);
+	pieces_text.setFillColor(sf::Color::Green);
+}
+
+pair<int, int> temp_Board::count_replay_pieces(vector<int> board_state)
+{
+	int p_red = 0;
+	int p_black = 0;
+
+	for (int i = 0; i < board_state.size(); ++i)
+	{
+		if (board_state.at(i) == _BLACK_MAN_ || board_state.at(i) == _BLACK_KING_)
+		{
+			++p_black;
+		}
+		else if (board_state.at(i) == _RED_MAN_ || board_state.at(i) == _RED_KING_)
+		{
+			++p_red;
+		}
+	}
+
+	return make_pair(p_black, p_red);
 }
