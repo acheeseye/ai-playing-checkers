@@ -186,6 +186,14 @@ This is a project dedicated to creating and training an AI to play pro level che
 - `topo_proof_x.txt` files added as readable verification that the current version of topology generator works correctly.
 - Added separate Gaussian number generator with graphs. This can be found in `gnugraph` along with further documentation for the generator.
   - The main for the Gaussian number generator has been merged into `main.cpp`.
+### Version 6.1
+- Completed saved games can now be replayed using the `REPLAY_SAVED_GAME` option for the `main_state`.
+- The controls for this option are as follows:
+  - `Spacebar`: toggles automatic/manual stepping modes; manual stepping is the default stepping mode. When in automatic stepping mode, manual stepping mode can also be engaged by pressing either the left or right arrow key.
+  - `Right Arrow Key`: steps forward in manual stepping mode.
+  - `Left Arrow Key`: steps backward in manual stepping mode.
+  - The `R` key: restarts the board when end of game has been reached in automatic stepping mode.
+  - The `Q` key: to quit.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
