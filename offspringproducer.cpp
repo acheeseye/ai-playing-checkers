@@ -15,6 +15,8 @@ using std::endl;
 #include <vector>
 using std::vector;
 #include <random>
+#include <exception>
+using std::exception;
 
 
 // No-throw
@@ -66,7 +68,8 @@ void OffspringProducer::record()
 	fin.open(GLOBAL_NAMING_FILE, ifstream::in);
 	if (!fin.is_open())
 	{
-		throw std::exception("OPENING \"naming_status.txt\" FAILED");
+		//throw std::exception("OPENING \"naming_status.txt\" FAILED");
+		cout << "cannot open file in OffspringProducer::record" << endl;
 	}
 	fin >> generation >> id;
 	fin.close();
@@ -80,11 +83,20 @@ void OffspringProducer::record()
 
 	// NOTE: _mkdir returns a NON-ZERO if it is successful, thus if 0 (==false), unsuccessful
 	// info.st_mode & S_IFDIR == true if directory exists
-	if (_mkdir(dir_name_wrap) && !(info.st_mode & S_IFDIR)) throw std::exception("DIRECTORY CREATION FAILED");
-	if (id >= GLOBAL_MAX_POPULATION_PER_GEN) throw std::exception("MAXIMUM NERUAL NETWORK COUNT REACHED FOR CURRENT GENERATION");
+	if (_mkdir(dir_name_wrap) && !(info.st_mode & S_IFDIR)) {
+		cout << "cannot create directory in OffspringProducer::record" << endl;
+		return;
+	}
+	if (id >= GLOBAL_MAX_POPULATION_PER_GEN) {
+		cout << "max population per generation reached in OffspringProducer::record" << endl;
+		return;
+	}
 
 	fout.open(out_filename, ofstream::out | ofstream::trunc);
-	if (!fout.is_open()) throw std::exception("OPENING TOPOLOGY FILE TO WRITE FAILED");
+	if (!fout.is_open()) {
+		cout << "cannot open file in OffspringProducer::record (out_filename)" << endl;
+		return;
+	}
 
 	fout << m_topology[0] << "\n999999\n";
 	for (auto i = GLOBAL_WEIGHT_START; i < GLOBAL_SIGMA_START - 1; ++i) fout << m_topology[i] << '\n';
@@ -148,7 +160,8 @@ void OffspringProducer::advance_gen()
 	fin.open(GLOBAL_NAMING_FILE, ifstream::in);
 	if (!fin.is_open())
 	{
-		throw std::exception("OPEING \"naming_status.txt\" FAILED");
+		cout << "naming_status.txt does not exist" << endl;
+		return;
 	}
 	fin >> generation >> id;
 	fin.close();
@@ -165,8 +178,11 @@ void OffspringProducer::set_topology(const std::string & parent_file)
 {
 	ifstream fin;
 	fin.open(parent_file, ifstream::in);
-	if (!fin.is_open()) throw std::exception("Cannot open parent file in set_parent");
-
+	if (!fin.is_open()) 
+	{
+		cout << "parent file was not opened" << endl;
+		return;
+	}
 	double input;
 	int topo_iter = 0;
 	while (true) {

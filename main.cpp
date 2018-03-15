@@ -38,8 +38,6 @@ using std::numeric_limits;
 
 enum { // THESE ARE THE DIFFERENT TYPES OF main_state
 	PLAY_CHECKERS,
-	NEURAL_NETWORK_TIMING,
-	NEURAL_NETWORK_TESTING,
 	NEURAL_NETWORK_TIMING_PERF,
 	NEURAL_NETWORK_OFFSPRING
 };
@@ -48,7 +46,7 @@ enum { // THESE ARE THE DIFFERENT TYPES OF main_state
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = PLAY_CHECKERS;
+int main_state = NEURAL_NETWORK_OFFSPRING;
 //**********************************************************************************************
 //**********************************************************************************************
 
@@ -81,19 +79,6 @@ string adjust_time(int unit)
 		str = to_string(unit);
 	}
 	return str;
-}
-
-double do_calculation(double input, double weight)
-{
-	cout << input << " * " << weight << " = " << input*weight << endl;
-	return input * weight;
-}
-
-void apply_sigma_t(double & input)
-{
-	cout << "		DID SIGMA: s(" << input << ") = ";
-	input = (2 / (1 + exp(-input)) - 1);
-	cout << input << endl << endl;
 }
 
 int main() {
@@ -498,200 +483,6 @@ int main() {
 
 		return 0;
 	}
-	else if (main_state == NEURAL_NETWORK_TIMING)
-	{
-		NeuralNetwork nn0;
-		nn0.init();
-		nn0.set_board_record_with("ai-playing-checkers\\games_played\\game_20180219_142934.txt");
-
-		cout.precision(6);
-		cout << "nn0 weights: " << GLOBAL_WEIGHT_COUNT << endl;
-		{
-			int times = 10;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-		{
-			int times = 100;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-		{
-			int times = 1000;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-		{
-			int times = 10000;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-		{
-			int times = 100000;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-		{
-			int times = 200000;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-		{
-			int times = 250000;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-
-		cout << endl;
-		cout << "'Enter' to quit . . .";
-		while (cin.get() != '\n');
-
-		return 0;
-	}
-	else if (main_state == NEURAL_NETWORK_TESTING)
-	{
-		NeuralNetwork nn_TESTING;
-
-		vector<double> input_TESTING = { -1, 0, 0, 1 };
-		vector<double> weights_TESTING = {
-			0.1732, -0.0460, -0.1104, 0.1161, 0.0372,
-			0.1322, 0.1705, 0.1428, 0.888, 0.697,
-			-0.0652, 0.1425, 0.1563, 0.0889, 0.1031,
-			-0.1840, 0.0333, -0.0699, -0.0944, -0.1409 };
-		nn_TESTING.init_TESTING(input_TESTING, weights_TESTING);
-
-		//LAYER 1
-		double layer_1_node_0_result = 0.0;
-		layer_1_node_0_result += do_calculation(input_TESTING[0], weights_TESTING[0]);
-		layer_1_node_0_result += do_calculation(input_TESTING[1], weights_TESTING[1]);
-		layer_1_node_0_result += do_calculation(input_TESTING[2], weights_TESTING[2]);
-		layer_1_node_0_result += do_calculation(input_TESTING[3], weights_TESTING[3]);
-		apply_sigma_t(layer_1_node_0_result);
-		double layer_1_node_1_result = 0.0;
-		layer_1_node_1_result += do_calculation(input_TESTING[0], weights_TESTING[4]);
-		layer_1_node_1_result += do_calculation(input_TESTING[1], weights_TESTING[5]);
-		layer_1_node_1_result += do_calculation(input_TESTING[2], weights_TESTING[6]);
-		layer_1_node_1_result += do_calculation(input_TESTING[3], weights_TESTING[7]);
-		apply_sigma_t(layer_1_node_1_result);
-		double layer_1_node_2_result = 0.0;
-		layer_1_node_2_result += do_calculation(input_TESTING[0], weights_TESTING[8]);
-		layer_1_node_2_result += do_calculation(input_TESTING[1], weights_TESTING[9]);
-		layer_1_node_2_result += do_calculation(input_TESTING[2], weights_TESTING[10]);
-		layer_1_node_2_result += do_calculation(input_TESTING[3], weights_TESTING[11]);
-		apply_sigma_t(layer_1_node_2_result);
-
-		//LAYER 2
-		double layer_2_node_0_result = 0.0;
-		layer_2_node_0_result += do_calculation(layer_1_node_0_result, weights_TESTING[12]);
-		layer_2_node_0_result += do_calculation(layer_1_node_1_result, weights_TESTING[13]);
-		layer_2_node_0_result += do_calculation(layer_1_node_2_result, weights_TESTING[14]);
-		apply_sigma_t(layer_2_node_0_result);
-		double layer_2_node_1_result = 0.0;
-		layer_2_node_1_result += do_calculation(layer_1_node_0_result, weights_TESTING[15]);
-		layer_2_node_1_result += do_calculation(layer_1_node_1_result, weights_TESTING[16]);
-		layer_2_node_1_result += do_calculation(layer_1_node_2_result, weights_TESTING[17]);
-		apply_sigma_t(layer_2_node_1_result);
-
-		//LAYER 3
-		double layer_3_node_0_result = 0.0;
-		layer_3_node_0_result += do_calculation(layer_2_node_0_result, weights_TESTING[18]);
-		layer_3_node_0_result += do_calculation(layer_2_node_1_result, weights_TESTING[19]);
-		apply_sigma_t(layer_3_node_0_result);
-
-		cout << "\nOutput with non-NeuralNetwork calculations: " << layer_3_node_0_result << endl;
-
-		nn_TESTING.calculate_output_TESTING();
-		cout << "Output with NeuralNetwork object: " << nn_TESTING.get_output() << endl;
-
-		// -1 * 0.1732 = -0.1732
-		// 0 * -0.0460 = 0
-		// 0 * -0.1104 = 0
-		// 1 * 0.0372
-	}
 	else if (main_state == NEURAL_NETWORK_TIMING_PERF)
 	{
 		OffspringProducer osp;
@@ -879,16 +670,12 @@ int main() {
 		OffspringProducer osp;
 		osp.reset_counter();
 
-		for (auto i = 0; i < 1; ++i) {
+		for (auto i = 0; i < 30; ++i) {
 			vector<double> topo_holder = osp.generate_random_topology();
 
 			NeuralNetwork_PERF(dummy_input, topo_holder);
 			try { osp.record(); }
 			catch (std::exception e) { cout << "EXCEPTION CAUGHT: " << e.what() << endl; }
-			for (auto j = 0; j < 5; ++j) {
-				osp.produce_offspring(parent_file);
-				osp.record();
-			}
 		}
 	}
 }

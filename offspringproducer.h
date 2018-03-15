@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <cmath>
 
 const int GLOBAL_KING_START = 0;
 const int GLOBAL_WEIGHT_START = GLOBAL_KING_START + 1;
@@ -14,7 +15,7 @@ const int GLOBAL_SIGMA_END = GLOBAL_SIGMA_START + GLOBAL_SC - 1;
 
 const double GLOBAL_SIGMA_VALUE = 0.05;
 const int GLOBAL_MAX_POPULATION_PER_GEN = 30;
-const double GLOBAL_TAU = (1 / sqrt(2 * sqrt(GLOBAL_WC)));
+const double GLOBAL_TAU = (1 / std::sqrt(2 * std::sqrt(GLOBAL_WC)));
 const std::string GLOBAL_NAMING_FILE = "ai-playing-checkers\\nn_topologies\\naming_status.txt";
 const std::string GLOBAL_OFFSPRING_PROOF = "ai-playing-checkers\\nn_topologies\\offsp_proof.txt";
 
@@ -54,7 +55,6 @@ public:
 private:
 	std::vector<double> m_topology;
 	std::vector<std::string> m_survived_parent;
-
 };
 
 #endif // !_INCLUDED_OFFSPRINGPRODUCER_H_
