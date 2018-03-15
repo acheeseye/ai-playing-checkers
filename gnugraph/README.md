@@ -11,9 +11,10 @@ The gnugraph files can be found here along with the accompanying `LICENSE`.
 - `GnuGraphFormatter.h` -- Unmodified
 - `GnuGraphPiping.h` -- Unmodified
 ## Other files
-- `Gauss_main.cpp`
+- ~~`Gauss_main.cpp`~~
   - Generates 1000 pseudo-random Gaussian numbers and uses the gnugraph library to output the graph in gnuplot as well as to create a png file of that plot when the program is run.
   - Depending on your setup, you'll need to modify both the path for `gnuplot.exe` as well as the `file_name`.
+  - This file has been merged into `main.cpp`.
 - This `README.md`
   - You're currently reading this file, which documents changes made to the gnugraph project as well as describes how it was used for this checkers project.
 - The graphs...

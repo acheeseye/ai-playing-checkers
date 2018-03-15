@@ -9,18 +9,21 @@
 #include "NeuralNetwork.h"
 #include "NeuralNetwork_PERF.h"
 #include "offspringproducer.h"
+#include "GnuGraph.h"
 
 #include <time.h>
 #include <SFML\Graphics.hpp>
 
 #include <iostream>
 #include <vector>
+#include <map>
 #include <utility>
 #include <string>
 #include <fstream>
 #include <limits>
 #include <chrono>
 #include <random>
+#include <sstream>
 
 // USINGS
 using std::cout;
@@ -35,18 +38,28 @@ using std::to_string;
 using std::ofstream;
 using std::ifstream;
 using std::numeric_limits;
+using std::normal_distribution;
+using std::random_device;
+using std::mt19937;
+using std::map;
+using std::stringstream;
+
 
 enum { // THESE ARE THE DIFFERENT TYPES OF main_state
 	PLAY_CHECKERS,
+	REPLAY_SAVED_GAME,
+	NEURAL_NETWORK_TIMING,
+	NEURAL_NETWORK_TESTING,
 	NEURAL_NETWORK_TIMING_PERF,
-	NEURAL_NETWORK_OFFSPRING
+	NEURAL_NETWORK_OFFSPRING,
+	GAUSSIAN_GRAPHING
 };
 
 //**********************************************************************************************
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = NEURAL_NETWORK_OFFSPRING;
+int main_state = REPLAY_SAVED_GAME;
 //**********************************************************************************************
 //**********************************************************************************************
 
@@ -100,13 +113,8 @@ int main() {
 		//just remove the "ai-playing-checkers" part of the string for it to work for you (probably)
 		string file_name = "ai-playing-checkers\\games_played\\game_" + year + month + day + '_' + hour + minute + second + ".txt";
 
-		std::ofstream to_file;
-		to_file.open(file_name, std::ofstream::out | std::ofstream::app);
-
-		temp_Board board(_RED_);
-		Board_tree board_tree(board);
-		vector<int> tree_result = min_max_search(board, 1);
-		board.write_board_to_file(to_file);
+		ofstream to_file;
+		to_file.open(file_name, ofstream::out | ofstream::app);
 
 		if (!to_file.is_open())//|| !to_compressed_file.is_open())
 		{
@@ -114,7 +122,15 @@ int main() {
 			cout << "ERROR OPENING FILE: PROBABLY NOT WRITING GAME DATA" << endl;
 			cout << "PLEASE CHECK IF THE FILE NAME IS CORRECT FOR YOUR VERSION" << endl;
 			cout << "*********************************************************" << endl;
+			cout << endl << "press ENTER to quit";
+			while (cin.get() != '\n');
+			return 0;
 		}
+
+		temp_Board board(_RED_);
+		Board_tree board_tree(board);
+		vector<int> tree_result = min_max_search(board, 1);
+		board.write_board_to_file(to_file);
 
 		int next_move;
 
@@ -219,15 +235,18 @@ int main() {
 			}
 
 			// AI movement
-			if (window_loop_cycles > ai_wait_time) {
-				if (red_is_ai && board.get_Player() == _RED_ && board.get_move_list().size() > 0) {
+			if (window_loop_cycles > ai_wait_time)
+			{
+				if (red_is_ai && board.get_Player() == _RED_ && board.get_move_list().size() > 0)
+				{
 					if (random_moves_made < random_move_count)
 					{
 						next_move = rand() % board.get_move_list().size();
 						random_moves_made++;
 					}
-					else {
-						std::vector<int> min_max_move = min_max_search(board, 4);
+					else
+					{
+						vector<int> min_max_move = min_max_search(board, 4);
 						next_move = min_max_move.at(0);
 						int val = min_max_move.at(1);
 					}
@@ -235,15 +254,15 @@ int main() {
 					board.write_board_to_file(to_file);
 					window_loop_cycles = 0;
 				}
-
-				else if (black_is_ai && board.get_Player() == _BLACK_ && board.get_move_list().size() > 0) {
+				else if (black_is_ai && board.get_Player() == _BLACK_ && board.get_move_list().size() > 0)
+				{
 					if (random_moves_made < random_move_count)
 					{
 						next_move = rand() % board.get_move_list().size();
 						random_moves_made++;
 					}
 					else {
-						std::vector<int> min_max_move = min_max_search(board, 4);
+						vector<int> min_max_move = min_max_search(board, 4);
 						next_move = min_max_move.at(0);
 						int val = min_max_move.at(1);
 					}
@@ -266,7 +285,9 @@ int main() {
 					}
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
 					{
-						cout << "GUI OVERRIDE. ENTER MOVE ID OR q TO EXIT OVERRIDE: ";
+						cout << "GUI OVERRIDE; POSSIBLE MOVES LISTED." << endl;
+						board.print_moves();
+						cout << "ENTER MOVE ID OR q TO EXIT OVERRIDE: ";
 						cin >> next_move;
 						if (next_move == 'q')
 						{
@@ -483,6 +504,526 @@ int main() {
 
 		return 0;
 	}
+	else if (main_state == REPLAY_SAVED_GAME)
+	{
+		string file_name = "ai-playing-checkers\\games_played\\game_20180309_120157.txt";
+
+		ifstream in_file;
+		in_file.open(file_name);
+
+		if (!in_file.is_open())
+		{
+			cout << "*********************************************************" << endl;
+			cout << "ERROR OPENING FILE: PROBABLY NOT READING GAME DATA" << endl;
+			cout << "PLEASE CHECK IF THE FILE NAME IS CORRECT FOR YOUR VERSION" << endl;
+			cout << "*********************************************************" << endl;
+			cout << endl << "press ENTER to quit";
+			while (cin.get() != '\n');
+			return 0;
+		}
+
+		vector<vector<int>> parsed_states;
+
+		string line;
+		int token;
+
+		while (getline(in_file, line))
+		{
+			vector<int> parsed_move;
+			stringstream ss(line);
+
+			while (ss >> token)
+			{
+				parsed_move.push_back(token);
+			}
+			parsed_states.push_back(parsed_move);
+		}
+
+		in_file.close();
+
+		if (parsed_states[parsed_states.size()-1][0] != 100 && parsed_states[parsed_states.size()-1][0] != -100)
+		{
+			cout << "INCOMPLETE GAME FILE: CANNOT REPLAY GAME" << endl;
+			cout << endl << "press ENTER to quit";
+			while (cin.get() != '\n');
+			return 0;
+		}
+
+		int step = 0;
+		int wait_time = 300;
+
+		temp_Board board(_RED_);
+
+		bool last_move = false;
+
+		unsigned int board_size = 8;
+		unsigned int board_width = 700;
+		unsigned int board_height = 700;
+		unsigned int side_display_width = 200;
+		unsigned int board_boarder = 30;
+		unsigned int slot_width = (board_width - board_boarder * 2) / board_size;
+		unsigned int slot_height = (board_width - board_boarder * 2) / board_size;
+		unsigned int piece_distance_from_edge = 10;
+
+		// SFML INITIALIZATIONS
+		sf::RenderWindow window(sf::VideoMode(board_width + side_display_width, board_height), "CHECKERS");
+
+		sf::RectangleShape board_base(sf::Vector2f(board_width, board_height));
+		sf::RectangleShape selector(sf::Vector2f(slot_width, slot_height));
+		sf::RectangleShape slot(sf::Vector2f(slot_width, slot_height));
+		sf::Sprite piece;
+		piece.setScale(0.2375, 0.2375);
+
+		sf::Vector2f board_base_origin = board_base.getPosition();
+		sf::Vector2f slot_origin = board_base_origin + sf::Vector2f(board_boarder, board_boarder);
+
+		board_base.setFillColor(sf::Color(85, 35, 5));
+		selector.setFillColor(sf::Color::Transparent);
+		selector.setOutlineThickness(10);
+		selector.setOutlineColor(sf::Color(55, 0, 130));
+
+		sf::Font font;
+
+		//sorry, for my version I have to enter the "ai-playing-checkers" direcotry to open the files
+		//just remove the "ai-playing-checkers/" part of the string for it to work for you (probably)
+		if (!font.loadFromFile("ai-playing-checkers/res/cour.ttf"))
+		{
+			cout << "font load failed" << endl;
+		}
+
+		sf::Texture red_king;
+		if (!red_king.loadFromFile("ai-playing-checkers/res/red_king.png"))
+		{
+			cout << "red_king load failed" << endl;
+		}
+		red_king.setSmooth(true);
+
+		sf::Texture red_soldier;
+		if (!red_soldier.loadFromFile("ai-playing-checkers/res/red_soldier.png"))
+		{
+			cout << "red_soldier load failed" << endl;
+		}
+		red_soldier.setSmooth(true);
+
+		sf::Texture black_king;
+		if (!black_king.loadFromFile("ai-playing-checkers/res/black_king.png"))
+		{
+			cout << "black_king load failed" << endl;
+		}
+		black_king.setSmooth(true);
+
+		sf::Texture black_soldier;
+		if (!black_soldier.loadFromFile("ai-playing-checkers/res/black_soldier.png"))
+		{
+			cout << "black_soldier load failed" << endl;
+		}
+		black_soldier.setSmooth(true);
+
+		sf::Texture unseen_piece;
+		if (!unseen_piece.loadFromFile("ai-playing-checkers/res/empty.png"))
+		{
+			cout << "unseen_piece load failed" << endl;
+		}
+
+		srand(time(NULL));
+
+		bool stepper = false;
+		sf::Event event;
+
+		while (window.isOpen())
+		{
+			Sleep(wait_time);
+
+			vector<int> board_status;
+			board_status.resize(32);
+
+
+			//*************************************************************************
+			// EVENT POLLER -- ADD RUNTIME EVENTS HERE
+			//*************************************************************************
+
+			while (window.pollEvent(event))
+			{
+				if (event.type == sf::Event::KeyPressed)
+				{
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+					{
+						stepper = !stepper;
+						cout << "stepping: " << stepper << endl;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+					{
+						cout << "stepping backward" << endl;
+						if(step == 0)
+						{
+							step = parsed_states.size() - 2;
+						}
+						else
+						{
+							--step;
+						}
+						stepper = false;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+					{
+						cout << "stepping forward" << endl;
+						if (step == parsed_states.size() - 2)
+						{
+							step = 0;
+						}
+						else
+						{
+							++step;
+						}
+						stepper = false;
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+					{
+						if (step == parsed_states.size() - 2 && stepper)
+						{
+							cout << "restarting" << endl;
+							step = 0;
+						}
+					}
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+					{
+						window.close();
+						return 0;
+					}
+				}
+				if (event.type == sf::Event::Closed)
+				{
+					window.close();
+				}
+			}
+			//*************************************************************************
+			// END OF EVENT POLLER
+			//*************************************************************************
+
+			window.clear();
+			window.draw(board_base);
+			bool playable_slot = false;
+			sf::Vector2f selector_draw_position;
+
+			// Main chunk of drawing
+			for (int col = 0; col < board_size; ++col)
+			{
+				for (int row = 0; row < board_size; ++row)
+				{
+					sf::Vector2f position_on_board =
+						sf::Vector2f(slot_origin.x, slot_origin.y) +
+						sf::Vector2f(slot_width * col, slot_height * row);
+
+					slot.setPosition(position_on_board);
+
+					sf::Vector2f piece_dfe_holder(piece_distance_from_edge, piece_distance_from_edge);
+					piece.setPosition(position_on_board + piece_dfe_holder);
+
+					int playable_slot_id = (row * board_size + col) / 2;
+					int current_status = parsed_states.at(step).at(playable_slot_id);
+
+					switch (current_status)
+					{
+					case -1:
+						piece.setTexture(red_soldier);
+						break;
+					case -2:
+						piece.setTexture(red_king);
+						break;
+					case 1:
+						piece.setTexture(black_soldier);
+						break;
+					case 2:
+						piece.setTexture(black_king);
+						break;
+					case 0:
+						piece.setTexture(unseen_piece);
+						break;
+					}
+
+					if (playable_slot)
+					{
+						string p_slot_id_str = to_string(playable_slot_id);
+						sf::Text slot_id(p_slot_id_str, font, 15);
+						slot_id.setPosition(position_on_board);
+						slot.setFillColor(sf::Color(125, 75, 30));
+						window.draw(slot);
+						window.draw(slot_id);
+						window.draw(piece);
+						playable_slot = !playable_slot;
+					}
+					else
+					{
+						slot.setFillColor(sf::Color(240, 195, 150));
+						window.draw(slot);
+						playable_slot = !playable_slot;
+					}
+				}
+				playable_slot = !playable_slot;
+			}
+
+			// window text management
+			vector<string> strings_to_draw;
+			string player = "null";
+			sf::Text player_text(player, font, 30);
+
+			string pieces = "null";
+			sf::Text pieces_text(player, font, 30);
+
+			string moves = "null";
+			sf::Text moves_text(player, font, 30);
+
+			if (board.get_Player() == _RED_)
+			{
+				player = "RED TURN";
+				player_text.setFillColor(sf::Color::Red);
+			}
+			else
+			{
+				player = "BLACK TURN";
+				player_text.setFillColor(sf::Color::White);
+			}
+
+			if (step == parsed_states.size() - 2)
+			{
+				if (parsed_states[parsed_states.size()-1][0] == 100)
+				{
+					player = "BLACK WINS";
+					player_text.setFillColor(sf::Color::White);
+				}
+				else
+				{
+					player = "RED WINS";
+					player_text.setFillColor(sf::Color::Red);
+				}
+			}
+
+			board.handle_replay_count(parsed_states.at(step), pieces, pieces_text); // live piece count
+
+			moves = "MOVE #" + to_string(step);
+			player_text.setFillColor(sf::Color::White);
+
+			player_text.setString(player);
+			pieces_text.setString(pieces);
+			moves_text.setString(moves);
+
+			player_text.setPosition(board_width + 10, 5);
+			pieces_text.setPosition(board_width + 10, 100);
+			moves_text.setPosition(board_width + 10, 225);
+
+			window.draw(player_text);
+			window.draw(pieces_text);
+			window.draw(moves_text);
+
+			window.display();
+
+			if (stepper && step < parsed_states.size() - 2)
+			{
+				++step;
+			}
+		}
+
+		cout << endl << "END OF REPLAY >> press ENTER to exit" << endl;
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		while (cin.get() != '\n');
+		return 0;
+	}
+	else if (main_state == NEURAL_NETWORK_TIMING)
+	{
+		NeuralNetwork nn0;
+		nn0.init();
+		nn0.set_board_record_with("ai-playing-checkers\\games_played\\game_20180219_142934.txt");
+
+		cout.precision(6);
+		cout << "nn0 weights: " << GLOBAL_WEIGHT_COUNT << endl;
+		{
+			int times = 10;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i)
+			{
+				nn0.set_input_layer(0);
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate_output();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 100;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				nn0.set_input_layer(0);
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate_output();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 1000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				nn0.set_input_layer(0);
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate_output();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 10000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				nn0.set_input_layer(0);
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate_output();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 100000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				nn0.set_input_layer(0);
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate_output();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 200000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				nn0.set_input_layer(0);
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate_output();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 250000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				nn0.set_input_layer(0);
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate_output();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+				//cout << nn0.get_output() << endl;
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+
+		cout << endl;
+		cout << "'Enter' to quit . . .";
+		while (cin.get() != '\n');
+
+		return 0;
+	}
+	else if (main_state == NEURAL_NETWORK_TESTING)
+	{
+		NeuralNetwork nn_TESTING;
+
+		vector<double> input_TESTING = { -1, 0, 0, 1 };
+		vector<double> weights_TESTING = {
+			0.1732, -0.0460, -0.1104, 0.1161, 0.0372,
+			0.1322, 0.1705, 0.1428, 0.888, 0.697,
+			-0.0652, 0.1425, 0.1563, 0.0889, 0.1031,
+			-0.1840, 0.0333, -0.0699, -0.0944, -0.1409 };
+		nn_TESTING.init_TESTING(input_TESTING, weights_TESTING);
+
+		//LAYER 1
+		double layer_1_node_0_result = 0.0;
+		layer_1_node_0_result += do_calculation(input_TESTING[0], weights_TESTING[0]);
+		layer_1_node_0_result += do_calculation(input_TESTING[1], weights_TESTING[1]);
+		layer_1_node_0_result += do_calculation(input_TESTING[2], weights_TESTING[2]);
+		layer_1_node_0_result += do_calculation(input_TESTING[3], weights_TESTING[3]);
+		apply_sigma_t(layer_1_node_0_result);
+		double layer_1_node_1_result = 0.0;
+		layer_1_node_1_result += do_calculation(input_TESTING[0], weights_TESTING[4]);
+		layer_1_node_1_result += do_calculation(input_TESTING[1], weights_TESTING[5]);
+		layer_1_node_1_result += do_calculation(input_TESTING[2], weights_TESTING[6]);
+		layer_1_node_1_result += do_calculation(input_TESTING[3], weights_TESTING[7]);
+		apply_sigma_t(layer_1_node_1_result);
+		double layer_1_node_2_result = 0.0;
+		layer_1_node_2_result += do_calculation(input_TESTING[0], weights_TESTING[8]);
+		layer_1_node_2_result += do_calculation(input_TESTING[1], weights_TESTING[9]);
+		layer_1_node_2_result += do_calculation(input_TESTING[2], weights_TESTING[10]);
+		layer_1_node_2_result += do_calculation(input_TESTING[3], weights_TESTING[11]);
+		apply_sigma_t(layer_1_node_2_result);
+
+		//LAYER 2
+		double layer_2_node_0_result = 0.0;
+		layer_2_node_0_result += do_calculation(layer_1_node_0_result, weights_TESTING[12]);
+		layer_2_node_0_result += do_calculation(layer_1_node_1_result, weights_TESTING[13]);
+		layer_2_node_0_result += do_calculation(layer_1_node_2_result, weights_TESTING[14]);
+		apply_sigma_t(layer_2_node_0_result);
+		double layer_2_node_1_result = 0.0;
+		layer_2_node_1_result += do_calculation(layer_1_node_0_result, weights_TESTING[15]);
+		layer_2_node_1_result += do_calculation(layer_1_node_1_result, weights_TESTING[16]);
+		layer_2_node_1_result += do_calculation(layer_1_node_2_result, weights_TESTING[17]);
+		apply_sigma_t(layer_2_node_1_result);
+
+		//LAYER 3
+		double layer_3_node_0_result = 0.0;
+		layer_3_node_0_result += do_calculation(layer_2_node_0_result, weights_TESTING[18]);
+		layer_3_node_0_result += do_calculation(layer_2_node_1_result, weights_TESTING[19]);
+		apply_sigma_t(layer_3_node_0_result);
+
+		cout << "\nOutput with non-NeuralNetwork calculations: " << layer_3_node_0_result << endl;
+
+		nn_TESTING.calculate_output_TESTING();
+		cout << "Output with NeuralNetwork object: " << nn_TESTING.get_output() << endl;
+
+		// -1 * 0.1732 = -0.1732
+		// 0 * -0.0460 = 0
+		// 0 * -0.1104 = 0
+		// 1 * 0.0372
+	}
 	else if (main_state == NEURAL_NETWORK_TIMING_PERF)
 	{
 		OffspringProducer osp;
@@ -678,4 +1219,44 @@ int main() {
 			catch (std::exception e) { cout << "EXCEPTION CAUGHT: " << e.what() << endl; }
 		}
 	}
+	else if (main_state == GAUSSIAN_GRAPHING)
+	{
+		GnuGraph graph("C:/Program Files/gnuplot/bin/gnuplot.exe"); // provide path to executable
+		
+		vector<double> g_vals, width;
+		map<double, double> vals;
+		
+		random_device rnd;
+		mt19937 e2(rnd());
+		
+		normal_distribution<> gauss(0, 1);
+		
+		for (int i = 0; i < 1000; ++i)
+		{
+			++vals[round(gauss(e2))];
+		}
+		
+		for (auto & p : vals)
+		{
+			cout << p.first << ' ' << string(p.second / 200, '*') << '\n';
+			
+			g_vals.push_back(p.second);
+			width.push_back(p.first);
+		}
+		
+		const string output = graph.plot(width, g_vals, "gauss check");
+		cout << output << '\n'; // print any errors to console
+		
+		cout << "press ENTER to quit" << endl;
+		//cin.clear();
+		//cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		while (cin.get() != '\n');
+		
+		return 0;
+	}
+
+	cout << "You should not be here." << endl;
+	cout << endl << "press ENTER to quit" << endl;
+	while (cin.get() != '\n');
+	return 0;
 }
