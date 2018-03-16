@@ -719,7 +719,7 @@ if (player == "RED WINS") { to_file << "R"; }
 else { to_file << "B"; }
 }*/
 
-
+// handles all boards as well as winning status
 void temp_Board::write_board_to_file(std::ofstream & to_file)
 {
 	if (m_board.size() != 32) throw std::exception("Board has incorrect size");
@@ -765,7 +765,6 @@ void temp_Board::write_board_to_file(std::ofstream & to_file)
 	}
 	to_file << data;
 }
-
 
 void temp_Board::move_from(int start, int dest)
 {
@@ -901,7 +900,7 @@ void temp_Board::handle_count(string & pieces, sf::Text & pieces_text)
 //returns child and value of child
 std::vector<int> min_max_search(temp_Board & current_board, int depth)
 {
-	if (depth < 0|| depth >= 10) //if depth is negative or too large, don't run program
+	if (depth < 0 || depth >= 10) //if depth is negative or too large, don't run program
 	{
 		std::vector<int> answer;
 		answer.push_back(0);
@@ -921,9 +920,9 @@ std::vector<int> min_max_search(temp_Board & current_board, int depth)
 
 
 	Board_tree tree(current_board);
-	std::vector<int> max_node;
+	std::vector<int> max_node; // max_node = { move_id, move_value }
 
-	//Stuff to insure that the below move choice will not happen
+	//Stuff to ensure that the below move choice will not happen
 	if (current_board.get_Player() == _BLACK_)
 	{
 		max_node.push_back(0);

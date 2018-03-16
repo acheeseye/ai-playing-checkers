@@ -9,7 +9,7 @@
 #include "NeuralNetwork.h"
 #include "NeuralNetwork_PERF.h"
 #include "offspringproducer.h"
-#include "GnuGraph.h"
+#include "gnugraph\GnuGraph.h"
 
 #include <time.h>
 #include <SFML\Graphics.hpp>
@@ -48,18 +48,17 @@ using std::stringstream;
 enum { // THESE ARE THE DIFFERENT TYPES OF main_state
 	PLAY_CHECKERS,
 	REPLAY_SAVED_GAME,
-	NEURAL_NETWORK_TIMING,
-	NEURAL_NETWORK_TESTING,
 	NEURAL_NETWORK_TIMING_PERF,
-	NEURAL_NETWORK_OFFSPRING,
-	GAUSSIAN_GRAPHING
+	NEURAL_NETWORK_OFFSPRING,	// generates 30 random gen 0 topologies
+	GAUSSIAN_GRAPHING,
+	NNvNN						// network vs network 
 };
 
 //**********************************************************************************************
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = REPLAY_SAVED_GAME;
+int main_state = NNvNN;
 //**********************************************************************************************
 //**********************************************************************************************
 
@@ -632,7 +631,7 @@ int main() {
 
 		while (window.isOpen())
 		{
-			Sleep(wait_time);
+			//Sleep(wait_time);
 
 			vector<int> board_status;
 			board_status.resize(32);
@@ -829,201 +828,6 @@ int main() {
 		while (cin.get() != '\n');
 		return 0;
 	}
-	else if (main_state == NEURAL_NETWORK_TIMING)
-	{
-		NeuralNetwork nn0;
-		nn0.init();
-		nn0.set_board_record_with("ai-playing-checkers\\games_played\\game_20180219_142934.txt");
-
-		cout.precision(6);
-		cout << "nn0 weights: " << GLOBAL_WEIGHT_COUNT << endl;
-		{
-			int times = 10;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i)
-			{
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-		{
-			int times = 100;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-		{
-			int times = 1000;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-		{
-			int times = 10000;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-		{
-			int times = 100000;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-		{
-			int times = 200000;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-		{
-			int times = 250000;
-			double t_sum = 0;
-			for (int i = 0; i < times; ++i) {
-				nn0.set_input_layer(0);
-				auto begin = std::chrono::high_resolution_clock::now();
-				nn0.calculate_output();
-				auto end = std::chrono::high_resolution_clock::now();
-				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-				t_sum += (ns);
-				//cout << nn0.get_output() << endl;
-			}
-			double avg = t_sum / times;
-			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
-			avg = avg / 1000000000;
-			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
-		}
-
-		cout << endl;
-		cout << "'Enter' to quit . . .";
-		while (cin.get() != '\n');
-
-		return 0;
-	}
-	else if (main_state == NEURAL_NETWORK_TESTING)
-	{
-		NeuralNetwork nn_TESTING;
-
-		vector<double> input_TESTING = { -1, 0, 0, 1 };
-		vector<double> weights_TESTING = {
-			0.1732, -0.0460, -0.1104, 0.1161, 0.0372,
-			0.1322, 0.1705, 0.1428, 0.888, 0.697,
-			-0.0652, 0.1425, 0.1563, 0.0889, 0.1031,
-			-0.1840, 0.0333, -0.0699, -0.0944, -0.1409 };
-		nn_TESTING.init_TESTING(input_TESTING, weights_TESTING);
-
-		//LAYER 1
-		double layer_1_node_0_result = 0.0;
-		layer_1_node_0_result += do_calculation(input_TESTING[0], weights_TESTING[0]);
-		layer_1_node_0_result += do_calculation(input_TESTING[1], weights_TESTING[1]);
-		layer_1_node_0_result += do_calculation(input_TESTING[2], weights_TESTING[2]);
-		layer_1_node_0_result += do_calculation(input_TESTING[3], weights_TESTING[3]);
-		apply_sigma_t(layer_1_node_0_result);
-		double layer_1_node_1_result = 0.0;
-		layer_1_node_1_result += do_calculation(input_TESTING[0], weights_TESTING[4]);
-		layer_1_node_1_result += do_calculation(input_TESTING[1], weights_TESTING[5]);
-		layer_1_node_1_result += do_calculation(input_TESTING[2], weights_TESTING[6]);
-		layer_1_node_1_result += do_calculation(input_TESTING[3], weights_TESTING[7]);
-		apply_sigma_t(layer_1_node_1_result);
-		double layer_1_node_2_result = 0.0;
-		layer_1_node_2_result += do_calculation(input_TESTING[0], weights_TESTING[8]);
-		layer_1_node_2_result += do_calculation(input_TESTING[1], weights_TESTING[9]);
-		layer_1_node_2_result += do_calculation(input_TESTING[2], weights_TESTING[10]);
-		layer_1_node_2_result += do_calculation(input_TESTING[3], weights_TESTING[11]);
-		apply_sigma_t(layer_1_node_2_result);
-
-		//LAYER 2
-		double layer_2_node_0_result = 0.0;
-		layer_2_node_0_result += do_calculation(layer_1_node_0_result, weights_TESTING[12]);
-		layer_2_node_0_result += do_calculation(layer_1_node_1_result, weights_TESTING[13]);
-		layer_2_node_0_result += do_calculation(layer_1_node_2_result, weights_TESTING[14]);
-		apply_sigma_t(layer_2_node_0_result);
-		double layer_2_node_1_result = 0.0;
-		layer_2_node_1_result += do_calculation(layer_1_node_0_result, weights_TESTING[15]);
-		layer_2_node_1_result += do_calculation(layer_1_node_1_result, weights_TESTING[16]);
-		layer_2_node_1_result += do_calculation(layer_1_node_2_result, weights_TESTING[17]);
-		apply_sigma_t(layer_2_node_1_result);
-
-		//LAYER 3
-		double layer_3_node_0_result = 0.0;
-		layer_3_node_0_result += do_calculation(layer_2_node_0_result, weights_TESTING[18]);
-		layer_3_node_0_result += do_calculation(layer_2_node_1_result, weights_TESTING[19]);
-		apply_sigma_t(layer_3_node_0_result);
-
-		cout << "\nOutput with non-NeuralNetwork calculations: " << layer_3_node_0_result << endl;
-
-		nn_TESTING.calculate_output_TESTING();
-		cout << "Output with NeuralNetwork object: " << nn_TESTING.get_output() << endl;
-
-		// -1 * 0.1732 = -0.1732
-		// 0 * -0.0460 = 0
-		// 0 * -0.1104 = 0
-		// 1 * 0.0372
-	}
 	else if (main_state == NEURAL_NETWORK_TIMING_PERF)
 	{
 		OffspringProducer osp;
@@ -1213,45 +1017,150 @@ int main() {
 
 		for (auto i = 0; i < 30; ++i) {
 			vector<double> topo_holder = osp.generate_random_topology();
-
 			NeuralNetwork_PERF(dummy_input, topo_holder);
-			try { osp.record(); }
+
+			try { osp.record_current(); }
 			catch (std::exception e) { cout << "EXCEPTION CAUGHT: " << e.what() << endl; }
 		}
 	}
-	else if (main_state == GAUSSIAN_GRAPHING)
+	//else if (main_state == GAUSSIAN_GRAPHING)
+	//{
+	//	GnuGraph graph("C:/Program Files/gnuplot/bin/gnuplot.exe"); // provide path to executable
+	//	
+	//	vector<double> g_vals, width;
+	//	map<double, double> vals;
+	//	
+	//	random_device rnd;
+	//	mt19937 e2(rnd());
+	//	
+	//	normal_distribution<> gauss(0, 1);
+	//	
+	//	for (int i = 0; i < 1000; ++i)
+	//	{
+	//		++vals[round(gauss(e2))];
+	//	}
+	//	
+	//	for (auto & p : vals)
+	//	{
+	//		cout << p.first << ' ' << string(p.second / 200, '*') << '\n';
+	//		
+	//		g_vals.push_back(p.second);
+	//		width.push_back(p.first);
+	//	}
+	//	
+	//	const string output = graph.plot(width, g_vals, "gauss check");
+	//	cout << output << '\n'; // print any errors to console
+	//	
+	//	cout << "press ENTER to quit" << endl;
+	//	//cin.clear();
+	//	//cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	//	while (cin.get() != '\n');
+	//	
+	//	return 0;
+	//}
+	else if (main_state == NNvNN)
 	{
-		GnuGraph graph("C:/Program Files/gnuplot/bin/gnuplot.exe"); // provide path to executable
-		
-		vector<double> g_vals, width;
-		map<double, double> vals;
-		
-		random_device rnd;
-		mt19937 e2(rnd());
-		
-		normal_distribution<> gauss(0, 1);
-		
-		for (int i = 0; i < 1000; ++i)
-		{
-			++vals[round(gauss(e2))];
+		// here are "fake" globals for ease of access rather than digging through code to change
+		// hard coded values
+		const int FAKE_OPPO_COUNT = 5;
+
+		// 30 sets of 5 random opponents for current network
+
+		// let's try just for one network for now
+
+		int active_nn_id = 0; // this will be incremented every 5 games
+		vector<int> oppo_list;
+		string gen_wrapper = "ai-playing-checkers\\nn_topologies\\GEN";
+		ofstream fout;
+
+		std::random_device r;
+		std::default_random_engine e1(r());
+		std::uniform_int_distribution<> int_dist(0, GLOBAL_MAX_POPULATION_PER_GEN - 1);
+		for (auto i = 0; i < FAKE_OPPO_COUNT; ++i) {
+			int oppo = int_dist(e1);
+			// nn should not play against self
+			while (oppo == active_nn_id) {
+				cout << "SAME NN DETECTED " << oppo << endl;
+				oppo = int_dist(e1);
+			}
+			// nn should not play the same oppo
+			while (find(oppo_list.begin(), oppo_list.end(), oppo) != oppo_list.end()) {
+				cout << "PLAYED THIS NN PREVIOUSLY " << oppo << endl;
+				oppo = int_dist(e1);
+			}
+			oppo_list.push_back(oppo);
 		}
-		
-		for (auto & p : vals)
-		{
-			cout << p.first << ' ' << string(p.second / 200, '*') << '\n';
-			
-			g_vals.push_back(p.second);
-			width.push_back(p.first);
+		//for (auto i = 0; i < oppo_list.size(); ++i) cout << oppo_list[i] << endl;
+		string active_nn_topo = "";
+		active_nn_topo += gen_wrapper + "0";
+		active_nn_topo += "\\nn";
+		active_nn_topo += active_nn_id;
+		active_nn_topo += "_brunette26_topology.txt";
+
+		for (auto i = 0; i < oppo_list.size(); ++i) {
+			int oppo_nn_id = oppo_list[i];
+			string against_nn_topo = "";
+			against_nn_topo += gen_wrapper + "0";
+			against_nn_topo += "\\nn";
+			against_nn_topo += oppo_nn_id;
+			against_nn_topo += "_brunette26_topology.txt";
+
+			cout << "nn" << active_nn_id << " vs nn" << oppo_nn_id << endl;
+			string game_played_destination = "ai-playing-checkers\\nn_topologies\\GEN0\\games_played_0\\";
+			game_played_destination += to_string(active_nn_id);
+			game_played_destination += "_";
+			game_played_destination += to_string(oppo_nn_id);
+			game_played_destination += ".txt";
+
+			temp_Board board(_BLACK_); // black is starting player
+			int random_moves_made = 0;
+			int random_move_count = 3;
+			int move_count = 0;
+			int next_move;
+
+			// invariant: repeating names (0_2.txt & 0_2.txt) handled by while loop above
+			fout.open(game_played_destination, ofstream::out | ofstream::app);
+			board.write_board_to_file(fout); // initial gameboard
+			while(!board.is_over() && move_count < 100)
+			{
+				if (board.get_Player() == _RED_ && board.get_move_list().size() > 0)
+				{
+					if (random_moves_made < random_move_count)
+					{
+						next_move = rand() % board.get_move_list().size();
+						random_moves_made++;
+					}
+					else
+					{
+						vector<int> min_max_move = min_max_search(board, 1);
+						next_move = min_max_move.at(0);
+						int val = min_max_move.at(1);
+					}
+					board.move_piece(next_move);
+					board.write_board_to_file(fout);
+					move_count++;
+				}
+				else if (board.get_Player() == _BLACK_ && board.get_move_list().size() > 0)
+				{
+					if (random_moves_made < random_move_count)
+					{
+						next_move = rand() % board.get_move_list().size();
+						random_moves_made++;
+					}
+					else {
+						vector<int> min_max_move = min_max_search(board, 1);
+						next_move = min_max_move.at(0);
+						int val = min_max_move.at(1);
+					}
+					board.move_piece(next_move);
+					board.write_board_to_file(fout);
+					move_count++;
+				}
+			}
+			fout.close();
 		}
-		
-		const string output = graph.plot(width, g_vals, "gauss check");
-		cout << output << '\n'; // print any errors to console
-		
-		cout << "press ENTER to quit" << endl;
-		//cin.clear();
-		//cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		while (cin.get() != '\n');
-		
+		active_nn_id++;
+
 		return 0;
 	}
 

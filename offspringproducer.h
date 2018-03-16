@@ -49,7 +49,7 @@ public:
 	std::vector<double> generate_random_topology();
 	void set_topology(const std::string & parent_file);
 	void produce_offspring(const std::string & parent_file);
-	void record();
+	void record_current();
 	void reset_counter();
 	void advance_gen();
 private:

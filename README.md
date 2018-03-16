@@ -7,16 +7,19 @@ This is a project dedicated to creating and training an AI to play pro level che
   - [x] Add a minimax search with a piece count evaluation function. (2/XX, JK)
 - PROJ3
   - [x] Modify random neural network to specified uniformly distributed range. (2/18, JH)
-  - [ ] Given neural network, create offspring. **IN PROGRESS** (2/18, JH)
+  - [x] Given neural network, create offspring. (2/18, JH)
   - [x] Test program to check correctly generated gaussian pseudo-random values (non NN-related).
   - [ ] Test program to check offsprings lie on the gaussian curve.
+- PROJ4
+  - [ ] Implement alpha-beta pruning.
+  - [ ] Generation manager (`OffspringProducer`).
+  - [ ] Determine file storage structure.
+  - [ ] Testing (hand examine games played & test children in gaussian curve).
 # Useful Resources
 - [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
 - [Here](https://msdn.microsoft.com/en-us/library/chh3fb0k.aspx) is documentation for pragma optimize to get more accurate timing.
 # IMPORTANT  
-- ***NOTE*** According to PROJ3 rubric, the sigma is set to 0.05. However, if this is [graphed](https://www.google.com/search?ei=KlWKWrvGJor8jwOp3brIBg&q=graph+of+2%2F%281%2Be%5E-0.05x%29+-+1&oq=graph+of+2%2F%281%2Be%5E-0.05x%29+-+1&gs_l=psy-ab.12...12136.13716.0.15643.7.7.0.0.0.0.145.618.1j4.5.0....0...1c.1.64.psy-ab..2.1.145...0i8i30k1.0.8Yt_gsXJtwg), you can see that the activation slope is not steep. This caused the BEF to spit out numbers extremely close to 0 (because inputs are \[-1, 1] and weights are \[-0.2, 0.2]). This is the "starting point" for the network ~~but for visible results I hard set sigma to 5 for now~~. The value remains at 0.05 for requirements of PROJ3. Feel free to change for visible output.
-- ***PLEASE*** check if the file name for the output file and file location for the resource files are correct for your version. You may need to remove the `ai-playing-checkers` portion of the name (my VS creates a separate directory for the `.cpp` and `.h` files and that directory is the master for me; I am not sure how to make the `.sln` read the files from the same directory instead).
-- The BEF/sec obtained from the desktops in the computer labs (while running only `main.cpp`, `NeuralNetwork_PERF.cpp`, `NeuralNetwork_PERF.h`, and only the `NEURAL_NETWORK_TESTING_PERF` section of `main.cpp`) is around ***290,000*** using the g++ compiler with -O2 optimizations turned on. Non optimized BEF/sec is around ***120,000***.
+- I've commented out gnuplot related files because I could not figure out how to get them to work. (JH)
 # Versions
 ## Version 0:  
 - All relevant current files added.
@@ -194,6 +197,24 @@ This is a project dedicated to creating and training an AI to play pro level che
   - `Left Arrow Key`: steps backward in manual stepping mode.
   - The `R` key: restarts the board when end of game has been reached in automatic stepping mode.
   - The `Q` key: to quit.
+### Version 6.2
+- New `main_state` `NNvNN` which handles network vs network play.
+- `main_state`s `NEURAL_NETWORK_TESTING` and `NEURAL_NETWORK_TIMING` removed due to irrelevance.
+- [ ] TODO: Remove `NeuralNetwork` class, leaving just `NeuralNetwork_PERF`.
+- [ ] TODO: new generations need to generate new folder within directory to hold games played.
+  - (this is hard coded for GEN0)
+- Heuristics of network vs network:
+  - Active network is always red.
+  - Opposing network plays first move.
+  - 3 randomly generated moves will be made at the beginning.
+  - Networks will not play itself or a repeated network.
+  - Reaching move 100 indicates a draw.
+  - Networks use 4-ply for minimax iteration.
+  - [ ] TODO: implement alpha-beta pruning.
+  - 5 games per network with population of 30 networks: 150 games played.
+  - Games played stored in `games_played_#GENID#` folder found in respective generation directory where `#GENID#` is replaced with the generation it is in.
+    - Gameplay results will also be stored in that folder under `results.txt`.
+    - Games played will be named `#ACTIVE#_#OPPO#.txt`.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
@@ -213,7 +234,8 @@ This is a project dedicated to creating and training an AI to play pro level che
   - 90,000 BEF/sec => compiled with Visual Studio on a Surface Pro 3 with -O2 turned on
   - 120,000 BEF/sec => compiled with g++ on the desktop in the computer lab without -O2 turned on
   - 290,000 BEF/sec => compiled with g++ on the desktop in the computer lab with -O2 turned on
-- [ ] Asexually reproducing `brunette26`. (2/18, JH)
+- [x] Asexually reproducing `brunette26`. (2/18, JH)
+- [ ] Working on implementing `NeuralNetwork_PERF`'s `calculate` function to `mini_max_search`. (3/15, JH)
 - Here's a potentially helpful chart for all the playable positions:  
 
 |P|L|A|Y|A|B|L|E|

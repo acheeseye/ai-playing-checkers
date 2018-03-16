@@ -57,7 +57,7 @@ std::vector<double> OffspringProducer::generate_random_topology()
 }
 
 // Basic guarantee
-void OffspringProducer::record()
+void OffspringProducer::record_current()
 {
 	struct stat info;
 	ifstream fin;

@@ -17,19 +17,18 @@ using std::to_string;
 NeuralNetwork_PERF::NeuralNetwork_PERF(const std::vector<double>& input, const std::vector<double>& topology)
 {
 	if (input.size() != GLOBAL_LAYER_0_NC) throw std::exception("INVALID INPUT SIZE");
-	// input layer set
-	for (auto i = 0; i < GLOBAL_LAYER_0_NC; ++i)
-	{
-		m_nodes[i] = input[i];
-	}
-	for (auto i = GLOBAL_LAYER_0_NC; i < GLOBAL_NC; ++i)
-	{
-		m_nodes[i] = 0;
-	}
 	m_king_val = topology[0];
 	for (auto i = 1; i < 1 + GLOBAL_WC; ++i)
 	{
 		m_weights[i - 1] = topology[i];
+	}
+
+	// input layer set
+	for (auto i = 0; i < GLOBAL_LAYER_0_NC; ++i)
+	{
+		if (input[i] == 2) m_nodes[i] = m_king_val;
+		else if (input[i] == -2) m_nodes[i] = -m_king_val;
+		else m_nodes[i] = input[i];
 	}
 }
 
