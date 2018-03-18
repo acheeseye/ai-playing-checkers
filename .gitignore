@@ -248,3 +248,5 @@ nn_topologies/ndist_02.txt
 nn_topologies/offsp_proof.txt
 nn_topologies/expected_delta_w.plt
 .vscode/
+nn_topologies/GEN*
+nn_topologies/GEN*/
