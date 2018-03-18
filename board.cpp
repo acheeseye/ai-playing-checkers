@@ -760,8 +760,16 @@ void temp_Board::write_board_to_file(std::ofstream & to_file)
 		}
 	}
 	if (is_over()) {
-		if (m_current_player == _BLACK_) data += "\n-100"; //red wins
-		else data += "\n100"; //black wins
+		if (m_current_player == _BLACK_) 
+		{ //red wins
+			data += "\n-100";
+			GLOBAL_WINNER_DENOTER = '1';
+		}
+		else 
+		{
+			data += "\n100"; //black wins
+			GLOBAL_WINNER_DENOTER = '2';
+		}
 	}
 	to_file << data;
 }
@@ -923,6 +931,7 @@ std::vector<int> min_max_search(temp_Board & current_board, int depth)
 	std::vector<int> max_node; // max_node = { move_id, move_value }
 
 	//Stuff to ensure that the below move choice will not happen
+	//ensure that first move encountered will always be selected
 	if (current_board.get_Player() == _BLACK_)
 	{
 		max_node.push_back(0);
@@ -958,7 +967,7 @@ std::vector<int> min_max_search(temp_Board & current_board, int depth)
 		}
 
 
-		std::vector<int> possible_move = min_max_search(next_board, depth - 1);
+		std::vector<int> possible_move = min_max_search(next_board, depth - 1); // next_board has called move_piece
 		possible_move.at(0) = i;
 
 		//Check if new move is better than old move

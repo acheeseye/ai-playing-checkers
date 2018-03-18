@@ -8,16 +8,18 @@
 #include <cmath>
 
 const int GLOBAL_KING_START = 0;
-const int GLOBAL_WEIGHT_START = GLOBAL_KING_START + 1;
-const int GLOBAL_WEIGHT_END = GLOBAL_WEIGHT_START + GLOBAL_WC - 1;
-const int GLOBAL_SIGMA_START = GLOBAL_WEIGHT_END + 1;
-const int GLOBAL_SIGMA_END = GLOBAL_SIGMA_START + GLOBAL_SC - 1;
+const int GLOBAL_WEIGHT_START = 1;
+const int GLOBAL_WEIGHT_END = 1691; // one past so it uses < rather than <=
+const int GLOBAL_SIGMA_START = 1691;
+const int GLOBAL_SIGMA_END = 3381; // one past so it uses < rather than <=
 
 const double GLOBAL_SIGMA_VALUE = 0.05;
 const int GLOBAL_MAX_POPULATION_PER_GEN = 30;
 const double GLOBAL_TAU = (1 / std::sqrt(2 * std::sqrt(GLOBAL_WC)));
 const std::string GLOBAL_NAMING_FILE = "ai-playing-checkers\\nn_topologies\\naming_status.txt";
 const std::string GLOBAL_OFFSPRING_PROOF = "ai-playing-checkers\\nn_topologies\\offsp_proof.txt";
+
+const int GLOBAL_OPPO_COUNT = 5;
 
 
 // CLASS OffspringProducer
@@ -50,11 +52,17 @@ public:
 	void set_topology(const std::string & parent_file);
 	void produce_offspring(const std::string & parent_file);
 	void record_current();
+
 	void reset_counter();
 	void advance_gen();
+	void determine_survivors(const std::string & result_txt);
+	int get_current_generation_id();
+
+	void produce_next_generation();
 private:
 	std::vector<double> m_topology;
 	std::vector<std::string> m_survived_parent;
+	std::vector<std::string> m_offspring;
 };
 
 #endif // !_INCLUDED_OFFSPRINGPRODUCER_H_

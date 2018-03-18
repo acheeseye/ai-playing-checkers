@@ -201,7 +201,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - New `main_state` `NNvNN` which handles network vs network play.
 - `main_state`s `NEURAL_NETWORK_TESTING` and `NEURAL_NETWORK_TIMING` removed due to irrelevance.
 - [ ] TODO: Remove `NeuralNetwork` class, leaving just `NeuralNetwork_PERF`.
-- [ ] TODO: new generations need to generate new folder within directory to hold games played.
+- [x] TODO: new generations need to generate new folder within directory to hold games played.
   - (this is hard coded for GEN0)
 - Heuristics of network vs network:
   - Active network is always red.
@@ -215,6 +215,39 @@ This is a project dedicated to creating and training an AI to play pro level che
   - Games played stored in `games_played_#GENID#` folder found in respective generation directory where `#GENID#` is replaced with the generation it is in.
     - Gameplay results will also be stored in that folder under `results.txt`.
     - Games played will be named `#ACTIVE#_#OPPO#.txt`.
+### Version 6.3
+- [x] TODO: Create `results.txt` per `NNvNN` generation.
+  - Per line, the active network ID is followed by 5 networks played, then followed by results of the game, respectively (space delimited).
+- [x] TODO: Draws denoted.
+- [ ] TODO: Change number of moves to draw to 40?
+- Storage structure:
+  - `GEN#GENID#` directory contains:
+    - all 30 network topologies
+    - `games_played_#GENID#` directory for games played
+      - games played
+      - 150 games result file (`result.txt`) (this will allow easier determination for which networks survived)
+  - example access to generation 5 game results: `fin.open("ai-playing-checkers//nn_topologies//GEN5//games_played_5//result.txt", ifstream::in);`
+- [ ] QUES: Should the set of 5 games played by each network switch who starts first?
+- [ ] QUES: Record lineage?
+- [ ] TODO: CHANGE PLY TO (at least) 4.
+- [ ] TODO: Calculate average branch factor.
+- [ ] TODO: Use `NerualNetwork_PERF::calculate` for `mini_max_search` return values.
+- Fixed `OffspringProducer` issues with vector indicies.
+- More comments in `OffspringProducer.cpp`.
+- `NNvNN` now trains through 10 generations with 1 ply mini max (CURRENTLY NO BOARD EVALUATIONS!!!).
+  - INSTRUCTIONS TO RECREATE:
+    1. Delete all GENX directories (leave naming_status.txt).
+    2. Run `NEURAL_NETWORK_OFFSPRING` to produce 0th generation randomly generated networks.
+    3. Run `NNvNN` and set desired generations (default to 10, at the moment) to train.
+      - 10 generations with 1 ply is about 5~10 minutes, roughly.
+  - Produces offspring for the 10th generation but does not play itself on 10th generation.
+  - Interestingly, 1 ply mini max values kings as at least 2.0.
+- New `OffspringProducer` functions:
+  - `determine_survivors`: sets `m_survived_parents` to all topologies that placed top 15 (in string form).
+  - `produce_next_generation`: records survivors from previous generation and calls `produce_offspring` on it. Offspring topologies come right after parent topologies after GEN0.
+    - [ ] TODO: Perhaps collapse `determine_survivors` into this function.
+  - `get_current_generation_id`: returns generation ID according to naming_status.txt.
+- My run of 10 generations training is pasted onto the git repo.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)

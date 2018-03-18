@@ -247,3 +247,4 @@ nn_topologies/ndist_01_graph.plt
 nn_topologies/ndist_02.txt
 nn_topologies/offsp_proof.txt
 nn_topologies/expected_delta_w.plt
+.vscode/

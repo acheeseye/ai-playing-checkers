@@ -21,6 +21,8 @@ using std::pair;
 using std::ofstream;
 using std::ifstream;
 
+extern char GLOBAL_WINNER_DENOTER;
+
 //List of piece types
 enum {
 	_RED_KING_ = -2,

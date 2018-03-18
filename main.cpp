@@ -54,6 +54,8 @@ enum { // THESE ARE THE DIFFERENT TYPES OF main_state
 	NNvNN						// network vs network 
 };
 
+char GLOBAL_WINNER_DENOTER;
+
 //**********************************************************************************************
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
@@ -94,7 +96,8 @@ string adjust_time(int unit)
 }
 
 int main() {
-	if (main_state == PLAY_CHECKERS) {
+	if (main_state == PLAY_CHECKERS) 
+	{
 		//Game of checkers using temp_Board
 		struct tm timeinfo;
 		time_t now = time(0);
@@ -1011,7 +1014,7 @@ int main() {
 			1,1,1,1,
 		};
 
-		string parent_file = "ai-playing-checkers\\nn_topologies\\GEN0\\nn0_brunette26_topology.txt";
+		//string parent_file = "ai-playing-checkers\\nn_topologies\\GEN0\\nn0_brunette26_topology.txt";
 		OffspringProducer osp;
 		osp.reset_counter();
 
@@ -1022,6 +1025,7 @@ int main() {
 			try { osp.record_current(); }
 			catch (std::exception e) { cout << "EXCEPTION CAUGHT: " << e.what() << endl; }
 		}
+		return 0;
 	}
 	//else if (main_state == GAUSSIAN_GRAPHING)
 	//{
@@ -1060,107 +1064,164 @@ int main() {
 	//}
 	else if (main_state == NNvNN)
 	{
-		// here are "fake" globals for ease of access rather than digging through code to change
-		// hard coded values
-		const int FAKE_OPPO_COUNT = 5;
+		// PLY CHANGER ***********************************
+		//************************************************
+		int ply = 1;
+		//************************************************
+		//************************************************
 
-		// 30 sets of 5 random opponents for current network
-
-		// let's try just for one network for now
-
-		int active_nn_id = 0; // this will be incremented every 5 games
-		vector<int> oppo_list;
-		string gen_wrapper = "ai-playing-checkers\\nn_topologies\\GEN";
+		ifstream fin;
 		ofstream fout;
+		OffspringProducer osp;
+		osp.reset_counter();
+
+		vector<int> oppo_list;
 
 		std::random_device r;
 		std::default_random_engine e1(r());
 		std::uniform_int_distribution<> int_dist(0, GLOBAL_MAX_POPULATION_PER_GEN - 1);
-		for (auto i = 0; i < FAKE_OPPO_COUNT; ++i) {
-			int oppo = int_dist(e1);
-			// nn should not play against self
-			while (oppo == active_nn_id) {
-				cout << "SAME NN DETECTED " << oppo << endl;
-				oppo = int_dist(e1);
-			}
-			// nn should not play the same oppo
-			while (find(oppo_list.begin(), oppo_list.end(), oppo) != oppo_list.end()) {
-				cout << "PLAYED THIS NN PREVIOUSLY " << oppo << endl;
-				oppo = int_dist(e1);
-			}
-			oppo_list.push_back(oppo);
-		}
-		//for (auto i = 0; i < oppo_list.size(); ++i) cout << oppo_list[i] << endl;
-		string active_nn_topo = "";
-		active_nn_topo += gen_wrapper + "0";
-		active_nn_topo += "\\nn";
-		active_nn_topo += active_nn_id;
-		active_nn_topo += "_brunette26_topology.txt";
 
-		for (auto i = 0; i < oppo_list.size(); ++i) {
-			int oppo_nn_id = oppo_list[i];
-			string against_nn_topo = "";
-			against_nn_topo += gen_wrapper + "0";
-			against_nn_topo += "\\nn";
-			against_nn_topo += oppo_nn_id;
-			against_nn_topo += "_brunette26_topology.txt";
-
-			cout << "nn" << active_nn_id << " vs nn" << oppo_nn_id << endl;
-			string game_played_destination = "ai-playing-checkers\\nn_topologies\\GEN0\\games_played_0\\";
-			game_played_destination += to_string(active_nn_id);
-			game_played_destination += "_";
-			game_played_destination += to_string(oppo_nn_id);
-			game_played_destination += ".txt";
-
-			temp_Board board(_BLACK_); // black is starting player
-			int random_moves_made = 0;
-			int random_move_count = 3;
-			int move_count = 0;
-			int next_move;
-
-			// invariant: repeating names (0_2.txt & 0_2.txt) handled by while loop above
-			fout.open(game_played_destination, ofstream::out | ofstream::app);
-			board.write_board_to_file(fout); // initial gameboard
-			while(!board.is_over() && move_count < 100)
+		while(osp.get_current_generation_id() != 10) {
+			int gen = osp.get_current_generation_id();
+			string gen_str = to_string(gen);
+			string gen_wrapper = "ai-playing-checkers\\nn_topologies\\GEN" + gen_str;
+			string result_txt = gen_wrapper + "\\games_played_" + gen_str + "\\result.txt";
+			for(auto active_nn_id = 0; active_nn_id < GLOBAL_MAX_POPULATION_PER_GEN; ++active_nn_id)
 			{
-				if (board.get_Player() == _RED_ && board.get_move_list().size() > 0)
-				{
-					if (random_moves_made < random_move_count)
-					{
-						next_move = rand() % board.get_move_list().size();
-						random_moves_made++;
-					}
-					else
-					{
-						vector<int> min_max_move = min_max_search(board, 1);
-						next_move = min_max_move.at(0);
-						int val = min_max_move.at(1);
-					}
-					board.move_piece(next_move);
-					board.write_board_to_file(fout);
-					move_count++;
-				}
-				else if (board.get_Player() == _BLACK_ && board.get_move_list().size() > 0)
-				{
-					if (random_moves_made < random_move_count)
-					{
-						next_move = rand() % board.get_move_list().size();
-						random_moves_made++;
-					}
-					else {
-						vector<int> min_max_move = min_max_search(board, 1);
-						next_move = min_max_move.at(0);
-						int val = min_max_move.at(1);
-					}
-					board.move_piece(next_move);
-					board.write_board_to_file(fout);
-					move_count++;
-				}
-			}
-			fout.close();
-		}
-		active_nn_id++;
+				string result_out = to_string(active_nn_id);
 
+				//populating opponent list
+				oppo_list.clear();
+				for (auto i = 0; i < GLOBAL_OPPO_COUNT; ++i) 
+				{
+					int oppo = int_dist(e1);
+
+					// nn should not play against self
+					while (oppo == active_nn_id) {
+						cout << "SAME NN DETECTED " << oppo << endl;
+						oppo = int_dist(e1);
+					}
+					// nn should not play the same oppo
+					while (find(oppo_list.begin(), oppo_list.end(), oppo) != oppo_list.end()) {
+						cout << "PLAYED THIS NN PREVIOUSLY " << oppo << endl;
+						oppo = int_dist(e1);
+					}
+
+					oppo_list.push_back(oppo);
+					result_out += " ";
+					result_out += to_string(oppo);
+				}
+
+				result_out += " ";
+
+				//for (auto i = 0; i < oppo_list.size(); ++i) cout << oppo_list[i] << endl;
+
+				// setting "our side" topology string
+				string active_nn_topo = "";
+				active_nn_topo += gen_wrapper + gen_str;
+				active_nn_topo += "\\nn";
+				active_nn_topo += active_nn_id;
+				active_nn_topo += "_brunette26_topology.txt";
+
+				for (auto i = 0; i < oppo_list.size(); ++i) {
+					int oppo_nn_id = oppo_list[i];
+
+					// setting "against" topology string
+					string against_nn_topo = "";
+					against_nn_topo += gen_wrapper + gen_str;
+					against_nn_topo += "\\nn";
+					against_nn_topo += oppo_nn_id;
+					against_nn_topo += "_brunette26_topology.txt";
+
+					cout << "nn" << active_nn_id << " vs nn" << oppo_nn_id << endl;
+
+					string game_played_destination = "ai-playing-checkers\\nn_topologies\\GEN" + gen_str;
+					game_played_destination += "\\games_played_" + gen_str + "\\";
+					game_played_destination += to_string(active_nn_id);
+					game_played_destination += "_";
+					game_played_destination += to_string(oppo_nn_id);
+					game_played_destination += ".txt";
+
+					// board set up
+					temp_Board board(_BLACK_); // black is starting player
+					int random_moves_made = 0;
+					int random_move_count = 3;
+					int move_count = 0;
+					int next_move;
+
+					// game begin
+					fout.open(game_played_destination, ofstream::out | ofstream::app);
+					if(!fout.is_open())
+					{
+						cout << "game_played_destination declared in main.cpp not opened" << endl;
+						return 0;
+					}
+
+					board.write_board_to_file(fout); // initial gameboard
+
+					while(!board.is_over() && move_count < 100)
+					{
+						if (board.get_Player() == _RED_ && board.get_move_list().size() > 0)
+						{
+							if (random_moves_made < random_move_count)
+							{
+								next_move = rand() % board.get_move_list().size();
+								random_moves_made++;
+							}
+							else
+							{
+								vector<int> min_max_move = min_max_search(board, ply);
+								next_move = min_max_move.at(0);
+								int val = min_max_move.at(1);
+							}
+							board.move_piece(next_move);
+							board.write_board_to_file(fout);
+							move_count++;
+						}
+						else if (board.get_Player() == _BLACK_ && board.get_move_list().size() > 0)
+						{
+							if (random_moves_made < random_move_count)
+							{
+								next_move = rand() % board.get_move_list().size();
+								random_moves_made++;
+							}
+							else {
+								vector<int> min_max_move = min_max_search(board, ply);
+								next_move = min_max_move.at(0);
+								int val = min_max_move.at(1);
+							}
+							board.move_piece(next_move);
+							board.write_board_to_file(fout);
+							move_count++;
+						}
+					}
+
+					// denote draw status
+					if(move_count == 100) 
+					{
+						fout << "50";
+						GLOBAL_WINNER_DENOTER = '0';
+					}
+
+					result_out += GLOBAL_WINNER_DENOTER;
+					result_out += ' ';
+
+					fout.close();
+				}
+
+				fout.open(result_txt, ofstream::out | ofstream::app);
+				if(!fout.is_open())
+				{
+					cout << "cannot open result.txt in main" << endl;
+					return 0;
+				}
+				fout << result_out << endl;
+				fout.close();
+			}
+			// after 150 games, advancing generation and producing offspring
+			osp.determine_survivors(result_txt);
+			osp.produce_next_generation();
+		}
 		return 0;
 	}
 
