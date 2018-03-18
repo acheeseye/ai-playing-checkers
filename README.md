@@ -249,6 +249,16 @@ This is a project dedicated to creating and training an AI to play pro level che
   - `produce_next_generation`: records survivors from previous generation and calls `produce_offspring` on it. Offspring topologies come right after parent topologies after GEN0.
     - [ ] TODO: Perhaps collapse `determine_survivors` into this function.
   - `get_current_generation_id`: returns generation ID according to naming_status.txt.
+### Version 6.4
+- With version 6.3, some network plays were very questionable and seemed like it did not consider piece count what-so-ever.
+- [ ] TODO: I will provide all games of NN20 (best performing) of GEN9 for replay purposes.
+  - This is located in `best_of_GEN9` folder.
+- Voiding `MAIN_STATE::PLAY_CHECKERS` because of interactivity with modified `min_max_search`.
+- `min_max_search` now takes `NeuralNetwork_PERF` as an additional parameter and calculates each "leaf board" (at the end of the ply).
+- Increase modularity for `NeuralNetwork_PERF` to allow mutation to same object during runtime.
+- New function `NeuralNetwork_PERF::get_result` returns result (for `min_max_search` to eat).
+- New function `temp_Board::get_board_as_vector` returns `m_board`. 
+- New training method takes ~35 minutes to train 10 generations.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
