@@ -20,6 +20,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [Here](https://msdn.microsoft.com/en-us/library/chh3fb0k.aspx) is documentation for pragma optimize to get more accurate timing.
 # IMPORTANT  
 - I've commented out gnuplot related files because I could not figure out how to get them to work. (JH)
+- With my attempts to use g++ to compile this project, it seemed to have issues with std::exceptions. Instead, the system now does a console print out and may or may not return after.
 # Versions
 ## Version 0:  
 - All relevant current files added.
