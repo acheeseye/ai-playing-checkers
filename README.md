@@ -15,7 +15,7 @@ This is a project dedicated to creating and training an AI to play pro level che
   - [x] Generation manager (`OffspringProducer`).
   - [x] Determine file storage structure.
   - [ ] Testing (hand examine games played & test children in gaussian curve).
-  - [ ] Apply board evaluation function to mini-max/alpha-beta.
+  - [x] Apply board evaluation function to mini-max/alpha-beta.
 # Useful Resources
 - [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
 - [Here](https://msdn.microsoft.com/en-us/library/chh3fb0k.aspx) is documentation for pragma optimize to get more accurate timing.
@@ -80,7 +80,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - Simple GUI implemented (with selection indication included).
 - Right side of GUI to be implemented as move display, or something to the likes.
 - [x] TODO: Check if kings are properly produced when a multi-jump is attempted and the slot the piece lands on is **NOT** a king transformer slot.\*\*\*
-- [ ] TODO: Perhaps clean-up `main.cpp` by creating GUI drawer objects?
+- [ ] ~~TODO: Perhaps clean-up `main.cpp` by creating GUI drawer objects?~~ `main.cpp` is very messy now with other stuff.
 - `_RED_` player is by default and AI with random moves generated and `_BLACK_` is user.
 - [x] TODO: Test if reverse works and if both can be AI.
 ### Version 4.1:
@@ -133,7 +133,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [ ] ~~Somehow parse the ugly bullshit I've created as compressed game data OR~~
 - [x] Write new function to store game data with 32 numbers per game move and read that file instead.
 - `process_output` rewritten to do that, code has been added to `board_evaluation` to read in, parse, and store the data.
-- [ ] TODO: Iterate through files in directory? (so that names don't have to be hard-coded)
+- [x] TODO: Iterate through files in directory? (so that names don't have to be hard-coded)
 - [ ] ~~TODO: Instead of defaulting `Connectors` to next layer only, allow user to pass in `layer_id` for diversified connection~~. Class `Connectors` no longer exists.
 ### Version 5.3
 - Classes `Connector` and `NNNodes` removed for simplicity.
@@ -233,7 +233,7 @@ This is a project dedicated to creating and training an AI to play pro level che
 - [ ] QUES: Record lineage?
 - [ ] TODO: CHANGE PLY TO (at least) 4.
 - [ ] TODO: Calculate average branch factor.
-- [ ] TODO: Use `NerualNetwork_PERF::calculate` for `mini_max_search` return values.
+- [x] TODO: Use `NerualNetwork_PERF::calculate` for `mini_max_search` return values.
 - Fixed `OffspringProducer` issues with vector indicies.
 - More comments in `OffspringProducer.cpp`.
 - `NNvNN` now trains through 10 generations with 1 ply mini max (CURRENTLY NO BOARD EVALUATIONS!!!).
@@ -251,14 +251,14 @@ This is a project dedicated to creating and training an AI to play pro level che
   - `get_current_generation_id`: returns generation ID according to naming_status.txt.
 ### Version 6.4
 - With version 6.3, some network plays were very questionable and seemed like it did not consider piece count what-so-ever.
-- [ ] TODO: I will provide all games of NN20 (best performing) of GEN9 for replay purposes.
+- [x] TODO: I will provide all games of NN20 (best performing) of GEN9 for replay purposes.
   - This is located in `best_of_GEN9` folder.
 - Voiding `MAIN_STATE::PLAY_CHECKERS` because of interactivity with modified `min_max_search`.
 - `min_max_search` now takes `NeuralNetwork_PERF` as an additional parameter and calculates each "leaf board" (at the end of the ply).
 - Increase modularity for `NeuralNetwork_PERF` to allow mutation to same object during runtime.
 - New function `NeuralNetwork_PERF::get_result` returns result (for `min_max_search` to eat).
 - New function `temp_Board::get_board_as_vector` returns `m_board`. 
-- New training method takes ~35 minutes to train 10 generations.
+- New training method (ply = 2) takes ~35 minutes to train 10 generations.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
