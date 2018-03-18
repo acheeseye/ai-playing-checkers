@@ -12,9 +12,10 @@ This is a project dedicated to creating and training an AI to play pro level che
   - [ ] Test program to check offsprings lie on the gaussian curve.
 - PROJ4
   - [ ] Implement alpha-beta pruning.
-  - [ ] Generation manager (`OffspringProducer`).
-  - [ ] Determine file storage structure.
+  - [x] Generation manager (`OffspringProducer`).
+  - [x] Determine file storage structure.
   - [ ] Testing (hand examine games played & test children in gaussian curve).
+  - [ ] Apply board evaluation function to mini-max/alpha-beta.
 # Useful Resources
 - [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
 - [Here](https://msdn.microsoft.com/en-us/library/chh3fb0k.aspx) is documentation for pragma optimize to get more accurate timing.
@@ -240,7 +241,7 @@ This is a project dedicated to creating and training an AI to play pro level che
     1. Delete all GENX directories (leave naming_status.txt).
     2. Run `NEURAL_NETWORK_OFFSPRING` to produce 0th generation randomly generated networks.
     3. Run `NNvNN` and set desired generations (default to 10, at the moment) to train.
-      - 10 generations with 1 ply is about 5~10 minutes, roughly.
+        - 10 generations with 1 ply is about 5~10 minutes, roughly.
   - Produces offspring for the 10th generation but does not play itself on 10th generation.
   - Interestingly, 1 ply mini max values kings as at least 2.0.
 - New `OffspringProducer` functions:
@@ -248,7 +249,6 @@ This is a project dedicated to creating and training an AI to play pro level che
   - `produce_next_generation`: records survivors from previous generation and calls `produce_offspring` on it. Offspring topologies come right after parent topologies after GEN0.
     - [ ] TODO: Perhaps collapse `determine_survivors` into this function.
   - `get_current_generation_id`: returns generation ID according to naming_status.txt.
-- My run of 10 generations training is pasted onto the git repo.
 # Non-Version Related Comments
 - [x] Currently working on collision check/move piece functions. Feel free to make your own and/or put together a GUI! (1/24, JH)
 - [ ] ~~Currently working on implementing king transformations/movements.~~ (1/25, JH)
