@@ -16,6 +16,7 @@ This is a project dedicated to creating and training an AI to play pro level che
   - [x] Determine file storage structure.
   - [ ] Testing (hand examine games played & test children in gaussian curve).
   - [x] Apply board evaluation function to mini-max/alpha-beta.
+  - [ ] Feed piece count into final board eval.
 # Useful Resources
 - [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
 - [Here](https://msdn.microsoft.com/en-us/library/chh3fb0k.aspx) is documentation for pragma optimize to get more accurate timing.
