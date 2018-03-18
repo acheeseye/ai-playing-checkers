@@ -9,6 +9,8 @@
 #ifndef _INCLUDED_BOARD_H_
 #define _INCLUDED_BOARD_H_
 
+#include "NeuralNetwork_PERF.h"
+
 #include <SFML\Graphics.hpp>
 #include <vector>
 using std::vector;
@@ -118,6 +120,7 @@ public:
 	bool is_over();
 	int get_Player();
 	int get_board_status(int board_id);
+	std::vector<int> get_board_as_vector();
 
 	void print_moves();
 
@@ -155,7 +158,7 @@ class Board_tree
 {
 public:
 	Board_tree(temp_Board next_board):m_number_of_children(next_board.generate_moves().size()){}
-	friend vector<int> min_max_search(temp_Board & current_board, int depth); //ist entry is move, 2nd is value
+	friend vector<int> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth); //ist entry is move, 2nd is value
 private:
 	int m_number_of_children;
 };

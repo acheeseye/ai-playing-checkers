@@ -21,9 +21,12 @@ const int GLOBAL_TOPOLOGY_SIZE = 1 + GLOBAL_WC + GLOBAL_SC;
 
 class NeuralNetwork_PERF {
 public:
-	NeuralNetwork_PERF(const std::vector<double> & input, const std::vector<double> & topology);
+	NeuralNetwork_PERF();
+	void set_input_layer(const std::vector<int> & input);
+	void set_topology(const std::vector<double> & topology);
 	void calculate();
 	void apply_sigma(double & input_sum);
+	double get_result();
 private:
 	double m_nodes[GLOBAL_NC];
 	double m_weights[GLOBAL_WC];

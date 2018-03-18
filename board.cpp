@@ -811,6 +811,11 @@ int temp_Board::get_board_status(int board_id)
 	return m_board.at(board_id);
 }
 
+vector<int> temp_Board::get_board_as_vector()
+{
+	return m_board;
+}
+
 bool temp_Board::is_over() { return (m_possible_move_list.size() == 0); }
 
 void draw_board(const temp_Board & board)
@@ -906,7 +911,7 @@ void temp_Board::handle_count(string & pieces, sf::Text & pieces_text)
 
 
 //returns child and value of child
-std::vector<int> min_max_search(temp_Board & current_board, int depth)
+std::vector<int> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth)
 {
 	if (depth < 0 || depth >= 10) //if depth is negative or too large, don't run program
 	{
@@ -919,7 +924,10 @@ std::vector<int> min_max_search(temp_Board & current_board, int depth)
 	{
 		std::vector<int> answer;
 		answer.push_back(0);
-		answer.push_back(current_board.piece_count_eval());
+		vector<int> board_as_vector = current_board.get_board_as_vector();
+		nnp.set_input_layer(board_as_vector);
+		nnp.calculate();
+		answer.push_back(nnp.get_result());
 		//std::cout << "end of depth, value is:" << answer.at(1) << std::endl;
 		//int x;
 		//std::cin >> x;
@@ -967,7 +975,7 @@ std::vector<int> min_max_search(temp_Board & current_board, int depth)
 		}
 
 
-		std::vector<int> possible_move = min_max_search(next_board, depth - 1); // next_board has called move_piece
+		std::vector<int> possible_move = min_max_search(nnp, next_board, depth - 1); // next_board has called move_piece
 		possible_move.at(0) = i;
 
 		//Check if new move is better than old move
