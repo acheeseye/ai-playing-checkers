@@ -59,7 +59,7 @@ PROJ4
 ### Version 6.4
 
 - With version 6.3, some network plays were very questionable and seemed like it did not consider piece count what-so-ever.
-- [x] TODO: I will provide all games of NN20 (best performing) of GEN9 for replay purposes.
+- I will provide all games of NN20 (best performing) of GEN9 for replay purposes.
   - This is located in `previous_gen_folder` folder.
 - Voiding `MAIN_STATE::PLAY_CHECKERS` because of interactivity with modified `min_max_search`.
 - `min_max_search` now takes `NeuralNetwork_PERF` as an additional parameter and calculates each "leaf board" (at the end of the ply).
@@ -70,10 +70,8 @@ PROJ4
 
 ### Version 6.3
 
-- [x] TODO: Create `results.txt` per `NNvNN` generation.
+- Created `results.txt` per `NNvNN` generation.
   - Per line, the active network ID is followed by 5 networks played, then followed by results of the game, respectively (space delimited).
-- [x] TODO: Draws denoted.
-- [ ] TODO: Change number of moves to draw to 40?
 - Storage structure:
   - `GEN#GENID#` directory contains:
     - all 30 network topologies
@@ -83,8 +81,8 @@ PROJ4
   - example access to generation 5 game results: `fin.open("ai-playing-checkers//nn_topologies//GEN5//games_played_5//result.txt", ifstream::in);`
 - [ ] QUES: Should the set of 5 games played by each network switch who starts first?
 - [ ] QUES: Record lineage?
-- [x] TODO: CHANGE PLY TO (at least) 4.
-- [x] TODO: Use `NerualNetwork_PERF::calculate` for `mini_max_search` return values.
+- Ply of evaluation is 4.
+- Uses `NerualNetwork_PERF::calculate` for `mini_max_search` return values.
 - Fixed `OffspringProducer` issues with vector indicies.
 - More comments in `OffspringProducer.cpp`.
 - `NNvNN` now trains through 10 generations with 1 ply mini max (CURRENTLY NO BOARD EVALUATIONS!!!).
@@ -105,8 +103,7 @@ PROJ4
 
 - New `main_state` `NNvNN` which handles network vs network play.
 - `main_state`s `NEURAL_NETWORK_TESTING` and `NEURAL_NETWORK_TIMING` removed due to irrelevance.
-- [x] TODO: new generations need to generate new folder within directory to hold games played.
-  - (this is hard coded for GEN0)
+- New generations generate new folder within directory to hold games played.
 - Heuristics of network vs network:
   - Active network is always red.
   - Opposing network plays first move.
@@ -157,8 +154,6 @@ PROJ4
 - On my(JH) machine, it is currently consistent around 95,000 BEF/sec with the sigmoid function (slightly worse than `NeuralNetwork`, but better now with `NeuralNetwork` slowing down).
 - New `main_state` `NEURAL_NETWORK_TIMING_PERF` for timing `NeuralNetwork_PERF`.
 - No current test cases for `NeuralNetwork_PERF`.
-- [ ] ~~TODO: Move `GLOBAL_SIGMA_VALUE` to `NeuralNetwork_PERF` and remove `GLOBAL_WEIGHT_COUNT` from `NeuralNetwork` as it is calculated in `NeuralNetwork_PERF`~~ No longer relevant due to new topology generation. 
-- [ ] TODO: Perhaps remove `NeuralNetwork` to unclutter the project solution (and perhaps helps with increasing the BEF speed?).
 
 ### Version 5.4
 
@@ -168,9 +163,7 @@ PROJ4
   - Due to the nature of arrays, their size is statically allocated thus hard-coded global values are used for initialization.
   - Hard-coded values apply to Blonde24 and simple test-case of 4-3-2-1 topology.
 - `NeuralNetwork` BEF/sec is now roughly 150,000 **WITHOUT** applying sigmoid.
-- [x] TODO: apply sigmoid.
 - `NeuralNetwork` BEF/sec is around 100,000 with sigmoid on my machine.
-- [ ] TODO: further optimize to get to around 500,000 BEF/sec?
 - `Main.cpp` now has new states for `PLAY_CHECKERS`, `NEURAL_NETWORK_TESTING`, and `NEURAL_NETWORK_TIMING` for ease of switching between `main_modes` (thus `NeuralNetwork_main.cpp` is now merged with `main.cpp`).
 - Testing mode implemented in `NEURAL_NETWORK_TESTING`.
 
@@ -179,20 +172,15 @@ PROJ4
 - Classes `Connector` and `NNNodes` removed for simplicity.
 - Class `NeuralNetwork` now computes the "board evaluation" (Now called `calculate_output`).
 - Class `NeuralNetwork` now require more modular initialization.
-- [x] TODO: Perhaps create a thin wrapper for default initialization ~~(or a multi-parametered function)~~.
-- [x] TODO: Fix an issue where `init_weights_and_sigmoid` needs `set_player` to be called first.
-- [x] TODO: Test calculated output to be random?
-- [x] TODO: Write `NeuralNetwork` king value, weights, and sigma to a file.
+- King value, weights, and sigma are saved to a file.
 - Class `NeuralNetwork` now applies sigmoid function (forgot about this in the previous commit).
 - Fixed an issue where `NeuralNetwork` would initialize new weights per board evaluation instead of using the previous ones.
-- [ ] ~~TODO: Might need testing for above to be sure~~. No longer relevant.
 - Timing done in `NeuralNetwork_main.cpp` for average BEF/sec and BEF/15 sec: averaging around 700~900 BEF per second (that's OK??)
 - `NeuralNetwork_main.cpp` now also tests the timing for a six layer >10,000 weights `NeuralNetwork` and prints the related calculations (requirements 1 & 2 fulfilled for PROJ2 deliverables).
 - `NeuralNetwork` now writes its topology values to file `brunette26_topology_gen0.txt` within the `nn_topologies` with first line as the `m_king_value` and the subsequent lines as a pair of weight and its corresponding sigma value.
   - User must use `NeuralNetwork::set_generate_file(true)` to write the topology, as it is set to false on default.
-  - [x] TODO: Figure out how to name the different topologies (same as convention for games played? yes, can do that).
   - Topologies now have unique names in the same style as recorded games. Note that this name does _not_ correlate the recorded game file to the topology file generated for it (would it be preferable to give topologies the same date/time as the recorded game that they are generated for?).
-- [x] TODO: Live piece count displayed.
+- Live piece count displayed.
 - AI player now prioritizes piece count when deciding its next move.
 
 ### Version 5.2
@@ -201,11 +189,7 @@ PROJ4
 - Each `NNNodes` in the `NeuralNetwork` has the correct amount of `Connectors` to the next layer.
 - `Connectors` generate randomized values correctly.
 - Working on reading game data for function `NeuralNetwork::board_evaluation`.
-- [ ] ~~Somehow parse the ugly bullshit I've created as compressed game data OR~~
-- [x] Write new function to store game data with 32 numbers per game move and read that file instead.
 - `process_output` rewritten to do that, code has been added to `board_evaluation` to read in, parse, and store the data.
-- [x] TODO: Iterate through files in directory? (so that names don't have to be hard-coded)
-- [ ] ~~TODO: Instead of defaulting `Connectors` to next layer only, allow user to pass in `layer_id` for diversified connection~~. Class `Connectors` no longer exists.
 
 ### Version 5.1
 
@@ -220,10 +204,6 @@ PROJ4
 - I am unsure if storing them as binary/hex will cost less memory, please alter accordingly if you please.
 - Integers are stored memory in binary format already.
 - `NNNodes` objects now use a new sigmoid function for processing inputs. This allows for the range of inputs/output to be in the range of -1 and 1.
-- [x] TODO: Create class `connectors` that take an input and apply a weight and bias to it accordingly.
-- [x] TODO: Contemplate if `connectors` need to be a class or if this should be internally handled by the `NNNodes` objects.
-- [x] TODO: Do some timing optimizations (simplified sigmoid calculation?).
-  - [This](http://www.meta-calculator.com/?panel-102-graph&data-bounds-xMin=-8&data-bounds-xMax=8&data-bounds-yMin=-11&data-bounds-yMax=11&data-equations-0=%22y%3D1%2F(1%20%2B%20e%5E(-x))%22&data-equations-1=%22y%3D(0.5*(x%2F1%2Bx))%2B0.5%22&data-rand=undefined&data-hideGrid=false) graph page (click add equations and add the two the plot it I think) shows the difference between the sigmoid function and the "faster and approximated" function mentioned [here](https://stackoverflow.com/questions/10732027/fast-sigmoid-algorithm) by Nosyara. I don't believe it will be a useful approximation.
 
 ### Version 5.0
 
@@ -236,17 +216,12 @@ PROJ4
 
 - Right arrow key now generates a random move for whosever turn it is.
 - Resource files (`*.png` and `*.ttf` files) are now stored in the `res` directory.
-- [x] TODO: Make a directory to store the gameplay files/change the storing directory for the `std::ofstream`.
-- [ ] ~~Or keep track of them ourselves?~~
-- [ ] ~~Do we need to make sure no overlapping names when trying to congregate our games played?~~
 
 ### Version 4.3
 
 - Identified issue causing crash where both players are to be random AI and only one piece is remaining on either side, it was because of attempted division by 0 when randomizing. Issue is now resolved.
 - Added images and replaced `CircleShape piece` with `Sprite piece`.
 - Window does not auto-close at end of game and notes who the winner is.
-- [x] TODO: Visually execute the winning move before `board.is_over()` evaluates to `true`.
-- [x] TODO: Examine rules to determine what should happen when a given player is unable to make any moves (currently the player who is not unable to make moves auto-wins). This happens when a player has one piece left, that piece is in a corner or up against the wall, and it is the other player's turn to move.
 - "The player who cannot move, because he has no pieces, or because all of his pieces are blocked, loses the game." http://www.chesslab.com/rules/CheckerComments.html
 
 ### Version 4.2
@@ -255,28 +230,25 @@ PROJ4
 - Allows (ish) for both players to be random AI (when `black_is_ai` and `red_is_ai` are both set to true and there is only one piece remaining from either side, the game crashes).
 - Above seems to be resolved (?). Just did a game that ended with 0 black pieces.
 - Added a delay between each move for viewing.
-- [x] TODO: Save the moves made and win status and output it to a (text?) file.
+- Save the moves made and win status and output it to a text file.
 - When the program is run, a game file (`.txt`) is created; the generated file name contains the current date and time. The file contents are space-delimited and each line contains `r` or `b` followed by the move it took, except for the last line which is either `R` or `B` depending on who won the game.
 
 ### Version 4.1
 
 - Pieces are now displayed smaller allowing the top left corner of the playable slot to display slot id (for easier debugging and/or readability).
-- [x] TODO: Change the white board base because it hurts my eyes a little.
+- Changed the white board base because it hurts my eyes a little.
 - Now sports a classy dark brown board base.
 
 ### Version 4.0
 
 - New class `temp_Board` is used to keep track of board status and pieces.
-- [x] TODO: Delete `piece.cpp` and `piece.h` files.
+- Deleted `piece.cpp` and `piece.h` files.
 - King moves and jumps correctly for single pieces.
 - In order to perform a multi-jump, the user must override mouse-click mode by pressing the `M` key and choose a move ID.
 - Move IDs can be generated by pressing the `F` key.
 - Simple GUI implemented (with selection indication included).
 - Right side of GUI to be implemented as move display, or something to the likes.
-- [x] TODO: Check if kings are properly produced when a multi-jump is attempted and the slot the piece lands on is **NOT** a king transformer slot.\*\*\*
-- [ ] ~~TODO: Perhaps clean-up `main.cpp` by creating GUI drawer objects?~~ `main.cpp` is very messy now with other stuff.
 - `_RED_` player is by default and AI with random moves generated and `_BLACK_` is user.
-- [x] TODO: Test if reverse works and if both can be AI.
 
 ## Version 3
 
@@ -295,9 +267,6 @@ PROJ4
 
 ### Version 3.0
 
-- [x] TODO: Multijumping to be implemented.
-- [x] TODO: King transformation movement (becomes king, but crashes right after).
-- [ ] ~~TODO: Allow console to generate moves correctly when using 0 0.~~
 - Player 1 and 2 are now renamed to Player BLACK and RED, respectively.
 - Black pieces are now at the bottom (as required for assignment).
 - Various new data members and functions to store and retrieve moves made, moves possible, and jumps possible.
@@ -320,10 +289,8 @@ PROJ4
 
 - All files updated.
 - Board function `move_piece` allows movement for player 1 (starting player).
-- [ ] ~~TODO: Remove Board function `is_empty`.~~ This proved to be useful.
 - New Board functions `init_board`, `clear_board`, `is_boarder`, and `update_board` used to update Board object correctly for `print_board`.
 - Board construction now only initializes values.
-- [x] TODO: Use initializer list for constructor.
 - Various new data members for Board objects to keep track of Piece object owners and turn order.
 - New Board function `pass_turn` and turn checking in `move_piece` not working properly (fixed: issue #1).
 
