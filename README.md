@@ -4,22 +4,36 @@ This is a project dedicated to creating and training an AI to play pro level che
 
 # Deliverables
 
-- PROJ2
+PROJ2
+
   - [x] Create a neural network with random weights. (2/18, JH)
   - [x] Solve the neural network. (2/18, JH)
   - [x] Add a minimax search with a piece count evaluation function. (2/XX, JK)
-- PROJ3
+
+PROJ3
+
   - [x] Modify random neural network to specified uniformly distributed range. (2/18, JH)
   - [x] Given neural network, create offspring. (2/18, JH)
   - [x] Test program to check correctly generated gaussian pseudo-random values (non NN-related).
   - [ ] Test program to check offsprings lie on the gaussian curve.
-- PROJ4
+
+PROJ4
+
   - [ ] Implement alpha-beta pruning.
   - [x] Generation manager (`OffspringProducer`).
   - [x] Determine file storage structure.
   - [ ] Testing (hand examine games played & test children in gaussian curve).
-  - [x] Apply board evaluation function to mini-max/alpha-beta.
-  - [ ] Feed piece count into final board eval (can this be done with just two connectors?).
+
+# Task List
+
+- [x] Apply board evaluation function to mini-max/alpha-beta.
+- [x] Feed piece count into final board eval (can this be done with just two connectors?).
+- [ ] Testing for `NeuralNetwork_PERF`.
+- [ ] Modify draw condition.
+- [ ] Calculate and record branch factor.
+- [ ] Remove original `NeuralNetwork`.
+- [ ] Implement alpha-beta pruning.
+
 # Useful Resources
 
 - [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
@@ -33,6 +47,11 @@ This is a project dedicated to creating and training an AI to play pro level che
 # Versions
 
 ## Version 6
+
+### Version 6.5
+
+- `main_state` `NERUAL_NETWORK_OFFSPRING` renamed to `GEN0_GENERATE` (call this to produce 30 random networks for GEN0).
+- Modified `REPLAY_SAVED_GAME` to allow for replaying drawed games.
 
 ### Version 6.4
 
@@ -61,8 +80,7 @@ This is a project dedicated to creating and training an AI to play pro level che
   - example access to generation 5 game results: `fin.open("ai-playing-checkers//nn_topologies//GEN5//games_played_5//result.txt", ifstream::in);`
 - [ ] QUES: Should the set of 5 games played by each network switch who starts first?
 - [ ] QUES: Record lineage?
-- [ ] TODO: CHANGE PLY TO (at least) 4.
-- [ ] TODO: Calculate average branch factor.
+- [x] TODO: CHANGE PLY TO (at least) 4.
 - [x] TODO: Use `NerualNetwork_PERF::calculate` for `mini_max_search` return values.
 - Fixed `OffspringProducer` issues with vector indicies.
 - More comments in `OffspringProducer.cpp`.
@@ -84,7 +102,6 @@ This is a project dedicated to creating and training an AI to play pro level che
 
 - New `main_state` `NNvNN` which handles network vs network play.
 - `main_state`s `NEURAL_NETWORK_TESTING` and `NEURAL_NETWORK_TIMING` removed due to irrelevance.
-- [ ] TODO: Remove `NeuralNetwork` class, leaving just `NeuralNetwork_PERF`.
 - [x] TODO: new generations need to generate new folder within directory to hold games played.
   - (this is hard coded for GEN0)
 - Heuristics of network vs network:
@@ -94,7 +111,6 @@ This is a project dedicated to creating and training an AI to play pro level che
   - Networks will not play itself or a repeated network.
   - Reaching move 100 indicates a draw.
   - Networks use 4-ply for minimax iteration.
-  - [ ] TODO: implement alpha-beta pruning.
   - 5 games per network with population of 30 networks: 150 games played.
   - Games played stored in `games_played_#GENID#` folder found in respective generation directory where `#GENID#` is replaced with the generation it is in.
     - Gameplay results will also be stored in that folder under `results.txt`.
