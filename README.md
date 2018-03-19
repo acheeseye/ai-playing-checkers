@@ -6,23 +6,23 @@ This is a project dedicated to creating and training an AI to play pro level che
 
 PROJ2
 
-  - [x] Create a neural network with random weights. (2/18, JH)
-  - [x] Solve the neural network. (2/18, JH)
-  - [x] Add a minimax search with a piece count evaluation function. (2/XX, JK)
+- [x] Create a neural network with random weights. (2/18, JH)
+- [x] Solve the neural network. (2/18, JH)
+- [x] Add a minimax search with a piece count evaluation function. (2/XX, JK)
 
 PROJ3
 
-  - [x] Modify random neural network to specified uniformly distributed range. (2/18, JH)
-  - [x] Given neural network, create offspring. (2/18, JH)
-  - [x] Test program to check correctly generated gaussian pseudo-random values (non NN-related).
-  - [ ] Test program to check offsprings lie on the gaussian curve.
+- [x] Modify random neural network to specified uniformly distributed range. (2/18, JH)
+- [x] Given neural network, create offspring. (2/18, JH)
+- [x] Test program to check correctly generated gaussian pseudo-random values (non NN-related).
+- [ ] Test program to check offsprings lie on the gaussian curve.
 
 PROJ4
 
-  - [ ] Implement alpha-beta pruning.
-  - [x] Generation manager (`OffspringProducer`).
-  - [x] Determine file storage structure.
-  - [ ] Testing (hand examine games played & test children in gaussian curve).
+- [ ] Implement alpha-beta pruning.
+- [x] Generation manager (`OffspringProducer`).
+- [x] Determine file storage structure.
+- [ ] Testing (hand examine games played & test children in gaussian curve).
 
 # Task List
 
@@ -52,6 +52,9 @@ PROJ4
 
 - `main_state` `NERUAL_NETWORK_OFFSPRING` renamed to `GEN0_GENERATE` (call this to produce 30 random networks for GEN0).
 - Modified `REPLAY_SAVED_GAME` to allow for replaying drawed games.
+- New setting for `NNvNN` `gens_to_train`.
+- Timing done for each generation and stored in `timing.txt` in `nn_topologies`.
+- New function `NeuralNetwork_PERF::set_player` to hopeufully fix the issue of both networks playing for the same side.
 
 ### Version 6.4
 
