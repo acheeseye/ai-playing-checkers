@@ -49,7 +49,7 @@ enum { // THESE ARE THE DIFFERENT TYPES OF main_state
 	PLAY_CHECKERS,
 	REPLAY_SAVED_GAME,
 	NEURAL_NETWORK_TIMING_PERF,
-	NEURAL_NETWORK_OFFSPRING,	// generates 30 random gen 0 topologies
+	GEN0_GENERATE,	// generates 30 random gen 0 topologies
 	GAUSSIAN_GRAPHING,
 	NNvNN						// network vs network (EACH RUN RESETS THE naming_status.txt FILE, WATCH OUT)
 };
@@ -61,6 +61,8 @@ char GLOBAL_WINNER_DENOTER;
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
 int main_state = NNvNN;
+//**********************************************************************************************
+//**********************************************************************************************
 //**********************************************************************************************
 //**********************************************************************************************
 
@@ -508,7 +510,7 @@ int main() {
 	}
 	else if (main_state == REPLAY_SAVED_GAME)
 	{
-		string file_name = "ai-playing-checkers\\nn_topologies\\GEN9\\games_played_9\\16_22.txt";
+		string file_name = "ai-playing-checkers\\nn_topologies\\GEN4\\games_played_4\\14_1.txt";
 
 		ifstream in_file;
 		in_file.open(file_name);
@@ -543,7 +545,9 @@ int main() {
 
 		in_file.close();
 
-		if (parsed_states[parsed_states.size()-1][0] != 100 && parsed_states[parsed_states.size()-1][0] != -100)
+		if (parsed_states[parsed_states.size()-1][0] != 100 && 
+			parsed_states[parsed_states.size()-1][0] != -100 && 
+			parsed_states[parsed_states.size()-1][0] != 50)
 		{
 			cout << "INCOMPLETE GAME FILE: CANNOT REPLAY GAME" << endl;
 			cout << endl << "press ENTER to quit";
@@ -1001,17 +1005,14 @@ int main() {
 
 		return 0;
 	}
-	else if (main_state == NEURAL_NETWORK_OFFSPRING)
+	else if (main_state == GEN0_GENERATE)
 	{
 		//string parent_file = "ai-playing-checkers\\nn_topologies\\GEN0\\nn0_brunette26_topology.txt";
 		OffspringProducer osp;
 		osp.reset_counter();
 
 		for (auto i = 0; i < 30; ++i) {
-			vector<double> topo_holder = osp.generate_random_topology();
-			NeuralNetwork_PERF nn0;
-			nn0.set_topology(topo_holder);
-
+			osp.generate_random_topology();
 			try { osp.record_current(); }
 			catch (std::exception e) { cout << "EXCEPTION CAUGHT: " << e.what() << endl; }
 		}
@@ -1054,21 +1055,26 @@ int main() {
 	}
 	else if (main_state == NNvNN)
 	{
-		// PLY CHANGER ***********************************
+		// SETTINGS **************************************
 		//************************************************
-		int ply = 2;
+		int ply = 4;
+		int gens_to_train = 3;
 		//************************************************
 		//************************************************
 
 		ifstream fin;
 		ofstream fout;
+		ofstream result_out;
 		OffspringProducer osp;
 		NeuralNetwork_PERF nnpr;	// network for red player (active network)
 		NeuralNetwork_PERF nnpb;	// network for black player (oppposing network)
 		vector<double> nnpr_topo;
 		vector<double> nnpb_topo;
-		vector<int> oppo_list;		
+		vector<int> oppo_list;
+
 		osp.reset_counter();
+		cout.precision(6);
+		result_out.open("ai-playing-checkers\\nn_topologies\\timing.txt", ofstream::out | ofstream::trunc);
 
 		std::random_device r;
 		std::default_random_engine e1(r());
@@ -1076,11 +1082,14 @@ int main() {
 
 		//clock start
 		auto begin = std::chrono::high_resolution_clock::now();
-		while(osp.get_current_generation_id() != 10) {
+		while(osp.get_current_generation_id() != gens_to_train) 
+		{
+			auto begin_gen = std::chrono::high_resolution_clock::now();
+			
 			int gen = osp.get_current_generation_id();
 			string gen_str = to_string(gen);
 			string gen_wrapper = "ai-playing-checkers\\nn_topologies\\GEN" + gen_str;
-			string result_txt = gen_wrapper + "\\games_played_" + gen_str + "\\result.txt";
+			string result_txt = gen_wrapper + "\\_result.txt";
 			for(auto active_nn_id = 0; active_nn_id < GLOBAL_MAX_POPULATION_PER_GEN; ++active_nn_id)
 			{
 				string result_out = to_string(active_nn_id);
@@ -1132,6 +1141,7 @@ int main() {
 				}
 				fin.close();
 				nnpr.set_topology(nnpr_topo);
+				nnpr.set_player(_RED_);
 				for (auto i = 0; i < oppo_list.size(); ++i) {
 					nnpb_topo.clear();
 					int oppo_nn_id = oppo_list[i];
@@ -1148,6 +1158,7 @@ int main() {
 					while(fin >> dbuf) nnpb_topo.push_back(dbuf);
 					fin.close();
 					nnpb.set_topology(nnpb_topo);
+					nnpb.set_player(_BLACK_);
 					//cout << "nn" << active_nn_id << " vs nn" << oppo_nn_id << endl;
 
 					string game_played_destination = "ai-playing-checkers\\nn_topologies\\GEN" + gen_str;
@@ -1236,12 +1247,17 @@ int main() {
 			// after 150 games, advancing generation and producing offspring
 			osp.determine_survivors(result_txt);
 			osp.produce_next_generation();
-			cout << "generation advanced" << endl;
+			auto end_gen = std::chrono::high_resolution_clock::now();
+			auto ns_gen = std::chrono::duration_cast<std::chrono::nanoseconds>(end_gen - begin_gen).count();
+			double min_per_gen = (double)ns_gen / (double)1000 / (double)1000000 / (double)60;
+			int maincpp_gen = osp.get_current_generation_id();				
+			cout << maincpp_gen - 1 << " -> " << maincpp_gen << "generation advanced: " << min_per_gen << " min" << endl;
+			result_out << maincpp_gen - 1 << " -> " << maincpp_gen << "generation advanced: " << min_per_gen << " min" << endl;
 		}
 		//clock end
 		auto end = std::chrono::high_resolution_clock::now();
 		auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
-		double min = ns / 1000 / 1000000 / 60;
+		double min = (double)ns / (double)1000 / (double)1000000 / (double)60;
 		cout << "estimated time taken: " << min << endl;		
 		return 0;
 	}

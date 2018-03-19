@@ -238,6 +238,7 @@ void OffspringProducer::set_topology(const std::string & parent_file)
 void OffspringProducer::determine_survivors(const std::string & result_txt)
 {
 	ifstream fin;
+	ofstream fout;
 	vector< pair<int, int> > all_scores;
 
 	fin.open(result_txt, ifstream::in);
@@ -278,14 +279,13 @@ void OffspringProducer::determine_survivors(const std::string & result_txt)
 		{ return ( i.first > j.first ); }
 		);
 
-	// for verification purposes
-	cout << "score, ID" << endl;
-	for (auto n : all_scores)
-	{
-		cout << n.first << ", " << n.second << endl;
-	}
-
 	int gen = get_current_generation_id();
+	string sorted_res = "ai-playing-checkers\\nn_topologies\\GEN" + to_string(gen) + "\\_sorted_res.txt";
+
+	fout.open(sorted_res, ofstream::out | ofstream::app);
+	if(!fout.is_open())	cout << "sorted_res was not opened for writing" << endl;
+	for (auto n : all_scores) fout << "score: " << n.first << " network: " << n.second << endl;
+	fout.close();
 
 	for(auto i = 0; i < GLOBAL_MAX_POPULATION_PER_GEN / 2; ++i)
 	{

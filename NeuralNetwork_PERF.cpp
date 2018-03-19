@@ -1,4 +1,5 @@
 #include "NeuralNetwork_PERF.h"
+#include "board.h"
 
 #include <random>
 #include <iostream>
@@ -18,14 +19,29 @@ NeuralNetwork_PERF::NeuralNetwork_PERF()
 {
 }
 
+void NeuralNetwork_PERF::set_player(int player)
+{
+	m_player_modifier = 1;
+	if(player == _RED_)
+	{
+		m_player_modifier = -1;
+	}
+}
+
 void NeuralNetwork_PERF::set_input_layer(const std::vector<int>& input)
 {
 	if (input.size() != GLOBAL_LAYER_0_NC) throw std::exception("INVALID INPUT SIZE");
 	for (auto i = 0; i < GLOBAL_LAYER_0_NC; ++i)
 	{
-		if (input[i] == 2) m_nodes[i] = m_king_val;
-		else if (input[i] == -2) m_nodes[i] = -m_king_val;
-		else m_nodes[i] = input[i];
+		if (input[i] == 2) 
+		{
+			m_nodes[i] = m_king_val * m_player_modifier;
+		}
+		else if (input[i] == -2) 
+		{
+			m_nodes[i] = -m_king_val * m_player_modifier;
+		}
+		else m_nodes[i] = input[i] * m_player_modifier;
 	}
 }
 
@@ -72,6 +88,11 @@ void NeuralNetwork_PERF::calculate()
 		for (int l_2 = 0; l_2 < GLOBAL_LAYER_2_NC; ++l_2)
 		{
 			m_nodes[GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + GLOBAL_LAYER_2_NC + l_3] += m_nodes[l_2] * m_weights[m_weight_iter];
+			m_weight_iter++;
+		}
+		for (int l_0 = 0; l_0 < GLOBAL_LAYER_0_NC; ++l_0)
+		{
+			m_nodes[GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + GLOBAL_LAYER_2_NC + l_3] += m_nodes[l_0] * m_weights[m_weight_iter];
 			m_weight_iter++;
 		}
 		apply_sigma(m_nodes[GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + GLOBAL_LAYER_2_NC + l_3]);

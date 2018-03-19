@@ -720,6 +720,8 @@ else { to_file << "B"; }
 }*/
 
 // handles all boards as well as winning status
+// RED APPEARS AS NEGATIVE IN STORED FILE
+// BLACK APPEARS AS POSITIVE IN STORED FILE
 void temp_Board::write_board_to_file(std::ofstream & to_file)
 {
 	if (m_board.size() != 32) throw std::exception("Board has incorrect size");
