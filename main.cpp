@@ -24,6 +24,7 @@
 #include <chrono>
 #include <random>
 #include <sstream>
+#include <thread>
 
 // USINGS
 using std::cout;
@@ -60,7 +61,7 @@ char GLOBAL_WINNER_DENOTER;
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = NNvNN;
+int main_state = REPLAY_SAVED_GAME;
 //**********************************************************************************************
 //**********************************************************************************************
 //**********************************************************************************************
@@ -510,7 +511,8 @@ int main() {
 	}
 	else if (main_state == REPLAY_SAVED_GAME)
 	{
-		string file_name = "ai-playing-checkers\\nn_topologies\\GEN4\\games_played_4\\14_1.txt";
+		string file_name = "ai-playing-checkers\\previous_gen_data\\GEN6_4ply_noPieceCount_all\\GEN6\\games_played_6\\28_2.txt";
+		//string file_name = "ai-playing-checkers\\games_played\\game_20180308_190339.txt";
 
 		ifstream in_file;
 		in_file.open(file_name);
@@ -553,6 +555,27 @@ int main() {
 			cout << endl << "press ENTER to quit";
 			while (cin.get() != '\n');
 			return 0;
+		}
+
+		bool player_is_red = false;
+		bool red_moved = false;
+		bool go_red = false;
+
+		for (int k = 0; k < 12; ++k)
+		{
+			if (parsed_states[1][k] != -1)
+			{
+				red_moved = true;
+			}
+		}
+		if (red_moved)
+		{
+			player_is_red = true;
+		}
+
+		if (player_is_red)
+		{
+			go_red = true;
 		}
 
 		int step = 0;
@@ -634,11 +657,12 @@ int main() {
 		srand(time(NULL));
 
 		bool stepper = false;
+
 		sf::Event event;
 
 		while (window.isOpen())
 		{
-			//Sleep(wait_time);
+			std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
 
 			vector<int> board_status;
 			board_status.resize(32);
@@ -768,6 +792,23 @@ int main() {
 				playable_slot = !playable_slot;
 			}
 
+			if (player_is_red && step % 2 == 0)
+			{
+				go_red = true;
+			}
+			else if(player_is_red && step % 2 == 1)
+			{
+				go_red = false;
+			}
+			else if (!player_is_red && step % 2 == 0)
+			{
+				go_red = false;
+			}
+			else if (!player_is_red && step % 2 == 1)
+			{
+				go_red = true;
+			}
+
 			// window text management
 			vector<string> strings_to_draw;
 			string player = "null";
@@ -779,9 +820,9 @@ int main() {
 			string moves = "null";
 			sf::Text moves_text(player, font, 30);
 
-			if (board.get_Player() == _RED_)
+			if (go_red)//board.get_Player() == _RED_)
 			{
-				player = "RED TURN";
+				player = "RED   TURN";
 				player_text.setFillColor(sf::Color::Red);
 			}
 			else
@@ -797,17 +838,22 @@ int main() {
 					player = "BLACK WINS";
 					player_text.setFillColor(sf::Color::White);
 				}
-				else
+				else if (parsed_states[parsed_states.size() - 1][0] == -100)
 				{
-					player = "RED WINS";
+					player = "RED   WINS";
 					player_text.setFillColor(sf::Color::Red);
+				}
+				else if (parsed_states[parsed_states.size() - 1][0] == 50)
+				{
+					player = "   DRAW";
+					player_text.setFillColor(sf::Color::Cyan);
 				}
 			}
 
 			board.handle_replay_count(parsed_states.at(step), pieces, pieces_text); // live piece count
 
 			moves = "MOVE #" + to_string(step);
-			player_text.setFillColor(sf::Color::White);
+			moves_text.setFillColor(sf::Color::White);
 
 			player_text.setString(player);
 			pieces_text.setString(pieces);
@@ -829,7 +875,7 @@ int main() {
 			}
 		}
 
-		cout << endl << "END OF REPLAY >> press ENTER to exit" << endl;
+		cout << endl << "END OF REPLAY >> press ENTER to exit";
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
 		while (cin.get() != '\n');
