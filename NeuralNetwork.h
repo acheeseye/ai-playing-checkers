@@ -6,8 +6,6 @@
 #include <queue>
 #include <string>
 
-const double GLOBAL_SIGMA_VALUE = 5;
-
 const int GLOBAL_WEIGHT_COUNT = 1690;
 const int GLOBAL_SIGMA_COUNT = 51;
 const int GLOBAL_LAYER_0_NODE_COUNT = 32;

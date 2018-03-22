@@ -12,25 +12,29 @@ const int GLOBAL_LAYER_1_NC = 40;
 const int GLOBAL_LAYER_2_NC = 10;
 const int GLOBAL_LAYER_3_NC = 1;
 const int GLOBAL_NC = GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + GLOBAL_LAYER_2_NC + GLOBAL_LAYER_3_NC;
-const int GLOBAL_SC = GLOBAL_NC - GLOBAL_LAYER_0_NC;
 const int GLOBAL_WC = 
 GLOBAL_LAYER_0_NC * GLOBAL_LAYER_1_NC +
 GLOBAL_LAYER_1_NC * GLOBAL_LAYER_2_NC +
-GLOBAL_LAYER_2_NC * GLOBAL_LAYER_3_NC;
+GLOBAL_LAYER_2_NC * GLOBAL_LAYER_3_NC +
+GLOBAL_LAYER_0_NC;
+const int GLOBAL_SC = GLOBAL_WC;
 const int GLOBAL_TOPOLOGY_SIZE = 1 + GLOBAL_WC + GLOBAL_SC;
 
 class NeuralNetwork_PERF {
 public:
-	NeuralNetwork_PERF(const std::vector<double> & input, const std::vector<double> & topology);
+	NeuralNetwork_PERF();
+	void set_player(int player);
+	void set_input_layer(const std::vector<int> & input);
+	void set_topology(const std::vector<double> & topology);
 	void calculate();
 	void apply_sigma(double & input_sum);
+	double get_result();
 private:
 	double m_nodes[GLOBAL_NC];
-	double m_sigma[GLOBAL_SC];
 	double m_weights[GLOBAL_WC];
 	double m_king_val;
-	int m_sigma_iter;
 	int m_weight_iter;
+	int m_player_modifier;
 };
 
 #endif

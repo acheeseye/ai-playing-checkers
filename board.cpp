@@ -719,7 +719,9 @@ if (player == "RED WINS") { to_file << "R"; }
 else { to_file << "B"; }
 }*/
 
-
+// handles all boards as well as winning status
+// RED APPEARS AS NEGATIVE IN STORED FILE
+// BLACK APPEARS AS POSITIVE IN STORED FILE
 void temp_Board::write_board_to_file(std::ofstream & to_file)
 {
 	if (m_board.size() != 32) throw std::exception("Board has incorrect size");
@@ -740,13 +742,13 @@ void temp_Board::write_board_to_file(std::ofstream & to_file)
 				data += "-1";
 				break;
 			case _RED_KING_:
-				data += "-k";
+				data += "-2";
 				break;
 			case _BLACK_MAN_:
 				data += "1";
 				break;
 			case _BLACK_KING_:
-				data += "k";
+				data += "2";
 				break;
 			}
 			if ((row * 4) + column_id < 31) // space delimited, but no trailing space
@@ -759,9 +761,20 @@ void temp_Board::write_board_to_file(std::ofstream & to_file)
 			}
 		}
 	}
+	if (is_over()) {
+		if (m_current_player == _BLACK_) 
+		{ //red wins
+			data += "\n-100";
+			GLOBAL_WINNER_DENOTER = '1';
+		}
+		else 
+		{
+			data += "\n100"; //black wins
+			GLOBAL_WINNER_DENOTER = '2';
+		}
+	}
 	to_file << data;
 }
-
 
 void temp_Board::move_from(int start, int dest)
 {
@@ -791,28 +804,6 @@ void temp_Board::move_from(int start, int dest)
 			m_board.at(move_table[start].rmove) = _PLAYABLE_;
 		}
 	}
-
-
-	//if (m_current_player == _BLACK_)
-	//{
-	//	for (int i = 0; i < 4;++i)
-	//	{
-	//		if (m_board.at(i) == _BLACK_MAN_)
-	//		{
-	//			m_board.at(i) = _BLACK_KING_;
-	//		}
-	//	}
-	//}
-	//else
-	//{
-	//	for (int i = 28; i < 32;++i)
-	//	{
-	//		if (m_board.at(i) == _RED_MAN_)
-	//		{
-	//			m_board.at(i) = _RED_KING_;
-	//		}
-	//	}
-	//}
 }
 
 int temp_Board::get_Player() { return m_current_player; }
@@ -820,6 +811,11 @@ int temp_Board::get_Player() { return m_current_player; }
 int temp_Board::get_board_status(int board_id)
 {
 	return m_board.at(board_id);
+}
+
+vector<int> temp_Board::get_board_as_vector()
+{
+	return m_board;
 }
 
 bool temp_Board::is_over() { return (m_possible_move_list.size() == 0); }
@@ -885,15 +881,15 @@ pair<int, int> temp_Board::count_pieces()
 	int p_red = 0;
 	int p_black = 0;
 
-	for (int i = 0; i < m_board.size(); i++)
+	for (int i = 0; i < m_board.size(); ++i)
 	{
 		if (m_board.at(i) == _BLACK_MAN_ || m_board.at(i) == _BLACK_KING_)
 		{
-			p_black++;
+			++p_black;
 		}
 		else if (m_board.at(i) == _RED_MAN_ || m_board.at(i) == _RED_KING_)
 		{
-			p_red++;
+			++p_red;
 		}
 	}
 
@@ -917,9 +913,9 @@ void temp_Board::handle_count(string & pieces, sf::Text & pieces_text)
 
 
 //returns child and value of child
-std::vector<int> min_max_search(temp_Board & current_board, int depth)
+std::vector<int> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth)
 {
-	if (depth < 0|| depth >= 10) //if depth is negative or too large, don't run program
+	if (depth < 0 || depth >= 10) //if depth is negative or too large, don't run program
 	{
 		std::vector<int> answer;
 		answer.push_back(0);
@@ -930,7 +926,10 @@ std::vector<int> min_max_search(temp_Board & current_board, int depth)
 	{
 		std::vector<int> answer;
 		answer.push_back(0);
-		answer.push_back(current_board.piece_count_eval());
+		vector<int> board_as_vector = current_board.get_board_as_vector();
+		nnp.set_input_layer(board_as_vector);
+		nnp.calculate();
+		answer.push_back(nnp.get_result());
 		//std::cout << "end of depth, value is:" << answer.at(1) << std::endl;
 		//int x;
 		//std::cin >> x;
@@ -939,9 +938,10 @@ std::vector<int> min_max_search(temp_Board & current_board, int depth)
 
 
 	Board_tree tree(current_board);
-	std::vector<int> max_node;
+	std::vector<int> max_node; // max_node = { move_id, move_value }
 
-	//Stuff to insure that the below move choice will not happen
+	//Stuff to ensure that the below move choice will not happen
+	//ensure that first move encountered will always be selected
 	if (current_board.get_Player() == _BLACK_)
 	{
 		max_node.push_back(0);
@@ -977,7 +977,7 @@ std::vector<int> min_max_search(temp_Board & current_board, int depth)
 		}
 
 
-		std::vector<int> possible_move = min_max_search(next_board, depth - 1);
+		std::vector<int> possible_move = min_max_search(nnp, next_board, depth - 1); // next_board has called move_piece
 		possible_move.at(0) = i;
 
 		//Check if new move is better than old move
@@ -1001,4 +1001,46 @@ std::vector<int> min_max_search(temp_Board & current_board, int depth)
 	//std::cout << max_node.at(0) << max_node.at(1) << std::endl;
 	//std::cout << "value is:" << max_node.at(1) << std::endl;
 	return max_node;
+}
+
+
+/////////////////////////////////////////////////////////////////////
+//                                                                 //
+//                  Stuff for replaying boards                     //
+//                                                                 //
+/////////////////////////////////////////////////////////////////////
+void temp_Board::set_board_status(vector<int> board_state)
+{
+	for (auto i = 0; i < 32; ++i)
+	{
+		m_board.at(i) = board_state.at(i);
+	}
+}
+
+void temp_Board::handle_replay_count(vector<int> board_state, string & pieces, sf::Text & pieces_text)
+{
+	pair<int, int> curr_count = count_replay_pieces(board_state);
+
+	pieces = "R: " + to_string(curr_count.second) + "\nB: " + to_string(curr_count.first);
+	pieces_text.setFillColor(sf::Color::Green);
+}
+
+pair<int, int> temp_Board::count_replay_pieces(vector<int> board_state)
+{
+	int p_red = 0;
+	int p_black = 0;
+
+	for (int i = 0; i < board_state.size(); ++i)
+	{
+		if (board_state.at(i) == _BLACK_MAN_ || board_state.at(i) == _BLACK_KING_)
+		{
+			++p_black;
+		}
+		else if (board_state.at(i) == _RED_MAN_ || board_state.at(i) == _RED_KING_)
+		{
+			++p_red;
+		}
+	}
+
+	return make_pair(p_black, p_red);
 }
