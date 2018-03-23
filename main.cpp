@@ -24,6 +24,7 @@
 #include <chrono>
 #include <random>
 #include <sstream>
+#include <thread>
 
 // USINGS
 using std::cout;
@@ -98,7 +99,7 @@ string adjust_time(int unit)
 }
 
 int main() {
-	if (main_state == PLAY_CHECKERS) 
+	if (main_state == PLAY_CHECKERS)
 	{
 		// //Game of checkers using temp_Board
 		// struct tm timeinfo;
@@ -545,14 +546,35 @@ int main() {
 
 		in_file.close();
 
-		if (parsed_states[parsed_states.size()-1][0] != 100 && 
-			parsed_states[parsed_states.size()-1][0] != -100 && 
-			parsed_states[parsed_states.size()-1][0] != 50)
+		if (parsed_states[parsed_states.size() - 1][0] != 100 &&
+			parsed_states[parsed_states.size() - 1][0] != -100 &&
+			parsed_states[parsed_states.size() - 1][0] != 50)
 		{
 			cout << "INCOMPLETE GAME FILE: CANNOT REPLAY GAME" << endl;
 			cout << endl << "press ENTER to quit";
 			while (cin.get() != '\n');
 			return 0;
+		}
+
+		bool player_is_red = false;
+		bool red_moved = false;
+		bool go_red = false;
+
+		for (int k = 0; k < 12; ++k)
+		{
+			if (parsed_states[1][k] != -1)
+			{
+				red_moved = true;
+			}
+		}
+		if (red_moved)
+		{
+			player_is_red = true;
+		}
+
+		if (player_is_red)
+		{
+			go_red = true;
 		}
 
 		int step = 0;
@@ -634,11 +656,12 @@ int main() {
 		srand(time(NULL));
 
 		bool stepper = false;
+
 		sf::Event event;
 
 		while (window.isOpen())
 		{
-			//Sleep(wait_time);
+			std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
 
 			vector<int> board_status;
 			board_status.resize(32);
@@ -660,7 +683,7 @@ int main() {
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 					{
 						cout << "stepping backward" << endl;
-						if(step == 0)
+						if (step == 0)
 						{
 							step = parsed_states.size() - 2;
 						}
@@ -768,6 +791,23 @@ int main() {
 				playable_slot = !playable_slot;
 			}
 
+			if (player_is_red && step % 2 == 0)
+			{
+				go_red = true;
+			}
+			else if (player_is_red && step % 2 == 1)
+			{
+				go_red = false;
+			}
+			else if (!player_is_red && step % 2 == 0)
+			{
+				go_red = false;
+			}
+			else if (!player_is_red && step % 2 == 1)
+			{
+				go_red = true;
+			}
+
 			// window text management
 			vector<string> strings_to_draw;
 			string player = "null";
@@ -779,9 +819,9 @@ int main() {
 			string moves = "null";
 			sf::Text moves_text(player, font, 30);
 
-			if (board.get_Player() == _RED_)
+			if (go_red)//board.get_Player() == _RED_)
 			{
-				player = "RED TURN";
+				player = "RED   TURN";
 				player_text.setFillColor(sf::Color::Red);
 			}
 			else
@@ -792,22 +832,27 @@ int main() {
 
 			if (step == parsed_states.size() - 2)
 			{
-				if (parsed_states[parsed_states.size()-1][0] == 100)
+				if (parsed_states[parsed_states.size() - 1][0] == 100)
 				{
 					player = "BLACK WINS";
 					player_text.setFillColor(sf::Color::White);
 				}
-				else
+				else if (parsed_states[parsed_states.size() - 1][0] == -100)
 				{
-					player = "RED WINS";
+					player = "RED   WINS";
 					player_text.setFillColor(sf::Color::Red);
+				}
+				else if (parsed_states[parsed_states.size() - 1][0] == 50)
+				{
+					player = "   DRAW";
+					player_text.setFillColor(sf::Color::Cyan);
 				}
 			}
 
 			board.handle_replay_count(parsed_states.at(step), pieces, pieces_text); // live piece count
 
 			moves = "MOVE #" + to_string(step);
-			player_text.setFillColor(sf::Color::White);
+			moves_text.setFillColor(sf::Color::White);
 
 			player_text.setString(player);
 			pieces_text.setString(pieces);
@@ -829,7 +874,7 @@ int main() {
 			}
 		}
 
-		cout << endl << "END OF REPLAY >> press ENTER to exit" << endl;
+		cout << endl << "END OF REPLAY >> press ENTER to exit";
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
 		while (cin.get() != '\n');
@@ -839,14 +884,14 @@ int main() {
 	{
 		OffspringProducer osp;
 		vector<int> input = {
-		-1,-1,-1,-1,
-		-1,-1,-1,-1,
-		-1,-1,-1,-1,
-		0,0,0,0,
-		0,0,0,0,
-		1,1,1,1,
-		1,1,1,1,
-		1,1,1,1,
+			-1,-1,-1,-1,
+			-1,-1,-1,-1,
+			-1,-1,-1,-1,
+			0,0,0,0,
+			0,0,0,0,
+			1,1,1,1,
+			1,1,1,1,
+			1,1,1,1,
 		};
 
 		NeuralNetwork_PERF nn0;
@@ -1082,21 +1127,21 @@ int main() {
 
 		//clock start
 		auto begin = std::chrono::high_resolution_clock::now();
-		while(osp.get_current_generation_id() != gens_to_train) 
+		while (osp.get_current_generation_id() != gens_to_train)
 		{
 			auto begin_gen = std::chrono::high_resolution_clock::now();
-			
+
 			int gen = osp.get_current_generation_id();
 			string gen_str = to_string(gen);
 			string gen_wrapper = "ai-playing-checkers\\nn_topologies\\GEN" + gen_str;
 			string result_txt = gen_wrapper + "\\_result.txt";
-			for(auto active_nn_id = 0; active_nn_id < GLOBAL_MAX_POPULATION_PER_GEN; ++active_nn_id)
+			for (auto active_nn_id = 0; active_nn_id < GLOBAL_MAX_POPULATION_PER_GEN; ++active_nn_id)
 			{
 				string result_out = to_string(active_nn_id);
 
 				//populating opponent list
 				oppo_list.clear();
-				for (auto i = 0; i < GLOBAL_OPPO_COUNT; ++i) 
+				for (auto i = 0; i < GLOBAL_OPPO_COUNT; ++i)
 				{
 					int oppo = int_dist(e1);
 
@@ -1130,12 +1175,12 @@ int main() {
 				double dbuf;
 				nnpr_topo.clear();
 				fin.open(active_nn_topo, ifstream::in);
-				if(!fin.is_open()) 
+				if (!fin.is_open())
 				{
 					cout << "active_nn_topo not opened in main" << endl;
 					return 0;
 				}
-				while(fin >> dbuf) 
+				while (fin >> dbuf)
 				{
 					nnpr_topo.push_back(dbuf);
 				}
@@ -1155,7 +1200,7 @@ int main() {
 
 					nnpb_topo.clear();
 					fin.open(against_nn_topo, ifstream::in);
-					while(fin >> dbuf) nnpb_topo.push_back(dbuf);
+					while (fin >> dbuf) nnpb_topo.push_back(dbuf);
 					fin.close();
 					nnpb.set_topology(nnpb_topo);
 					nnpb.set_player(_BLACK_);
@@ -1177,7 +1222,7 @@ int main() {
 
 					// game begin
 					fout.open(game_played_destination, ofstream::out | ofstream::app);
-					if(!fout.is_open())
+					if (!fout.is_open())
 					{
 						cout << "game_played_destination declared in main.cpp not opened" << endl;
 						return 0;
@@ -1185,7 +1230,7 @@ int main() {
 
 					board.write_board_to_file(fout); // initial gameboard
 
-					while(!board.is_over() && move_count < 100)
+					while (!board.is_over() && move_count < 100)
 					{
 						if (board.get_Player() == _RED_ && board.get_move_list().size() > 0)
 						{
@@ -1223,7 +1268,7 @@ int main() {
 					}
 
 					// denote draw status
-					if(move_count == 100) 
+					if (move_count == 100)
 					{
 						fout << "50";
 						GLOBAL_WINNER_DENOTER = '0';
@@ -1236,7 +1281,7 @@ int main() {
 				}
 
 				fout.open(result_txt, ofstream::out | ofstream::app);
-				if(!fout.is_open())
+				if (!fout.is_open())
 				{
 					cout << "cannot open result.txt in main" << endl;
 					return 0;
@@ -1250,7 +1295,7 @@ int main() {
 			auto end_gen = std::chrono::high_resolution_clock::now();
 			auto ns_gen = std::chrono::duration_cast<std::chrono::nanoseconds>(end_gen - begin_gen).count();
 			double min_per_gen = (double)ns_gen / (double)1000 / (double)1000000 / (double)60;
-			int maincpp_gen = osp.get_current_generation_id();				
+			int maincpp_gen = osp.get_current_generation_id();
 			cout << maincpp_gen - 1 << " -> " << maincpp_gen << "generation advanced: " << min_per_gen << " min" << endl;
 			result_out << maincpp_gen - 1 << " -> " << maincpp_gen << "generation advanced: " << min_per_gen << " min" << endl;
 		}
@@ -1258,7 +1303,7 @@ int main() {
 		auto end = std::chrono::high_resolution_clock::now();
 		auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
 		double min = (double)ns / (double)1000 / (double)1000000 / (double)60;
-		cout << "estimated time taken: " << min << endl;		
+		cout << "estimated time taken: " << min << endl;
 		return 0;
 	}
 
