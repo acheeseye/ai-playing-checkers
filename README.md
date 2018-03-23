@@ -31,7 +31,8 @@ PROJ4
 - [x] Testing for `NeuralNetwork_PERF` (for result of layer 1 first node).
 - [ ] Modify draw condition.
 - [ ] Calculate and record branch factor. (mini max or alpha beta)
-- [ ] Calculate and record leaf nodes evaluated. (mini max or alpha beta)
+- [x] Calculate leaf nodes evaluated. (mini max or alpha beta)
+- [ ] Record leaf nodes evaluated.
 - [ ] Calculate and record expanded (but not evaluated) nodes. (mini max or alpha beta)
 - [x] Remove original `NeuralNetwork`.
 - [ ] Implement alpha-beta pruning. (JK)
@@ -65,6 +66,11 @@ PROJ4
 - Networks should be training correctly now; though through playing `GEN0 nn0`, I've noticed a "feed the king" behavior which may or may not be subjected to just that particular network.
 - I will run some training tonight (3/23, JH).
 - Removed `NeuralNetwork` class.
+- New global int `eval_count` that will count leaf nodes evaluated and console print it.
+- New function `piece_count_search` for non-network pure-piece-count AI algorithm.
+- New `main_state` `NNP_test` for testing `NeuralNetwork_PERF`; tests successful: may delete soon.
+- New function `fn_play_checkers` to attempt to implement easier AI type switching, though may not be useful.
+- Discovered issue with `NNvNN` where networks recieved topologies with delimiters and used delimiters as play/evolutionary values.
 
 ### Version 6.5
 
