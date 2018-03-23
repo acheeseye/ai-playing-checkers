@@ -28,11 +28,20 @@ PROJ4
 
 - [x] Apply board evaluation function to mini-max/alpha-beta.
 - [x] Feed piece count into final board eval (can this be done with just two connectors?).
-- [ ] Testing for `NeuralNetwork_PERF`.
+- [x] Testing for `NeuralNetwork_PERF` (for result of layer 1 first node).
 - [ ] Modify draw condition.
-- [ ] Calculate and record branch factor.
-- [ ] Remove original `NeuralNetwork`.
-- [ ] Implement alpha-beta pruning.
+- [ ] Calculate and record branch factor. (mini max or alpha beta)
+- [ ] Calculate and record leaf nodes evaluated. (mini max or alpha beta)
+- [ ] Calculate and record expanded (but not evaluated) nodes. (mini max or alpha beta)
+- [x] Remove original `NeuralNetwork`.
+- [ ] Implement alpha-beta pruning. (JK)
+- [ ] Implement iterative deepending search if time allows.
+- [ ] Decide topology.
+- [ ] Provide time per generation trained values.
+  - JH: 80 minutes/generation without alpha-beta pruning (surface pro 3).
+  - JK:
+  - AM:
+- [ ] Examine children and provide proof for correct offspring production.
 
 # Useful Resources
 
@@ -47,6 +56,15 @@ PROJ4
 # Versions
 
 ## Version 6
+
+### Version 6.6
+
+- Changed `min_max_search`: return value is `double`, or else truncates to `0` causing incorrect decision making.
+- Above is done to `alpha_beta`as well.
+- Fixed `NeuralNetwork_PERF` where `get_output` was returning the item one past the end.
+- Networks should be training correctly now; though through playing `GEN0 nn0`, I've noticed a "feed the king" behavior which may or may not be subjected to just that particular network.
+- I will run some training tonight (3/23, JH).
+- Removed `NeuralNetwork` class.
 
 ### Version 6.5
 

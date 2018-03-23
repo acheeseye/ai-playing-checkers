@@ -57,6 +57,7 @@ public:
 	void advance_gen();
 	void determine_survivors(const std::string & result_txt);
 	int get_current_generation_id();
+	std::vector<double> get_topology();
 
 	void produce_next_generation();
 private:

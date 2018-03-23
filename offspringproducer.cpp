@@ -315,6 +315,11 @@ int OffspringProducer::get_current_generation_id()
 	return gen;
 }
 
+vector<double> OffspringProducer::get_topology()
+{
+	return m_topology;
+}
+
 void OffspringProducer::produce_next_generation()
 {
 	advance_gen();
