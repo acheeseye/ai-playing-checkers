@@ -60,7 +60,7 @@ char GLOBAL_WINNER_DENOTER;
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = NNvNN;
+int main_state = REPLAY_SAVED_GAME;
 //**********************************************************************************************
 //**********************************************************************************************
 //**********************************************************************************************
@@ -510,7 +510,7 @@ int main() {
 	}
 	else if (main_state == REPLAY_SAVED_GAME)
 	{
-		string file_name = "ai-playing-checkers\\nn_topologies\\GEN4\\games_played_4\\14_1.txt";
+		string file_name = "ai-playing-checkers\\nn_topologies\\GEN2\\games_played_2\\10_12.txt";
 
 		ifstream in_file;
 		in_file.open(file_name);
