@@ -29,6 +29,8 @@ using std::ofstream;
 #include <bitset>
 using std::bitset;
 
+extern int eval_count;
+
 //***********************************************************
 //Functions for temp_Board
 //***********************************************************
@@ -911,9 +913,7 @@ void temp_Board::handle_count(string & pieces, sf::Text & pieces_text)
 //                                                                 //
 /////////////////////////////////////////////////////////////////////
 
-
-//returns child and value of child
-std::vector<int> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth)
+std::vector<int> piece_count_search(temp_Board & current_board, int depth)
 {
 	if (depth < 0 || depth >= 20) //if depth is negative or too large, don't run program
 	{
@@ -926,10 +926,7 @@ std::vector<int> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_b
 	{
 		std::vector<int> answer;
 		answer.push_back(0);
-		vector<int> board_as_vector = current_board.get_board_as_vector();
-		nnp.set_input_layer(board_as_vector);
-		nnp.calculate();
-		answer.push_back(nnp.get_result());
+		answer.push_back(current_board.piece_count_eval());
 		//std::cout << "end of depth, value is:" << answer.at(1) << std::endl;
 		//int x;
 		//std::cin >> x;
@@ -977,7 +974,7 @@ std::vector<int> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_b
 		}
 
 
-		std::vector<int> possible_move = min_max_search(nnp, next_board, depth - 1); // next_board has called move_piece
+		std::vector<int> possible_move = piece_count_search(next_board, depth - 1); // next_board has called move_piece
 		possible_move.at(0) = i;
 
 		//Check if new move is better than old move
@@ -1003,21 +1000,114 @@ std::vector<int> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_b
 	return max_node;
 }
 
-
-std::vector<int> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, int alpha, int beta)
+//returns child and value of child
+std::vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth)
 {
 	if (depth < 0 || depth >= 20) //if depth is negative or too large, don't run program
 	{
-		std::vector<int> answer;
+		std::vector<double> answer;
 		answer.push_back(0);
 		answer.push_back(1);
 		return answer;
 	}
 	if (depth == 0)
 	{
-		std::vector<int> answer;
+		std::vector<double> answer;
 		answer.push_back(0);
-		vector<int> board_as_vector = current_board.get_board_as_vector();
+		const auto board_as_vector = current_board.get_board_as_vector();
+		nnp.set_input_layer(board_as_vector);
+		nnp.calculate(); // board evaluation
+		eval_count++;
+		//cout << nnp.get_result() << endl;
+		answer.push_back(nnp.get_result());
+		//std::cout << "end of depth, value is:" << answer[1] << " id: " << answer[0] << std::endl;
+		//int x;
+		//std::cin >> x;
+		return answer;
+	}
+
+	Board_tree tree(current_board);
+	std::vector<double> max_node; // max_node = { move_id, move_value }
+
+	//Stuff to ensure that the below move choice will not happen
+	//ensure that first move encountered will always be selected
+	if (current_board.get_Player() == _BLACK_)
+	{
+		max_node.push_back(0);
+		max_node.push_back(-10000);
+	}
+	else
+	{
+		max_node.push_back(0);
+		max_node.push_back(10000);
+	}
+
+	for (int i = 0; i < tree.m_number_of_children; i++)
+	{
+		//std::cout << i << std::endl;
+		temp_Board next_board(current_board);
+		next_board.move_piece(i,true);
+
+		//draw_board(next_board);
+		//std::cout << std::endl;
+
+		if (next_board.is_over())
+		{
+			if (current_board.get_Player() == _BLACK_)
+			{
+				max_node.at(0) = i;
+				max_node.at(1) = 300;
+			}
+			else
+			{
+				max_node.at(0) = i;
+				max_node.at(1) = -300;
+			}
+			break;
+		}
+
+		std::vector<double> possible_move = min_max_search(nnp, next_board, depth - 1); // next_board has called move_piece
+		possible_move.at(0) = i; // setting move ID
+
+		//Check if new move is better than old move
+		if (current_board.get_Player() == _BLACK_)
+		{
+			if (max_node.at(1) <= possible_move.at(1))
+			{
+				max_node.at(0) = possible_move.at(0);
+				max_node.at(1) = possible_move.at(1);
+			}
+		}
+		else
+		{
+			if (max_node.at(1) >= possible_move.at(1))
+			{
+				max_node.at(0) = possible_move.at(0);
+				max_node.at(1) = possible_move.at(1);
+			}
+		}
+	}
+	//std::cout << max_node.at(0) << max_node.at(1) << std::endl;
+	//std::cout << "value is:" << max_node.at(1) << std::endl;
+	cout << "node value chosen: id: " << max_node.at(0) << " ~ " << max_node.at(1) << endl;
+	return max_node;
+}
+
+
+std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, int alpha, int beta)
+{
+	if (depth < 0 || depth >= 20) //if depth is negative or too large, don't run program
+	{
+		std::vector<double> answer;
+		answer.push_back(0);
+		answer.push_back(1);
+		return answer;
+	}
+	if (depth == 0)
+	{
+		std::vector<double> answer;
+		answer.push_back(0);
+		const auto board_as_vector = current_board.get_board_as_vector();
 		nnp.set_input_layer(board_as_vector);
 		nnp.calculate();
 		answer.push_back(nnp.get_result());
@@ -1029,7 +1119,7 @@ std::vector<int> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board
 
 
 	Board_tree tree(current_board);
-	std::vector<int> max_node; // max_node = { move_id, move_value }
+	std::vector<double> max_node; // max_node = { move_id, move_value }
 
 							   //Stuff to ensure that the below move choice will not happen
 							   //ensure that first move encountered will always be selected
@@ -1043,7 +1133,7 @@ std::vector<int> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board
 		max_node.push_back(0);
 		max_node.push_back(10000);
 	}
-	for (int i = 0; i < tree.m_number_of_children; i++)
+	for (auto i = 0; i < tree.m_number_of_children; i++)
 	{
 		//std::cout << i << std::endl;
 		temp_Board next_board(current_board);
@@ -1068,7 +1158,7 @@ std::vector<int> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board
 		}
 
 
-		std::vector<int> possible_move = alpha_beta(nnp, next_board, depth - 1, alpha, beta); // next_board has called move_piece
+		auto possible_move = alpha_beta(nnp, next_board, depth - 1, alpha, beta); // next_board has called move_piece
 		possible_move.at(0) = i;
 
 		//Check if new move is better than old move

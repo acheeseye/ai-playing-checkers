@@ -2,7 +2,6 @@
 #define _INCLUDED_NEURALNETWORK_PERF_H_
 
 #include <vector>
-#include <tuple>
 
 //NC for node count
 //WC for weight count
@@ -27,7 +26,7 @@ public:
 	void set_input_layer(const std::vector<int> & input);
 	void set_topology(const std::vector<double> & topology);
 	void calculate();
-	void apply_sigma(double & input_sum);
+	double apply_sigma(double input_sum);
 	double get_result();
 private:
 	double m_nodes[GLOBAL_NC];
