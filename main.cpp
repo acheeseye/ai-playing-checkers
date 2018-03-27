@@ -61,7 +61,10 @@ char GLOBAL_WINNER_DENOTER;
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = REPLAY_SAVED_GAME;
+
+int main_state = GEN0_GENERATE;
+
+
 //**********************************************************************************************
 //**********************************************************************************************
 //**********************************************************************************************
@@ -1230,7 +1233,7 @@ int main() {
 					}
 
 					board.write_board_to_file(fout); // initial gameboard
-
+					
 					while (!board.is_over() && move_count < 100)
 					{
 						if (board.get_Player() == _RED_ && board.get_move_list().size() > 0)
