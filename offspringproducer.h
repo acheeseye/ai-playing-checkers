@@ -9,9 +9,9 @@
 
 const int GLOBAL_KING_START = 0;
 const int GLOBAL_WEIGHT_START = 1;
-const int GLOBAL_WEIGHT_END = 1691; // one past so it uses < rather than <=
-const int GLOBAL_SIGMA_START = 1691;
-const int GLOBAL_SIGMA_END = 3381; // one past so it uses < rather than <=
+const int GLOBAL_WEIGHT_END = 1691 + 32; // one past so it uses < rather than <=
+const int GLOBAL_SIGMA_START = 1691 + 32;
+const int GLOBAL_SIGMA_END = 3381 + 32 + 32; // one past so it uses < rather than <=
 
 const double GLOBAL_SIGMA_VALUE = 0.05;
 const int GLOBAL_MAX_POPULATION_PER_GEN = 30;

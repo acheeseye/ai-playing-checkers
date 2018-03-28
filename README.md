@@ -56,6 +56,24 @@ PROJ4
 
 # Versions
 
+## Version 7
+
+### Version 7.0
+
+- Class `NeuralNetwork_PERF`:
+  - now requires player initialization so that `m_player_modifier` is initialized with constructor.
+  - no longer has an issue where the piece count layer was not applying `m_player_modifier`.
+  - has new function `get_player_modification` which returns `m_player_modifier` for tracking purposes (may not be useful).
+- Class `OffspringProducer`:
+  - no longer has an issue with incorrect declaration of topology size (brought up by the piece count layer).
+- Function `min_max_search`:
+  - uses a raw array now in attempt to meet computation speed requirement.
+  - now does ***NOT*** handle player identity (as it is handled `NeuralNetwork_PERF` itself through `m_player_modifier`).
+    - This seems to have fixed the issue of suicidal networks.
+- New global int `call_count` to keep track of `min_max_search` calls. Related calculations (leaf nodes, non-leaf nodes, etc) are presented in `LNE.txt` (I forget what this stands for).
+- Cleaned up `main.cpp`'s AI move chooser.
+- Watch `wtf.txt` in `previous_gen_data` for an interesting GEN0 game.
+
 ## Version 6
 
 ### Version 6.6

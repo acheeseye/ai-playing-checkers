@@ -11,16 +11,15 @@ using std::string;
 #include <sys/stat.h>
 #include <sys/types.h>
 
-NeuralNetwork_PERF::NeuralNetwork_PERF()
+NeuralNetwork_PERF::NeuralNetwork_PERF(const int player)
 {
-	m_player_modifier = 1;
-}
-
-void NeuralNetwork_PERF::set_player(const int player)
-{
-	if(player == _RED_)
+	if (player == _RED_)
 	{
 		m_player_modifier = -1;
+	}
+	else if (player == _BLACK_)
+	{
+		m_player_modifier = 1;
 	}
 }
 
@@ -92,7 +91,7 @@ void NeuralNetwork_PERF::calculate()
 		}
 		for (int l_0 = 0; l_0 < GLOBAL_LAYER_0_NC; ++l_0)
 		{
-			m_nodes[GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + GLOBAL_LAYER_2_NC + l_3] += m_nodes[l_0] * m_weights[m_weight_iter];
+			m_nodes[GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + GLOBAL_LAYER_2_NC + l_3] += m_nodes[l_0] * m_player_modifier * m_weights[m_weight_iter];
 			m_weight_iter++;
 		}
 		m_nodes[GLOBAL_NC - 1] = apply_sigma(m_nodes[GLOBAL_NC - 1]);
@@ -102,4 +101,9 @@ void NeuralNetwork_PERF::calculate()
 double NeuralNetwork_PERF::get_result()
 {
 	return m_nodes[GLOBAL_NC - 1];
+}
+
+int NeuralNetwork_PERF::get_player_modification() const
+{
+	return m_player_modifier;
 }

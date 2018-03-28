@@ -6,7 +6,6 @@ using std::ofstream;
 #include <string>
 using std::string;
 using std::to_string;
-using std::getline;
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -16,8 +15,6 @@ using std::endl;
 #include <vector>
 using std::vector;
 #include <random>
-#include <exception>
-using std::exception;
 #include <algorithm>
 using std::sort;
 #include <utility>
