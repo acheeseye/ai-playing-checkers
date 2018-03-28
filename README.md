@@ -32,8 +32,8 @@ PROJ4
 - [ ] Modify draw condition.
 - [ ] Calculate and record branch factor. (mini max or alpha beta)
 - [x] Calculate leaf nodes evaluated. (mini max or alpha beta)
-- [ ] Record leaf nodes evaluated.
-- [ ] Calculate and record expanded (but not evaluated) nodes. (mini max or alpha beta)
+- [x] Record leaf nodes evaluated.
+- [x] Calculate and record expanded (but not evaluated) nodes. (mini max or alpha beta)
 - [x] Remove original `NeuralNetwork`.
 - [ ] Implement alpha-beta pruning. (JK)
 - [ ] Implement iterative deepending search if time allows.
@@ -43,6 +43,8 @@ PROJ4
   - JK:
   - AM:
 - [ ] Examine children and provide proof for correct offspring production.
+- [ ] Don't record unfinished games.
+- [ ] OPTIMIZE FOR TRAINING SPEED.
 
 # Useful Resources
 
@@ -361,13 +363,12 @@ PROJ4
 - [x] Figuring out how to implement the neural network. (2/14, JH)
 - [x] `NeuralNetwork` should iterate through all boards (currently only one). (2/17, JH)
 - [x] Further optimize speed for `calculate_output`? (2/18, JH)
-- [ ] Even more optimizie for calculate_output. (2/23, JH)
   - (below are timing results of `NeuralNetwork_PERF`)
   - 90,000 BEF/sec => compiled with Visual Studio on a Surface Pro 3 with -O2 turned on
   - 120,000 BEF/sec => compiled with g++ on the desktop in the computer lab without -O2 turned on
   - 290,000 BEF/sec => compiled with g++ on the desktop in the computer lab with -O2 turned on
 - [x] Asexually reproducing `brunette26`. (2/18, JH)
-- [ ] Working on implementing `NeuralNetwork_PERF`'s `calculate` function to `mini_max_search`. (3/15, JH)
+- [x] Working on implementing `NeuralNetwork_PERF`'s `calculate` function to `mini_max_search`. (3/15, JH)
 - Here's a potentially helpful chart for all the playable positions:
 
 |P|L|A|Y|A|B|L|E|
