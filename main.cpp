@@ -51,7 +51,7 @@ enum
 	NN_ALPHA_BETA
 };
 
-enum 
+enum
 { // THESE ARE THE DIFFERENT TYPES OF main_state
 	PLAY_CHECKERS,
 	REPLAY_SAVED_GAME,
