@@ -38,8 +38,10 @@ PROJ4
 - [ ] Implement alpha-beta pruning. (JK)
 - [ ] Implement iterative deepending search if time allows.
 - [ ] Decide topology.
-- [ ] Provide time per generation trained values.
-  - JH: 80 minutes/generation without alpha-beta pruning (surface pro 3).
+- [ ] Provide time per generation trained values. (IDEALLY 3 SEC/n-PLY-GAME FOR 100 GEN IN 12 HOURS -- n == optimal ply per device)
+  - JH: 80 minutes/4-ply-generation without alpha-beta pruning (surface pro 3).
+    - 40 s/4-ply-game without alpha-beta pruning (average over 8 games) (ran out of patience)
+    - 30 s/4-ply-game WITH alpha-beta pruning (average about 15 games) (ran out of patience)
   - JK:
   - AM:
 - [ ] Examine children and provide proof for correct offspring production.
