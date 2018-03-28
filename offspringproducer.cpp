@@ -92,7 +92,7 @@ void OffspringProducer::record_current()
 	string id_str = to_string(id);
 	string out_filename = dir_name + "\\nn" + id_str + "_brunette26_topology.txt";
 	string games_played_dir = dir_name;
-	games_played_dir += "\\games_played_" + gen_str;
+	games_played_dir += "\\games_played";
 
 	const char * dir_name_wrap = dir_name.c_str();
 	const char * games_played_dir_wrap = games_played_dir.c_str();

@@ -537,7 +537,7 @@ int main() {
 	}
 	else if (main_state == REPLAY_SAVED_GAME)
 	{
-		const string file_name = R"(ai-playing-checkers\nn_topologies\GEN0\games_played\0_22.txt)";
+		const string file_name = R"(ai-playing-checkers\nn_topologies\GEN0\games_played\17_0.txt)";
 
 		ifstream in_file;
 		in_file.open(file_name);
@@ -1239,7 +1239,7 @@ int main() {
 					fout.open(game_played_destination, ofstream::out | ofstream::app);
 					if (!fout.is_open())
 					{
-						cout << "game_played_destination declared in main.cpp not opened" << endl;
+						cout << "game_played_destination declared in main.cpp not opened: " << game_played_destination << endl;
 						return 0;
 					}
 
@@ -1317,8 +1317,10 @@ int main() {
 		const auto end = std::chrono::high_resolution_clock::now();
 		const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
 		const auto min = double(ns) / double(1000) / double(1000000) / double(60);
-		cout << "estimated time taken: " << min << endl;
+		cout << "estimated total time taken: " << min << endl;
 		LNE_fout.close();
+		cout << "\nTRAINING SUCCESS" << endl;
+		while (cin.get() != '\n');
 		return 0;
 	}
 	else if (main_state == NNP_TEST)
