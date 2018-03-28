@@ -267,7 +267,8 @@ void fn_play_checkers()
 				}
 				else
 				{
-					vector<double> min_max_move = min_max_search(nnp, board, 4);
+					//vector<double> min_max_move = min_max_search(nnp, board, 4);
+					vector<double> min_max_move = alpha_beta(nnp, board, 4,-999999, 999999);
 					next_move = min_max_move.at(0);
 					int val = min_max_move.at(1);
 				}

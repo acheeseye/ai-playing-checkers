@@ -5,7 +5,7 @@
 // Created Jan 23, 2018
 
 #include "board.h"
-
+#include <algorithm>
 #include <SFML\Graphics.hpp>
 #include <vector>
 using std::vector;
@@ -1094,7 +1094,7 @@ std::vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & curren
 }
 
 
-std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, int alpha, int beta)
+std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
 {
 	if (depth < 0 || depth >= 20) //if depth is negative or too large, don't run program
 	{
@@ -1133,6 +1133,7 @@ std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_bo
 		max_node.push_back(0);
 		max_node.push_back(10000);
 	}
+
 	for (auto i = 0; i < tree.m_number_of_children; i++)
 	{
 		//std::cout << i << std::endl;
@@ -1157,8 +1158,7 @@ std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_bo
 			break;
 		}
 
-
-		auto possible_move = alpha_beta(nnp, next_board, depth - 1, alpha, beta); // next_board has called move_piece
+		std::vector<double>possible_move = alpha_beta(nnp, next_board, depth - 1, alpha, beta);
 		possible_move.at(0) = i;
 
 		//Check if new move is better than old move
@@ -1168,9 +1168,10 @@ std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_bo
 			{
 				max_node.at(0) = possible_move.at(0);
 				max_node.at(1) = possible_move.at(1);
-				alpha = max_node.at(1);
+				alpha = std::max(max_node.at(1), alpha);
 			}
-			if (max_node.at(1) > beta)
+			
+			if (beta<= alpha)
 				break;
 		}
 		else
@@ -1179,9 +1180,9 @@ std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_bo
 			{
 				max_node.at(0) = possible_move.at(0);
 				max_node.at(1) = possible_move.at(1);
-				beta = max_node.at(1);
+				beta = std::min(max_node.at(1), beta);
 			}
-			if (max_node.at(1) < alpha)
+			if (beta<= alpha)
 				break;
 		}
 	}
