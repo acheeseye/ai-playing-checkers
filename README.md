@@ -41,7 +41,7 @@ PROJ4
 - [ ] Provide time per generation trained values. (IDEALLY 3 SEC/n-PLY-GAME FOR 100 GEN IN 12 HOURS -- n == optimal ply per device)
   - JH: 80 minutes/4-ply-generation without alpha-beta pruning (surface pro 3).
     - 40 s/4-ply-game without alpha-beta pruning (average over 8 games).
-    - 28 s/4-ply-game WITH alpha-beta pruning (average over 15 games).
+    - 28 s/4-ply-game WITH alpha-beta pruning (average over 26 games).
     - 26 s/4-ply-game WITH alpha-beta pruning but with dummy all 1 inputs (average over 16 games) (this also included time to construct each dummy input).
   - JK:
   - AM:
