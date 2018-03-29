@@ -38,8 +38,11 @@ PROJ4
 - [ ] Implement alpha-beta pruning. (JK)
 - [ ] Implement iterative deepending search if time allows.
 - [ ] Decide topology.
-- [ ] Provide time per generation trained values.
-  - JH: 80 minutes/generation without alpha-beta pruning (surface pro 3).
+- [ ] Provide time per generation trained values. (IDEALLY 3 SEC/n-PLY-GAME FOR 100 GEN IN 12 HOURS -- n == optimal ply per device)
+  - JH: 80 minutes/4-ply-generation without alpha-beta pruning (surface pro 3).
+    - 40 s/4-ply-game without alpha-beta pruning (average over 8 games).
+    - 28 s/4-ply-game WITH alpha-beta pruning (average over 26 games).
+    - 26 s/4-ply-game WITH alpha-beta pruning but with dummy all 1 inputs (average over 16 games) (this also included time to construct each dummy input).
   - JK:
   - AM:
 - [ ] Examine children and provide proof for correct offspring production.
@@ -50,6 +53,10 @@ PROJ4
 
 - [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
 - [Here](https://msdn.microsoft.com/en-us/library/chh3fb0k.aspx) is documentation for pragma optimize to get more accurate timing.
+- 4-PLY TIMING RESULTS WITH ALPHA-BETA PRUNING
+  - Average number of moves per game: 57.5
+  - Average seconds per game: 28.6
+  - Average moves/sec: 2.2
 
 # IMPORTANT
 
