@@ -60,6 +60,12 @@ PROJ4
 
 ## Version 7
 
+### Version 7.1
+
+- Using raw arrays when applicable.
+- Fixed ambiguity of setting evaluated board as positive no matter whose turn (player ID handled outside) for `alpha_beta`.
+- `input` values in `NeuralNetwork_PERF::set_input_layer` casted to double (not sure if this was truncating values).
+
 ### Version 7.0
 
 - Class `NeuralNetwork_PERF`:
