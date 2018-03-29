@@ -23,9 +23,8 @@ NeuralNetwork_PERF::NeuralNetwork_PERF(const int player)
 	}
 }
 
-void NeuralNetwork_PERF::set_input_layer(const std::vector<int>& input)
+void NeuralNetwork_PERF::set_input_layer(const std::vector<int> & input)
 {
-	if (input.size() != GLOBAL_LAYER_0_NC) throw std::exception("INVALID INPUT SIZE");
 	for (auto i = 0; i < GLOBAL_LAYER_0_NC; ++i)
 	{
 		if (input[i] == 2) 
@@ -36,7 +35,7 @@ void NeuralNetwork_PERF::set_input_layer(const std::vector<int>& input)
 		{
 			m_nodes[i] = -m_king_val * m_player_modifier;
 		}
-		else m_nodes[i] = input[i] * m_player_modifier;
+		else m_nodes[i] = double(input[i]) * m_player_modifier;
 	}
 	for(auto i = GLOBAL_LAYER_0_NC; i < GLOBAL_NC; ++i)
 	{

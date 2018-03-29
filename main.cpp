@@ -537,7 +537,7 @@ int main() {
 	}
 	else if (main_state == REPLAY_SAVED_GAME)
 	{
-		const string file_name = R"(ai-playing-checkers\nn_topologies\GEN0\games_played\17_0.txt)";
+		const string file_name = R"(ai-playing-checkers\nn_topologies\GEN4\games_played\2_0.txt)";
 
 		ifstream in_file;
 		in_file.open(file_name);
@@ -921,7 +921,7 @@ int main() {
 		};
 
 		NeuralNetwork_PERF nn0(_RED_);
-		nn0.set_input_layer(input);
+//		nn0.set_input_layer(input);
 		nn0.set_topology(osp.generate_random_topology());
 
 		cout.precision(6);
@@ -1141,7 +1141,7 @@ int main() {
 		NeuralNetwork_PERF nnpb(_BLACK_);	// network for black player (oppposing network)
 		vector<double> nnpr_topo;
 		vector<double> nnpb_topo;
-		vector<int> oppo_list;
+		int oppo_list[GLOBAL_OPPO_COUNT];
 
 		fout.open(R"(ai-playing-checkers\nn_topologies\NNP_modification_insurance.txt)", ofstream::out | ofstream::app);
 		fout << "Network RED's m_player_modifier value:   " << nnpr.get_player_modification() << endl;
@@ -1177,7 +1177,6 @@ int main() {
 				string result_out = to_string(active_nn_id);
 
 				//populating opponent list
-				oppo_list.clear();
 				for (auto i = 0; i < GLOBAL_OPPO_COUNT; ++i)
 				{
 					int oppo = int_dist(e1);
@@ -1187,11 +1186,15 @@ int main() {
 						oppo = int_dist(e1);
 					}
 					// nn should not play the same oppo
-					while (find(oppo_list.begin(), oppo_list.end(), oppo) != oppo_list.end()) {
-						oppo = int_dist(e1);
+					for (auto j = 0; j < i; ++j) {
+						if (oppo == oppo_list[j])
+						{
+							oppo = int_dist(e1);
+							break;
+						}
 					}
 
-					oppo_list.push_back(oppo);
+					oppo_list[i] = oppo;
 					result_out += " ";
 					result_out += to_string(oppo);
 				}
@@ -1199,8 +1202,7 @@ int main() {
 				result_out += " ";
 
 				// setting "our side" topology string
-				string active_nn_topo = "";
-				active_nn_topo += gen_wrapper;
+				string active_nn_topo = gen_wrapper;
 				active_nn_topo += "\\nn";
 				active_nn_topo += to_string(active_nn_id);
 				active_nn_topo += "_brunette26_topology.txt";
@@ -1208,8 +1210,8 @@ int main() {
 				osp.set_topology(active_nn_topo);
 				nnpr_topo = osp.get_topology();
 				nnpr.set_topology(nnpr_topo);
-				for (auto i = 0; i < oppo_list.size(); ++i) {
-					int oppo_nn_id = oppo_list[i];
+				for (auto i = 0; i < GLOBAL_OPPO_COUNT; ++i) {
+					const auto oppo_nn_id = oppo_list[i];
 
 					// setting "against" topology string
 					string against_nn_topo = "";
@@ -1221,7 +1223,6 @@ int main() {
 					osp.set_topology(against_nn_topo);
 					nnpb_topo = osp.get_topology();
 					nnpb.set_topology(nnpb_topo);
-					//cout << "nn" << active_nn_id << " vs nn" << oppo_nn_id << endl;
 
 					string game_played_destination = "ai-playing-checkers\\nn_topologies\\GEN" + gen_str;
 					game_played_destination += "\\games_played\\";
@@ -1244,7 +1245,9 @@ int main() {
 					}
 
 					board.write_board_to_file(fout); // initial gameboard
-					//int eval_total = 0;
+
+					//const auto begin_game = std::chrono::high_resolution_clock::now();
+
 					while (!board.is_over() && move_count < 100)
 					{
 						const auto move_begin = std::chrono::high_resolution_clock::now();
@@ -1254,12 +1257,22 @@ int main() {
 						if (move_count < random_move_count) next_move = rand() % board.get_move_list().size();
 
 						else if (board.get_Player() == _RED_ && !board.get_move_list().empty()) {
-							double * min_max_move = min_max_search(nnpr, board, ply);
+							const auto begin_calc = std::chrono::high_resolution_clock::now();
+							double * min_max_move = alpha_beta(nnpr, board, ply, -10000, 10000);
+							const auto end_calc = std::chrono::high_resolution_clock::now();
+							const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
+							const auto s_per_calc = double(ns_calc) / double(1000) / double(1000000);
+							cout << s_per_calc << endl;
 							next_move = min_max_move[0];
 						}
 
 						else if (board.get_Player() == _BLACK_ && !board.get_move_list().empty()) {
-							double * min_max_move = min_max_search(nnpb, board, ply);
+							const auto begin_calc = std::chrono::high_resolution_clock::now();
+							double * min_max_move = alpha_beta(nnpb, board, ply, -10000, 10000);
+							const auto end_calc = std::chrono::high_resolution_clock::now();
+							const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
+							const auto s_per_calc = double(ns_calc) / double(1000) / double(1000000);
+							cout << s_per_calc << endl;
 							next_move = min_max_move[0];
 						}
 
@@ -1270,15 +1283,15 @@ int main() {
 						const auto ns_move = std::chrono::duration_cast<std::chrono::nanoseconds>(move_end - move_begin).count();
 						const auto s_per_move = double(ns_move) / double(1000) / double(1000000);
 
-						if (move_count > 3) { // 0 == starting, 1~3 == random, 4 == first AI move
-							LNE_fout << "move_id: " << move_count;
-							LNE_fout << " eval_count: " << eval_count;
-							LNE_fout << " fn_call_count: " << call_count;
-							LNE_fout << " nonleaf_leaf: " << call_count - eval_count << ":" << eval_count;
-							LNE_fout << " leaf_percent: " << double(eval_count) / double(call_count) * 100;
-							LNE_fout << " over_seconds: " << s_per_move;
-							LNE_fout << " eval/sec: " << eval_count / s_per_move << endl;
-						}
+						//if (move_count > 3) { // 0 == starting, 1~3 == random, 4 == first AI move
+						//	LNE_fout << "move_id: " << move_count;
+						//	LNE_fout << " eval_count: " << eval_count;
+						//	LNE_fout << " fn_call_count: " << call_count;
+						//	LNE_fout << " nonleaf_leaf: " << call_count - eval_count << ":" << eval_count;
+						//	LNE_fout << " leaf_percent: " << double(eval_count) / double(call_count) * 100;
+						//	LNE_fout << " over_seconds: " << s_per_move;
+						//	LNE_fout << " eval/sec: " << eval_count / s_per_move << endl;
+						//}
 					}
 
 					// denote draw status
@@ -1292,6 +1305,11 @@ int main() {
 					result_out += ' ';
 
 					fout.close();
+
+					//const auto end_game = std::chrono::high_resolution_clock::now();
+					//const auto ns_game = std::chrono::duration_cast<std::chrono::nanoseconds>(end_game - begin_game).count();
+					//const auto min_per_game = double(ns_game) / double(1000) / double(1000000) / double(60);
+					//cout << move_count << " " << ply << "-ply game played in: " << min_per_game << " min (" << min_per_game * 60 << " sec)" << endl;
 				}
 
 				fout.open(result_txt, ofstream::out | ofstream::app);
@@ -1363,7 +1381,7 @@ int main() {
 		NeuralNetwork_PERF nnp(_RED_);
 
 		osp.set_topology(ai_topo);
-		nnp.set_input_layer(nn_input_2);
+//		nnp.set_input_layer(nn_input_2);
 		nnp.set_topology(osp.get_topology());
 		nnp.calculate();
 		cout << nnp.get_result() << endl;
