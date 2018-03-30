@@ -34,6 +34,8 @@ using std::bitset;
 extern int eval_count;
 extern int call_count;
 
+extern bool GLOBAL_DO_WRITE;
+
 
 //***********************************************************
 //Functions for temp_Board
@@ -730,56 +732,58 @@ else { to_file << "B"; }
 // BLACK APPEARS AS POSITIVE IN STORED FILE
 void temp_Board::write_board_to_file(std::ofstream & to_file)
 {
-	if (m_board.size() != 32) throw std::exception("Board has incorrect size");
-	string data = "";
+	if (GLOBAL_DO_WRITE) {
+		if (m_board.size() != 32) throw std::exception("Board has incorrect size");
+		string data = "";
 
-	for (auto row = 0; row < 8; ++row)
-	{
-		for (auto column_id = 0; column_id < 4; ++column_id)
+		for (auto row = 0; row < 8; ++row)
 		{
-			int reverse_column_id = column_id + (3 + (-2) * column_id);
+			for (auto column_id = 0; column_id < 4; ++column_id)
+			{
+				int reverse_column_id = column_id + (3 + (-2) * column_id);
 
-			switch (m_board.at(row * 4 + column_id))
-			{
-			case _PLAYABLE_:
-				data += "0";
-				break;
-			case _RED_MAN_:
-				data += "-1";
-				break;
-			case _RED_KING_:
-				data += "-2";
-				break;
-			case _BLACK_MAN_:
-				data += "1";
-				break;
-			case _BLACK_KING_:
-				data += "2";
-				break;
-			}
-			if ((row * 4) + column_id < 31) // space delimited, but no trailing space
-			{
-				data += " ";
-			}
-			else if (!is_over()) // newline after each move, but no trailing newline
-			{
-				data += '\n';
+				switch (m_board.at(row * 4 + column_id))
+				{
+				case _PLAYABLE_:
+					data += "0";
+					break;
+				case _RED_MAN_:
+					data += "-1";
+					break;
+				case _RED_KING_:
+					data += "-2";
+					break;
+				case _BLACK_MAN_:
+					data += "1";
+					break;
+				case _BLACK_KING_:
+					data += "2";
+					break;
+				}
+				if ((row * 4) + column_id < 31) // space delimited, but no trailing space
+				{
+					data += " ";
+				}
+				else if (!is_over()) // newline after each move, but no trailing newline
+				{
+					data += '\n';
+				}
 			}
 		}
+		if (is_over()) {
+			if (m_current_player == _BLACK_)
+			{ //red wins
+				data += "\n-100";
+				GLOBAL_WINNER_DENOTER = '1';
+			}
+			else
+			{
+				data += "\n100"; //black wins
+				GLOBAL_WINNER_DENOTER = '2';
+			}
+		}
+		to_file << data;
 	}
-	if (is_over()) {
-		if (m_current_player == _BLACK_) 
-		{ //red wins
-			data += "\n-100";
-			GLOBAL_WINNER_DENOTER = '1';
-		}
-		else 
-		{
-			data += "\n100"; //black wins
-			GLOBAL_WINNER_DENOTER = '2';
-		}
-	}
-	to_file << data;
 }
 
 void temp_Board::move_from(int start, int dest)
@@ -1056,17 +1060,24 @@ double * min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, in
 
 double * alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, int alpha, int beta)
 {
+	cout << "    ";
+	if(depth < 0)
+	{
+		cout << "problem" << endl;
+	}
 	if (depth == 0)
 	{
 		double answer[2];
 		nnp.set_input_layer(current_board.get_board_as_vector());
 		//const auto begin_calc = std::chrono::high_resolution_clock::now();
 		nnp.calculate();
+		eval_count++;
 		//const auto end_calc = std::chrono::high_resolution_clock::now();
 		//const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
 		//cout << ns_calc << endl;
 		answer[0] = 0;
 		answer[1] = nnp.get_result();
+		cout << nnp.get_result() << endl;
 		//std::cout << "end of depth, value is:" << answer.at(1) << std::endl;
 		//int x;
 		//std::cin >> x;
@@ -1076,7 +1087,7 @@ double * alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int de
 	Board_tree tree(current_board);
 	double max_node[2]; // max_node = { move_id, move_value }
 	max_node[0] = 0;
-	max_node[1] = -10000;		// huge negative so that first encountered value is stored
+	max_node[1] = 10000;		// huge negative so that first encountered value is stored
 
 	for (auto i = 0; i < tree.m_number_of_children; i++)
 	{

@@ -228,6 +228,11 @@ void OffspringProducer::set_topology(const std::string & parent_file)
 		m_topology[topo_iter++] = input;
 	}
 
+	if(topo_iter > GLOBAL_TOPOLOGY_SIZE)
+	{
+		cout << "topo_iter in OffspringProducer::set_topology has reached incorrect size" << endl;
+	}
+
 	fin.close();
 }
 
