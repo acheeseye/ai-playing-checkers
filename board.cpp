@@ -5,7 +5,7 @@
 // Created Jan 23, 2018
 
 #include "board.h"
-
+#include <algorithm>
 #include <SFML\Graphics.hpp>
 #include <vector>
 using std::vector;
@@ -1058,7 +1058,9 @@ double * min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, in
 	return max_node;
 }
 
-double * alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, int alpha, int beta)
+
+//std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
+double * alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
 {
 	cout << "    ";
 	if(depth < 0)
@@ -1118,20 +1120,22 @@ double * alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int de
 			{
 				max_node[0] = possible_move[0];
 				max_node[1] = possible_move[1];
-				alpha = max_node[1]; 
+				alpha = std::max(max_node[1], alpha);
 			}
-			if (max_node[1] > beta) break;
+			if (beta <= alpha)
+				break;
 		}
 		else {
 			if (max_node[1] >= possible_move[1])
 			{
 				max_node[0] = possible_move[0];
 				max_node[1] = possible_move[1];
-				beta = max_node[1];
+				beta = std::min(max_node[1], beta);
 			}
-			if (max_node[1] < alpha) break;
+			if (beta<= alpha)
+				break;
+			}
 		}
-	}
 	//std::cout << max_node.at(0) << max_node.at(1) << std::endl;
 	//std::cout << "value is:" << max_node.at(1) << std::endl;
 	return max_node;

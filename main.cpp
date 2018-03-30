@@ -274,7 +274,8 @@ void fn_play_checkers()
 				}
 				else
 				{
-					double * min_max_move = alpha_beta(nnp, board, ply, -10000, 10000);
+					//double * min_max_move = min_max_search(nnp, board, ply);
+					double* min_max_move = alpha_beta(nnp, board, 4, -999999, 999999);
 					next_move = min_max_move[0];
 					double val = min_max_move[1];
 					cout << "chosen: " << next_move << " " << val << endl;
