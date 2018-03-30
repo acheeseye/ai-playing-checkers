@@ -10,6 +10,7 @@
 #include <vector>
 using std::vector;
 #include <utility>
+using std::move;
 using std::pair;
 using std::make_pair;
 #include <cmath>
@@ -28,8 +29,11 @@ using std::ofstream;
 #include <stdexcept>
 #include <bitset>
 using std::bitset;
+#include <chrono>
 
 extern int eval_count;
+extern int call_count;
+
 
 //***********************************************************
 //Functions for temp_Board
@@ -1000,139 +1004,81 @@ std::vector<int> piece_count_search(temp_Board & current_board, int depth)
 	return max_node;
 }
 
-//returns child and value of child
-std::vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth)
+double * min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth)
 {
-	if (depth < 0 || depth >= 20) //if depth is negative or too large, don't run program
-	{
-		std::vector<double> answer;
-		answer.push_back(0);
-		answer.push_back(1);
-		return answer;
-	}
+	//call_count++;
 	if (depth == 0)
 	{
-		std::vector<double> answer;
-		answer.push_back(0);
-		const auto board_as_vector = current_board.get_board_as_vector();
-		nnp.set_input_layer(board_as_vector);
-		nnp.calculate(); // board evaluation
-		eval_count++;
+		double answer[2];
+		//const auto board_as_vector = current_board.get_board_as_vector();
+		//nnp.set_input_layer(board_as_vector);
+		//nnp.calculate();
+		//eval_count++;
+		answer[0] = 0;
+		answer[1] = 0;//nnp.get_result();
 		//cout << nnp.get_result() << endl;
-		answer.push_back(nnp.get_result());
-		//std::cout << "end of depth, value is:" << answer[1] << " id: " << answer[0] << std::endl;
-		//int x;
-		//std::cin >> x;
 		return answer;
 	}
+	const Board_tree tree(current_board);
+	double max_node[2]; // max_node = { move_id, move_value }
 
-	Board_tree tree(current_board);
-	std::vector<double> max_node; // max_node = { move_id, move_value }
+	max_node[0] = 0;
+	max_node[1] = -10000;
 
-	//Stuff to ensure that the below move choice will not happen
-	//ensure that first move encountered will always be selected
-	if (current_board.get_Player() == _BLACK_)
+	for (auto i = 0; i < tree.m_number_of_children; i++)
 	{
-		max_node.push_back(0);
-		max_node.push_back(-10000);
-	}
-	else
-	{
-		max_node.push_back(0);
-		max_node.push_back(10000);
-	}
-
-	for (int i = 0; i < tree.m_number_of_children; i++)
-	{
-		//std::cout << i << std::endl;
-		temp_Board next_board(current_board);
+		auto next_board(current_board);
 		next_board.move_piece(i,true);
-
-		//draw_board(next_board);
-		//std::cout << std::endl;
-
+		
 		if (next_board.is_over())
 		{
-			if (current_board.get_Player() == _BLACK_)
-			{
-				max_node.at(0) = i;
-				max_node.at(1) = 300;
+			if (depth % 2 == 0) {	// even depth: "MY" winning move
+				max_node[0] = i;
+				max_node[1] = 300;
 			}
-			else
-			{
-				max_node.at(0) = i;
-				max_node.at(1) = -300;
+			else {					// odd depth: "ENEMY" winning move
+				max_node[0] = i;
+				max_node[1] = -300;
 			}
 			break;
 		}
 
-		std::vector<double> possible_move = min_max_search(nnp, next_board, depth - 1); // next_board has called move_piece
-		possible_move.at(0) = i; // setting move ID
-
-		//Check if new move is better than old move
-		if (current_board.get_Player() == _BLACK_)
+		const auto possible_move = min_max_search(nnp, next_board, depth - 1); // next_board has called move_piece
+		possible_move[0] = i; // setting move ID
+		if (max_node[1] <= possible_move[1])
 		{
-			if (max_node.at(1) <= possible_move.at(1))
-			{
-				max_node.at(0) = possible_move.at(0);
-				max_node.at(1) = possible_move.at(1);
-			}
-		}
-		else
-		{
-			if (max_node.at(1) >= possible_move.at(1))
-			{
-				max_node.at(0) = possible_move.at(0);
-				max_node.at(1) = possible_move.at(1);
-			}
+			max_node[0] = possible_move[0];
+			max_node[1] = possible_move[1];
 		}
 	}
-	//std::cout << max_node.at(0) << max_node.at(1) << std::endl;
-	//std::cout << "value is:" << max_node.at(1) << std::endl;
-	cout << "node value chosen: id: " << max_node.at(0) << " ~ " << max_node.at(1) << endl;
 	return max_node;
 }
 
 
-std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
+//std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
+double * alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
 {
-	if (depth < 0 || depth >= 20) //if depth is negative or too large, don't run program
-	{
-		std::vector<double> answer;
-		answer.push_back(0);
-		answer.push_back(1);
-		return answer;
-	}
 	if (depth == 0)
 	{
-		std::vector<double> answer;
-		answer.push_back(0);
-		const auto board_as_vector = current_board.get_board_as_vector();
-		nnp.set_input_layer(board_as_vector);
+		double answer[2];
+		nnp.set_input_layer(current_board.get_board_as_vector());
+		//const auto begin_calc = std::chrono::high_resolution_clock::now();
 		nnp.calculate();
-		answer.push_back(nnp.get_result());
+		//const auto end_calc = std::chrono::high_resolution_clock::now();
+		//const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
+		//cout << ns_calc << endl;
+		answer[0] = 0;
+		answer[1] = nnp.get_result();
 		//std::cout << "end of depth, value is:" << answer.at(1) << std::endl;
 		//int x;
 		//std::cin >> x;
 		return answer;
 	}
 
-
 	Board_tree tree(current_board);
-	std::vector<double> max_node; // max_node = { move_id, move_value }
-
-							   //Stuff to ensure that the below move choice will not happen
-							   //ensure that first move encountered will always be selected
-	if (current_board.get_Player() == _BLACK_)
-	{
-		max_node.push_back(0);
-		max_node.push_back(-10000);
-	}
-	else
-	{
-		max_node.push_back(0);
-		max_node.push_back(10000);
-	}
+	double max_node[2]; // max_node = { move_id, move_value }
+	max_node[0] = 0;
+	max_node[1] = -10000;		// huge negative so that first encountered value is stored
 
 	for (auto i = 0; i < tree.m_number_of_children; i++)
 	{
@@ -1145,47 +1091,40 @@ std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_bo
 
 		if (next_board.is_over())
 		{
-			if (current_board.get_Player() == _BLACK_)
-			{
-				max_node.at(0) = i;
-				max_node.at(1) = 300;
-			}
-			else
-			{
-				max_node.at(0) = i;
-				max_node.at(1) = -300;
-			}
+			if (depth % 2 == 0) {	// even depth: "MY" winning move
+				max_node[0] = i;
+				max_node[1] = 300; }
+			else {					// odd depth: "ENEMY" winning move
+				max_node[0] = i;
+				max_node[1] = -300; }
 			break;
 		}
 
-		std::vector<double>possible_move = alpha_beta(nnp, next_board, depth - 1, alpha, beta);
-		possible_move.at(0) = i;
+		auto possible_move = alpha_beta(nnp, next_board, depth - 1, alpha, beta); // next_board has called move_piece
+		possible_move[0] = i;
 
 		//Check if new move is better than old move
-		if (current_board.get_Player() == _BLACK_)
-		{
-			if (max_node.at(1) <= possible_move.at(1))
+		if (depth % 2 == 0) {
+			if (max_node[1] <= possible_move[1]) 
 			{
-				max_node.at(0) = possible_move.at(0);
-				max_node.at(1) = possible_move.at(1);
-				alpha = std::max(max_node.at(1), alpha);
+				max_node[0] = possible_move[0];
+				max_node[1] = possible_move[1];
+				alpha = std::max(max_node[1], alpha);
 			}
-			
-			if (beta<= alpha)
+			if (beta <= alpha)
 				break;
 		}
-		else
-		{
-			if (max_node.at(1) >= possible_move.at(1))
+		else {
+			if (max_node[1] >= possible_move[1])
 			{
-				max_node.at(0) = possible_move.at(0);
-				max_node.at(1) = possible_move.at(1);
-				beta = std::min(max_node.at(1), beta);
+				max_node[0] = possible_move[0];
+				max_node[1] = possible_move[1];
+				beta = std::min(max_node[1], beta);
 			}
 			if (beta<= alpha)
 				break;
+			}
 		}
-	}
 	//std::cout << max_node.at(0) << max_node.at(1) << std::endl;
 	//std::cout << "value is:" << max_node.at(1) << std::endl;
 	return max_node;

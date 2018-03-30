@@ -32,22 +32,31 @@ PROJ4
 - [ ] Modify draw condition.
 - [ ] Calculate and record branch factor. (mini max or alpha beta)
 - [x] Calculate leaf nodes evaluated. (mini max or alpha beta)
-- [ ] Record leaf nodes evaluated.
-- [ ] Calculate and record expanded (but not evaluated) nodes. (mini max or alpha beta)
+- [x] Record leaf nodes evaluated.
+- [x] Calculate and record expanded (but not evaluated) nodes. (mini max or alpha beta)
 - [x] Remove original `NeuralNetwork`.
 - [ ] Implement alpha-beta pruning. (JK)
 - [ ] Implement iterative deepending search if time allows.
 - [ ] Decide topology.
-- [ ] Provide time per generation trained values.
-  - JH: 80 minutes/generation without alpha-beta pruning (surface pro 3).
+- [ ] Provide time per generation trained values. (IDEALLY 3 SEC/n-PLY-GAME FOR 100 GEN IN 12 HOURS -- n == optimal ply per device)
+  - JH: 80 minutes/4-ply-generation without alpha-beta pruning (surface pro 3).
+    - 40 s/4-ply-game without alpha-beta pruning (average over 8 games).
+    - 28 s/4-ply-game WITH alpha-beta pruning (average over 26 games).
+    - 26 s/4-ply-game WITH alpha-beta pruning but with dummy all 1 inputs (average over 16 games) (this also included time to construct each dummy input).
   - JK:
   - AM:
 - [ ] Examine children and provide proof for correct offspring production.
+- [ ] Don't record unfinished games.
+- [ ] OPTIMIZE FOR TRAINING SPEED.
 
 # Useful Resources
 
 - [Here](https://www.youtube.com/watch?v=bhrC84zp9X8) is the YouTube video that worked for me on getting SFML to work.
 - [Here](https://msdn.microsoft.com/en-us/library/chh3fb0k.aspx) is documentation for pragma optimize to get more accurate timing.
+- 4-PLY TIMING RESULTS WITH ALPHA-BETA PRUNING
+  - Average number of moves per game: 57.5
+  - Average seconds per game: 28.6
+  - Average moves/sec: 2.2
 
 # IMPORTANT
 
@@ -55,6 +64,30 @@ PROJ4
 - With my attempts to use g++ to compile this project, it seemed to have issues with `std::exceptions`. Instead, the system now does a console print out and may or may not return after.
 
 # Versions
+
+## Version 7
+
+### Version 7.1
+
+- Using raw arrays when applicable.
+- Fixed ambiguity of setting evaluated board as positive no matter whose turn (player ID handled outside) for `alpha_beta`.
+- `input` values in `NeuralNetwork_PERF::set_input_layer` casted to double (not sure if this was truncating values).
+
+### Version 7.0
+
+- Class `NeuralNetwork_PERF`:
+  - now requires player initialization so that `m_player_modifier` is initialized with constructor.
+  - no longer has an issue where the piece count layer was not applying `m_player_modifier`.
+  - has new function `get_player_modification` which returns `m_player_modifier` for tracking purposes (may not be useful).
+- Class `OffspringProducer`:
+  - no longer has an issue with incorrect declaration of topology size (brought up by the piece count layer).
+- Function `min_max_search`:
+  - uses a raw array now in attempt to meet computation speed requirement.
+  - now does ***NOT*** handle player identity (as it is handled `NeuralNetwork_PERF` itself through `m_player_modifier`).
+    - This seems to have fixed the issue of suicidal networks.
+- New global int `call_count` to keep track of `min_max_search` calls. Related calculations (leaf nodes, non-leaf nodes, etc) are presented in `LNE.txt` (I forget what this stands for).
+- Cleaned up `main.cpp`'s AI move chooser.
+- Watch `wtf.txt` in `previous_gen_data` for an interesting GEN0 game.
 
 ## Version 6
 
@@ -343,13 +376,12 @@ PROJ4
 - [x] Figuring out how to implement the neural network. (2/14, JH)
 - [x] `NeuralNetwork` should iterate through all boards (currently only one). (2/17, JH)
 - [x] Further optimize speed for `calculate_output`? (2/18, JH)
-- [ ] Even more optimizie for calculate_output. (2/23, JH)
   - (below are timing results of `NeuralNetwork_PERF`)
   - 90,000 BEF/sec => compiled with Visual Studio on a Surface Pro 3 with -O2 turned on
   - 120,000 BEF/sec => compiled with g++ on the desktop in the computer lab without -O2 turned on
   - 290,000 BEF/sec => compiled with g++ on the desktop in the computer lab with -O2 turned on
 - [x] Asexually reproducing `brunette26`. (2/18, JH)
-- [ ] Working on implementing `NeuralNetwork_PERF`'s `calculate` function to `mini_max_search`. (3/15, JH)
+- [x] Working on implementing `NeuralNetwork_PERF`'s `calculate` function to `mini_max_search`. (3/15, JH)
 - Here's a potentially helpful chart for all the playable positions:
 
 |P|L|A|Y|A|B|L|E|
