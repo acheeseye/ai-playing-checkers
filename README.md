@@ -14,15 +14,15 @@ PROJ3
 
 - [x] Modify random neural network to specified uniformly distributed range. (2/18, JH)
 - [x] Given neural network, create offspring. (2/18, JH)
-- [x] Test program to check correctly generated gaussian pseudo-random values (non NN-related).
-- [ ] Test program to check offsprings lie on the gaussian curve.
+- [x] Test program to check correctly generated Gaussian pseudo-random values (non NN-related).
+- [ ] Test program to check offspring lie on the Gaussian curve.
 
 PROJ4
 
 - [ ] Implement alpha-beta pruning.
 - [x] Generation manager (`OffspringProducer`).
 - [x] Determine file storage structure.
-- [ ] Testing (hand examine games played & test children in gaussian curve).
+- [ ] Testing (hand examine games played & test children in Gaussian curve).
 
 # Task List
 
@@ -35,8 +35,8 @@ PROJ4
 - [x] Record leaf nodes evaluated.
 - [x] Calculate and record expanded (but not evaluated) nodes. (mini max or alpha beta)
 - [x] Remove original `NeuralNetwork`.
-- [ ] Implement alpha-beta pruning. (JK)
-- [ ] Implement iterative deepending search if time allows.
+- [x] Implement alpha-beta pruning. (JK)
+- [ ] Implement iterative deepening search if time allows.
 - [ ] Decide topology.
 - [ ] Provide time per generation trained values. (IDEALLY 3 SEC/n-PLY-GAME FOR 100 GEN IN 12 HOURS -- n == optimal ply per device)
   - JH: 80 minutes/4-ply-generation without alpha-beta pruning (surface pro 3).
@@ -46,7 +46,7 @@ PROJ4
   - JK:
   - AM:
 - [ ] Examine children and provide proof for correct offspring production.
-- [ ] Don't record unfinished games.
+- [x] Don't record unfinished games.
 - [ ] OPTIMIZE FOR TRAINING SPEED.
 
 # Useful Resources
@@ -66,6 +66,11 @@ PROJ4
 # Versions
 
 ## Version 7
+
+### Version 7.2
+
+- Global bool `GLOBAL_DO_WRITE` set as false (can change) so that unfinished games are not constantly recorded due to testing.
+- `REPLAY_SAVED_GAME` now handles replaying games consecutively.
 
 ### Version 7.1
 
