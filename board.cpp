@@ -1061,7 +1061,7 @@ std::vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & curren
 //std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
 vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
 {
-	cout << "    ";
+	//cout << "    ";
 	if(depth < 0)
 	{
 		cout << "problem" << endl;
@@ -1077,7 +1077,7 @@ vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, 
 		//const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
 		//cout << ns_calc << endl;
 		answer[1] = nnp.get_result();
-		cout << nnp.get_result() << endl;
+		//cout << nnp.get_result() << endl;
 		//std::cout << "end of depth, value is:" << answer.at(1) << std::endl;
 		//int x;
 		//std::cin >> x;
