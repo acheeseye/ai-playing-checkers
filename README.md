@@ -24,6 +24,10 @@ PROJ4
 - [x] Determine file storage structure.
 - [ ] Testing (hand examine games played & test children in Gaussian curve).
 
+# IMPORTANT
+
+- g++ compliant files added in `g++_timing_exes`. If the executables do not work for you, I have instructions also in that directory if you need it.
+
 # Task List
 
 - [x] Apply board evaluation function to mini-max/alpha-beta.
@@ -57,11 +61,6 @@ PROJ4
   - Average number of moves per game: 57.5
   - Average seconds per game: 28.6
   - Average moves/sec: 2.2
-
-# IMPORTANT
-
-- I've commented out gnuplot related files because I could not figure out how to get them to work. (JH)
-- With my attempts to use g++ to compile this project, it seemed to have issues with `std::exceptions`. Instead, the system now does a console print out and may or may not return after.
 
 # Versions
 
