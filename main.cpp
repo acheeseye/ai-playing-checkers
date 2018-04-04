@@ -71,7 +71,7 @@ int call_count;
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = NNvNN;
+int main_state = REPLAY_SAVED_GAME;
 //**********************************************************************************************
 //**********************************************************************************************
 //**********************************************************************************************
@@ -119,7 +119,7 @@ void fn_play_checkers()
 	const string ai_topo = R"(ai-playing-checkers\nn_topologies\GEN0\nn1_brunette26_topology.txt)";
 	const int random_move_count = 0;
 	const int ai_wait_time = 300;
-	GLOBAL_DO_WRITE = false;
+	//GLOBAL_DO_WRITE = false;
 	//****************************************************
 	//****************************************************
 
@@ -546,16 +546,20 @@ int main() {
 		int geninp;
 		cout << "Please enter a VALID generation (does not handle incorrect input): ";
 		cin >> geninp;
-		while (true) {
+		while (true)
+		{
 			int good_input_count = 0;
 			int friendly = -1;
 			int enemy;
-			while (good_input_count != 2) {
+			while (good_input_count != 2)
+			{
 				int cbuf;
-				if (good_input_count == 0) {
-					cout << "Please enter the friendly network: ";
+				if (good_input_count == 0)
+				{
+					cout << endl << "Please enter the friendly network: ";
 				}
-				else {
+				else
+				{
 					cout << "Network " << friendly << " against: ";
 				}
 				cin >> cbuf;
@@ -575,7 +579,7 @@ int main() {
 				}
 			}
 
-			cout << "Replaying Network " << friendly << " against Network " << enemy << endl;
+			cout << endl << "Replaying Network " << friendly << " against Network " << enemy << endl << endl;
 			const string file_name = 
 				"ai-playing-checkers\\nn_topologies\\GEN" + 
 				to_string(geninp) + 
@@ -624,6 +628,8 @@ int main() {
 			{
 				cout << "INCOMPLETE GAME FILE: CANNOT REPLAY GAME" << endl;
 				cout << endl << "press ENTER to quit";
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n');
 				while (cin.get() != '\n');
 				return 0;
 			}
@@ -650,7 +656,7 @@ int main() {
 			}
 
 			int step = 0;
-			const int wait_time = 0;
+			const int wait_time = 300;
 
 			temp_Board board(_RED_);
 
@@ -733,7 +739,10 @@ int main() {
 
 			while (window.isOpen())
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+				if (stepper)
+				{
+					std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+				}
 
 				vector<int> board_status;
 				board_status.resize(32);
