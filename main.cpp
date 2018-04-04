@@ -62,7 +62,7 @@ enum
 	NNP_TEST
 };
 
-bool GLOBAL_DO_WRITE;
+bool GLOBAL_DO_WRITE = true;
 char GLOBAL_WINNER_DENOTER;
 int eval_count;
 int call_count;
@@ -71,7 +71,7 @@ int call_count;
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = PLAY_CHECKERS;
+int main_state = NNvNN;
 //**********************************************************************************************
 //**********************************************************************************************
 //**********************************************************************************************
@@ -275,14 +275,12 @@ void fn_play_checkers()
 				else
 				{
 
-					vector<double> min_max_move = min_max_search(nnp, board, 1);
-					vector<double> alpha_beta_move = alpha_beta(nnp, board, 1, -999999, 999999);
-
-					next_move = min_max_move[0];
-					cout << "min max move: " << next_move << " "<< min_max_move[1]<< endl;
+					//vector<double> min_max_move = min_max_search(nnp, board, 1);
+					vector<double> alpha_beta_move = alpha_beta(nnp, board, 10, -999999, 999999);
+					next_move = alpha_beta_move[0];
 					cout << "alpha beta move: " << alpha_beta_move[0] << " "<<alpha_beta_move[1]<< endl;
-					double val = min_max_move[1];
-					cout << "chosen: " << next_move << " " << val << endl;
+					//double val = min_max_move[1];
+					//cout << "chosen: " << next_move << " " << val << endl;
 				}
 				board.move_piece(next_move);
 				board.write_board_to_file(to_file);
@@ -1307,15 +1305,18 @@ int main() {
 
 						else if (board.get_Player() == _RED_ && !board.get_move_list().empty()) {
 							//const auto begin_calc = std::chrono::high_resolution_clock::now();
-							//double * min_max_move = alpha_beta(nnpr, board, ply, -10000, 10000);
+							vector<double> alpha_beta_move = alpha_beta(nnpr, board, ply, -10000, 10000);
 							//const auto end_calc = std::chrono::high_resolution_clock::now();
 							//const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
 							//const auto s_per_calc = double(ns_calc) / double(1000) / double(1000000);
 							// << s_per_calc << endl;
-							//next_move = min_max_move[0];
+							next_move = alpha_beta_move[0];
 						}
 
 						else if (board.get_Player() == _BLACK_ && !board.get_move_list().empty()) {
+							vector<double> alpha_beta_move = alpha_beta(nnpr, board, ply, -10000, 10000);
+							next_move = alpha_beta_move[0];
+
 							//const auto begin_calc = std::chrono::high_resolution_clock::now();
 							//double * min_max_move = alpha_beta(nnpb, board, ply, -10000, 10000);
 							//const auto end_calc = std::chrono::high_resolution_clock::now();
