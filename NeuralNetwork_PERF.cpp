@@ -61,35 +61,26 @@ void NeuralNetwork_PERF::calculate()
 {
 	m_weight_iter = 0;
 
-	for (int l_1 = 0; l_1 < GLOBAL_LAYER_1_NC; ++l_1)
-	{
-		for (int l_0 = 0; l_0 < GLOBAL_LAYER_0_NC; ++l_0)
-		{
+	for (int l_1 = 0; l_1 < GLOBAL_LAYER_1_NC; ++l_1) {
+		for (int l_0 = 0; l_0 < GLOBAL_LAYER_0_NC; ++l_0) {
 			m_nodes[GLOBAL_LAYER_0_NC + l_1] += m_nodes[l_0] * m_weights[m_weight_iter];
 			m_weight_iter++;
 		}
 		m_nodes[GLOBAL_LAYER_0_NC + l_1] = apply_sigma(m_nodes[GLOBAL_LAYER_0_NC + l_1]);
 	}
-
-	for (int l_2 = 0; l_2 < GLOBAL_LAYER_2_NC; ++l_2)
-	{
-		for (int l_1 = 0; l_1 < GLOBAL_LAYER_1_NC; ++l_1)
-		{
+	for (int l_2 = 0; l_2 < GLOBAL_LAYER_2_NC; ++l_2) {
+		for (int l_1 = 0; l_1 < GLOBAL_LAYER_1_NC; ++l_1) {
 			m_nodes[GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + l_2] += m_nodes[l_1] * m_weights[m_weight_iter];
 			m_weight_iter++;
 		}
 		m_nodes[GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + l_2] = apply_sigma(m_nodes[GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + l_2]);
 	}
-
-	for (int l_3 = 0; l_3 < GLOBAL_LAYER_3_NC; ++l_3)
-	{
-		for (int l_2 = 0; l_2 < GLOBAL_LAYER_2_NC; ++l_2)
-		{
+	for (int l_3 = 0; l_3 < GLOBAL_LAYER_3_NC; ++l_3) {
+		for (int l_2 = 0; l_2 < GLOBAL_LAYER_2_NC; ++l_2) {
 			m_nodes[GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + GLOBAL_LAYER_2_NC + l_3] += m_nodes[l_2] * m_weights[m_weight_iter];
 			m_weight_iter++;
 		}
-		for (int l_0 = 0; l_0 < GLOBAL_LAYER_0_NC; ++l_0)
-		{
+		for (int l_0 = 0; l_0 < GLOBAL_LAYER_0_NC; ++l_0) {
 			m_nodes[GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + GLOBAL_LAYER_2_NC + l_3] += m_nodes[l_0] * m_player_modifier * m_weights[m_weight_iter];
 			m_weight_iter++;
 		}

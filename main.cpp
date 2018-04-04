@@ -64,14 +64,15 @@ enum
 
 bool GLOBAL_DO_WRITE = true;
 char GLOBAL_WINNER_DENOTER;
-int eval_count;
+int mms_eval_count;
+int ab_eval_count;
 int call_count;
 
 //**********************************************************************************************
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = NNvNN;
+int main_state = NEURAL_NETWORK_TIMING_PERF;
 //**********************************************************************************************
 //**********************************************************************************************
 //**********************************************************************************************
@@ -266,7 +267,8 @@ void fn_play_checkers()
 		{
 			if (red_is_ai && board.get_Player() == _RED_ && !board.get_move_list().empty())
 			{
-				eval_count = 0;
+				ab_eval_count = 0;
+				mms_eval_count = 0;
 				if (random_moves_made < random_move_count)
 				{
 					next_move = rand() % board.get_move_list().size();
@@ -276,16 +278,21 @@ void fn_play_checkers()
 				{
 
 					//vector<double> min_max_move = min_max_search(nnp, board, 1);
-					vector<double> alpha_beta_move = alpha_beta(nnp, board, 10, -999999, 999999);
+					
+					vector<double> alpha_beta_move = alpha_beta(nnp, board, 6, -999999, 999999);
+					vector<double> min_max_move = min_max_search(nnp, board, 6);
 					next_move = alpha_beta_move[0];
 					cout << "alpha beta move: " << alpha_beta_move[0] << " "<<alpha_beta_move[1]<< endl;
 					//double val = min_max_move[1];
+				
 					//cout << "chosen: " << next_move << " " << val << endl;
+				
 				}
 				board.move_piece(next_move);
 				board.write_board_to_file(to_file);
-				cout << "eval count: " << eval_count << endl;
-				LNE_fout << "gen" << osp.get_current_generation_id() << ": " << eval_count << endl;
+				cout << "mms eval count: " << mms_eval_count << endl;
+				cout << "ab eval count: " << ab_eval_count << endl;
+				//LNE_fout << "gen" << osp.get_current_generation_id() << ": " << eval_count << endl;
 				window_loop_cycles = 0;
 			}
 			else if (black_is_ai && board.get_Player() == _BLACK_ && !board.get_move_list().empty())
@@ -956,7 +963,7 @@ int main() {
 	else if (main_state == NEURAL_NETWORK_TIMING_PERF)
 	{
 		OffspringProducer osp;
-		vector<int> input = {
+		const vector<int> input = {
 			-1,-1,-1,-1,
 			-1,-1,-1,-1,
 			-1,-1,-1,-1,
@@ -968,7 +975,7 @@ int main() {
 		};
 
 		NeuralNetwork_PERF nn0(_RED_);
-//		nn0.set_input_layer(input);
+		nn0.set_input_layer(input);
 		nn0.set_topology(osp.generate_random_topology());
 
 		cout.precision(6);
@@ -1110,6 +1117,36 @@ int main() {
 				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
 				t_sum += (ns);
 				//cout << nn0.get_output() << endl;
+							}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 1000000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 2000000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
 			}
 			double avg = t_sum / times;
 			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
@@ -1298,7 +1335,8 @@ int main() {
 					while (!board.is_over() && move_count < 100)
 					{
 						//const auto move_begin = std::chrono::high_resolution_clock::now();
-						eval_count = 0;
+						mms_eval_count = 0;
+						ab_eval_count = 0;
 						call_count = 1;
 
 						if (move_count < random_move_count) next_move = rand() % board.get_move_list().size();

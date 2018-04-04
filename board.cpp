@@ -31,7 +31,8 @@ using std::ofstream;
 using std::bitset;
 #include <chrono>
 
-extern int eval_count;
+extern int mms_eval_count;
+extern int ab_eval_count;
 extern int call_count;
 
 extern bool GLOBAL_DO_WRITE;
@@ -1011,25 +1012,18 @@ std::vector<int> piece_count_search(temp_Board & current_board, int depth)
 std::vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth)
 {
 	//call_count++;
-	if (depth == 0)
-	{
+	if (depth == 0) {
 		vector<double> answer = { 0, 0 };
-		const auto board_as_vector = current_board.get_board_as_vector();
-		nnp.set_input_layer(board_as_vector);
+		nnp.set_input_layer(current_board.get_board_as_vector());
 		nnp.calculate();
-		//eval_count++;
+		mms_eval_count++;
 		answer[1] = nnp.get_result();
-		cout << nnp.get_result() << endl;
 		return answer;
 	}
 	const Board_tree tree(current_board);
 	vector<double> max_node = { 0, -10000 }; // max_node = { move_id, move_value }
 
-	//max_node[0] = 0;
-	//max_node[1] = -10000;
-
-	for (auto i = 0; i < tree.m_number_of_children; i++)
-	{
+	for (auto i = 0; i < tree.m_number_of_children; i++) {
 		auto next_board(current_board);
 		next_board.move_piece(i,true);
 		
@@ -1057,83 +1051,54 @@ std::vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & curren
 	return max_node;
 }
 
-
-//std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
 vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
 {
-	//cout << "    ";
-	if(depth < 0)
-	{
-		cout << "problem" << endl;
-	}
-	if (depth == 0)
-	{
-		vector<double> answer = { 0, 0 };
+	if (depth == 0) {
 		nnp.set_input_layer(current_board.get_board_as_vector());
-		//const auto begin_calc = std::chrono::high_resolution_clock::now();
 		nnp.calculate();
-		eval_count++;
-		//const auto end_calc = std::chrono::high_resolution_clock::now();
-		//const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
-		//cout << ns_calc << endl;
-		answer[1] = nnp.get_result();
-		//cout << nnp.get_result() << endl;
-		//std::cout << "end of depth, value is:" << answer.at(1) << std::endl;
-		//int x;
-		//std::cin >> x;
+		vector<double> answer = { 0, nnp.get_result() };		
 		return answer;
 	}
 
 	Board_tree tree(current_board);
 	vector<double> max_node = { 0, -10000 }; // max_node = { move_id, move_value }
 
-	for (auto i = 0; i < tree.m_number_of_children; i++)
-	{
-		//std::cout << i << std::endl;
+	for (auto i = 0; i < tree.m_number_of_children; i++) {
 		temp_Board next_board(current_board);
 		next_board.move_piece(i, true);
 
-		//draw_board(next_board);
-		//std::cout << std::endl;
-
-		if (next_board.is_over())
-		{
-			if (depth % 2 == 0) {	// even depth: "MY" winning move
+		if (next_board.is_over()) {
+			if (depth % 2 == 0) {			// even depth: "MY" winning move
 				max_node[0] = i;
-				max_node[1] = 300; }
-			else {					// odd depth: "ENEMY" winning move
+				max_node[1] = 300; 
+			} else {						// odd depth: "ENEMY" winning move
 				max_node[0] = i;
-				max_node[1] = -300; }
+				max_node[1] = -300; 
+			}
 			break;
 		}
 
-		auto possible_move = alpha_beta(nnp, next_board, depth - 1, alpha, beta); // next_board has called move_piece
+		auto possible_move = alpha_beta(nnp, next_board, depth - 1, alpha, beta);
 		possible_move[0] = i;
 
-		//Check if new move is better than old move
 		if (depth % 2 == 0) {
-			if (max_node[1] <= possible_move[1]) 
-			{
+			if (max_node[1] <= possible_move[1]) {
 				max_node[0] = possible_move[0];
 				max_node[1] = possible_move[1];
 				alpha = std::max(max_node[1], alpha);
 			}
-			if (beta <= alpha)
-				break;
+			if (beta <= alpha) break;
 		}
-		else {
-			if (max_node[1] <= possible_move[1])
-			{
+		else 
+		{
+			if (max_node[1] <= possible_move[1]) {
 				max_node[0] = possible_move[0];
 				max_node[1] = possible_move[1];
 				beta = std::min(max_node[1], beta);
 			}
-			if (beta<= alpha)
-				break;
-			}
+			if (beta <= alpha) break;
 		}
-	//std::cout << max_node.at(0) << max_node.at(1) << std::endl;
-	//std::cout << "value is:" << max_node.at(1) << std::endl;
+	}
 	return max_node;
 }
 
