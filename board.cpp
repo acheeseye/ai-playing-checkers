@@ -1008,26 +1008,25 @@ std::vector<int> piece_count_search(temp_Board & current_board, int depth)
 	return max_node;
 }
 
-double * min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth)
+std::vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth)
 {
 	//call_count++;
 	if (depth == 0)
 	{
-		double answer[2];
-		//const auto board_as_vector = current_board.get_board_as_vector();
-		//nnp.set_input_layer(board_as_vector);
-		//nnp.calculate();
+		vector<double> answer = { 0, 0 };
+		const auto board_as_vector = current_board.get_board_as_vector();
+		nnp.set_input_layer(board_as_vector);
+		nnp.calculate();
 		//eval_count++;
-		answer[0] = 0;
-		answer[1] = 0;//nnp.get_result();
-		//cout << nnp.get_result() << endl;
+		answer[1] = nnp.get_result();
+		cout << nnp.get_result() << endl;
 		return answer;
 	}
 	const Board_tree tree(current_board);
-	double max_node[2]; // max_node = { move_id, move_value }
+	vector<double> max_node = { 0, -10000 }; // max_node = { move_id, move_value }
 
-	max_node[0] = 0;
-	max_node[1] = -10000;
+	//max_node[0] = 0;
+	//max_node[1] = -10000;
 
 	for (auto i = 0; i < tree.m_number_of_children; i++)
 	{
@@ -1047,7 +1046,7 @@ double * min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, in
 			break;
 		}
 
-		const auto possible_move = min_max_search(nnp, next_board, depth - 1); // next_board has called move_piece
+		auto possible_move = min_max_search(nnp, next_board, depth - 1); // next_board has called move_piece
 		possible_move[0] = i; // setting move ID
 		if (max_node[1] <= possible_move[1])
 		{
@@ -1060,7 +1059,7 @@ double * min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, in
 
 
 //std::vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
-double * alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
+vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
 {
 	cout << "    ";
 	if(depth < 0)
@@ -1069,7 +1068,7 @@ double * alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int de
 	}
 	if (depth == 0)
 	{
-		double answer[2];
+		vector<double> answer = { 0, 0 };
 		nnp.set_input_layer(current_board.get_board_as_vector());
 		//const auto begin_calc = std::chrono::high_resolution_clock::now();
 		nnp.calculate();
@@ -1077,7 +1076,6 @@ double * alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int de
 		//const auto end_calc = std::chrono::high_resolution_clock::now();
 		//const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
 		//cout << ns_calc << endl;
-		answer[0] = 0;
 		answer[1] = nnp.get_result();
 		cout << nnp.get_result() << endl;
 		//std::cout << "end of depth, value is:" << answer.at(1) << std::endl;
@@ -1087,9 +1085,7 @@ double * alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int de
 	}
 
 	Board_tree tree(current_board);
-	double max_node[2]; // max_node = { move_id, move_value }
-	max_node[0] = 0;
-	max_node[1] = 10000;		// huge negative so that first encountered value is stored
+	vector<double> max_node = { 0, -10000 }; // max_node = { move_id, move_value }
 
 	for (auto i = 0; i < tree.m_number_of_children; i++)
 	{

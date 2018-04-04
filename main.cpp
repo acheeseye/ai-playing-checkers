@@ -275,8 +275,12 @@ void fn_play_checkers()
 				else
 				{
 					//double * min_max_move = min_max_search(nnp, board, ply);
-					double* min_max_move = alpha_beta(nnp, board, 4, -999999, 999999);
+					vector<double> min_max_move = min_max_search(nnp, board, 1);
+					vector<double> alpha_beta_move = alpha_beta(nnp, board, 1, -999999, 999999);
+
 					next_move = min_max_move[0];
+					cout << "min max move: " << next_move << endl;
+					cout << "alpha beta move: " << alpha_beta_move[0] << endl;
 					double val = min_max_move[1];
 					cout << "chosen: " << next_move << " " << val << endl;
 				}
@@ -1303,22 +1307,22 @@ int main() {
 
 						else if (board.get_Player() == _RED_ && !board.get_move_list().empty()) {
 							//const auto begin_calc = std::chrono::high_resolution_clock::now();
-							double * min_max_move = alpha_beta(nnpr, board, ply, -10000, 10000);
+							//double * min_max_move = alpha_beta(nnpr, board, ply, -10000, 10000);
 							//const auto end_calc = std::chrono::high_resolution_clock::now();
 							//const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
 							//const auto s_per_calc = double(ns_calc) / double(1000) / double(1000000);
 							// << s_per_calc << endl;
-							next_move = min_max_move[0];
+							//next_move = min_max_move[0];
 						}
 
 						else if (board.get_Player() == _BLACK_ && !board.get_move_list().empty()) {
 							//const auto begin_calc = std::chrono::high_resolution_clock::now();
-							double * min_max_move = alpha_beta(nnpb, board, ply, -10000, 10000);
+							//double * min_max_move = alpha_beta(nnpb, board, ply, -10000, 10000);
 							//const auto end_calc = std::chrono::high_resolution_clock::now();
 							//const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
 							//const auto s_per_calc = double(ns_calc) / double(1000) / double(1000000);
 							//cout << s_per_calc << endl;
-							next_move = min_max_move[0];
+							//next_move = min_max_move[0];
 						}
 
 						board.move_piece(next_move);

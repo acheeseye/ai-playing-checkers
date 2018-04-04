@@ -161,8 +161,8 @@ public:
 	friend vector<int> piece_count_search(temp_Board & current_board, int depth);
 	//friend vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth); //ist entry is move, 2nd is value
 	//friend vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta);
-	friend double * min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth); //ist entry is move, 2nd is value
-	friend double * alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta);
+	friend vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth); //ist entry is move, 2nd is value
+	friend vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta);
 private:
 	int m_number_of_children;
 };
