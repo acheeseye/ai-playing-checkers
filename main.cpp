@@ -114,7 +114,7 @@ void fn_play_checkers()
 	const auto red_is_ai = true;
 	const auto black_is_ai = false;
 	const int starting_player = _RED_;
-	const int ply = 1;
+	const int ply = 6;
 	const string ai_topo = R"(ai-playing-checkers\nn_topologies\GEN0\nn1_brunette26_topology.txt)";
 	const int random_move_count = 0;
 	const int ai_wait_time = 300;
@@ -272,8 +272,8 @@ void fn_play_checkers()
 				}
 				else
 				{
-					//double * min_max_move = min_max_search(nnp, board, ply);
-					double* min_max_move = alpha_beta(nnp, board, 4, -999999, 999999);
+					double * min_max_move = min_max_search(nnp, board, ply);
+					//double* min_max_move = alpha_beta(nnp, board, ply, -999999, 999999);
 					next_move = min_max_move[0];
 					double val = min_max_move[1];
 					cout << next_move << " " << val << endl;
