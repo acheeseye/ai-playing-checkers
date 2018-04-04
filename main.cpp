@@ -115,7 +115,7 @@ void fn_play_checkers()
 	const auto red_is_ai = true;
 	const auto black_is_ai = false;
 	const int starting_player = _RED_;
-	const int ply = 2;
+	const int ply = 20;
 	const string ai_topo = R"(ai-playing-checkers\nn_topologies\GEN0\nn1_brunette26_topology.txt)";
 	const int random_move_count = 0;
 	const int ai_wait_time = 300;
