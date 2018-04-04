@@ -62,6 +62,7 @@ enum
 	NNP_TEST
 };
 
+bool GLOBAL_DO_WRITE;
 char GLOBAL_WINNER_DENOTER;
 int eval_count;
 int call_count;
@@ -114,10 +115,11 @@ void fn_play_checkers()
 	const auto red_is_ai = true;
 	const auto black_is_ai = false;
 	const int starting_player = _RED_;
-	const int ply = 6;
+	const int ply = 2;
 	const string ai_topo = R"(ai-playing-checkers\nn_topologies\GEN0\nn1_brunette26_topology.txt)";
 	const int random_move_count = 0;
 	const int ai_wait_time = 300;
+	GLOBAL_DO_WRITE = false;
 	//****************************************************
 	//****************************************************
 
@@ -272,11 +274,15 @@ void fn_play_checkers()
 				}
 				else
 				{
-					double * min_max_move = min_max_search(nnp, board, ply);
-					//double* min_max_move = alpha_beta(nnp, board, ply, -999999, 999999);
+
+					vector<double> min_max_move = min_max_search(nnp, board, 1);
+					vector<double> alpha_beta_move = alpha_beta(nnp, board, 1, -999999, 999999);
+
 					next_move = min_max_move[0];
+					cout << "min max move: " << next_move << " "<< min_max_move[1]<< endl;
+					cout << "alpha beta move: " << alpha_beta_move[0] << " "<<alpha_beta_move[1]<< endl;
 					double val = min_max_move[1];
-					cout << next_move << " " << val << endl;
+					cout << "chosen: " << next_move << " " << val << endl;
 				}
 				board.move_piece(next_move);
 				board.write_board_to_file(to_file);
@@ -538,366 +544,408 @@ int main() {
 	}
 	else if (main_state == REPLAY_SAVED_GAME)
 	{
-		const string file_name = R"(ai-playing-checkers\nn_topologies\GEN4\games_played\2_0.txt)";
-
-		ifstream in_file;
-		in_file.open(file_name);
-
-		if (!in_file.is_open())
-		{
-			cout << "*********************************************************" << endl;
-			cout << "ERROR OPENING FILE: PROBABLY NOT READING GAME DATA" << endl;
-			cout << "PLEASE CHECK IF THE FILE NAME IS CORRECT FOR YOUR VERSION" << endl;
-			cout << "*********************************************************" << endl;
-			cout << endl << "press ENTER to quit";
-			while (cin.get() != '\n');
-			return 0;
-		}
-
-		vector<vector<int>> parsed_states;
-
-		string line;
-		int token;
-
-		while (getline(in_file, line))
-		{
-			vector<int> parsed_move;
-			stringstream ss(line);
-
-			while (ss >> token)
-			{
-				parsed_move.push_back(token);
-			}
-			parsed_states.push_back(parsed_move);
-		}
-
-		in_file.close();
-
-		if (parsed_states[parsed_states.size() - 1][0] != 100 &&
-			parsed_states[parsed_states.size() - 1][0] != -100 &&
-			parsed_states[parsed_states.size() - 1][0] != 50)
-		{
-			cout << "INCOMPLETE GAME FILE: CANNOT REPLAY GAME" << endl;
-			cout << endl << "press ENTER to quit";
-			while (cin.get() != '\n');
-			return 0;
-		}
-
-		bool player_is_red = false;
-		bool red_moved = false;
-		bool go_red = false;
-
-		for (int k = 0; k < 12; ++k)
-		{
-			if (parsed_states[1][k] != -1)
-			{
-				red_moved = true;
-			}
-		}
-		if (red_moved)
-		{
-			player_is_red = true;
-		}
-
-		if (player_is_red)
-		{
-			go_red = true;
-		}
-
-		int step = 0;
-		const int wait_time = 0;
-
-		temp_Board board(_RED_);
-
-		bool last_move = false;
-
-		unsigned int board_size = 8;
-		unsigned int board_width = 700;
-		unsigned int board_height = 700;
-		unsigned int side_display_width = 200;
-		unsigned int board_boarder = 30;
-		unsigned int slot_width = (board_width - board_boarder * 2) / board_size;
-		unsigned int slot_height = (board_width - board_boarder * 2) / board_size;
-		unsigned int piece_distance_from_edge = 10;
-
-		// SFML INITIALIZATIONS
-		sf::RenderWindow window(sf::VideoMode(board_width + side_display_width, board_height), "CHECKERS");
-
-		sf::RectangleShape board_base(sf::Vector2f(board_width, board_height));
-		sf::RectangleShape selector(sf::Vector2f(slot_width, slot_height));
-		sf::RectangleShape slot(sf::Vector2f(slot_width, slot_height));
-		sf::Sprite piece;
-		piece.setScale(0.2375, 0.2375);
-
-		sf::Vector2f board_base_origin = board_base.getPosition();
-		sf::Vector2f slot_origin = board_base_origin + sf::Vector2f(board_boarder, board_boarder);
-
-		board_base.setFillColor(sf::Color(85, 35, 5));
-		selector.setFillColor(sf::Color::Transparent);
-		selector.setOutlineThickness(10);
-		selector.setOutlineColor(sf::Color(55, 0, 130));
-
-		sf::Font font;
-
-		//sorry, for my version I have to enter the "ai-playing-checkers" direcotry to open the files
-		//just remove the "ai-playing-checkers/" part of the string for it to work for you (probably)
-		if (!font.loadFromFile("ai-playing-checkers/res/cour.ttf"))
-		{
-			cout << "font load failed" << endl;
-		}
-
-		sf::Texture red_king;
-		if (!red_king.loadFromFile("ai-playing-checkers/res/red_king.png"))
-		{
-			cout << "red_king load failed" << endl;
-		}
-		red_king.setSmooth(true);
-
-		sf::Texture red_soldier;
-		if (!red_soldier.loadFromFile("ai-playing-checkers/res/red_soldier.png"))
-		{
-			cout << "red_soldier load failed" << endl;
-		}
-		red_soldier.setSmooth(true);
-
-		sf::Texture black_king;
-		if (!black_king.loadFromFile("ai-playing-checkers/res/black_king.png"))
-		{
-			cout << "black_king load failed" << endl;
-		}
-		black_king.setSmooth(true);
-
-		sf::Texture black_soldier;
-		if (!black_soldier.loadFromFile("ai-playing-checkers/res/black_soldier.png"))
-		{
-			cout << "black_soldier load failed" << endl;
-		}
-		black_soldier.setSmooth(true);
-
-		sf::Texture unseen_piece;
-		if (!unseen_piece.loadFromFile("ai-playing-checkers/res/empty.png"))
-		{
-			cout << "unseen_piece load failed" << endl;
-		}
-
-		srand(time(NULL));
-
-		bool stepper = false;
-
-		sf::Event event;
-
-		while (window.isOpen())
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
-
-			vector<int> board_status;
-			board_status.resize(32);
-
-
-			//*************************************************************************
-			// EVENT POLLER -- ADD RUNTIME EVENTS HERE
-			//*************************************************************************
-
-			while (window.pollEvent(event))
-			{
-				if (event.type == sf::Event::KeyPressed)
+		cout << "main_state: REPLAY_SAVED_GAME" << endl << endl;
+		int geninp;
+		cout << "Please enter a VALID generation (does not handle incorrect input): ";
+		cin >> geninp;
+		while (true) {
+			int good_input_count = 0;
+			int friendly = -1;
+			int enemy;
+			while (good_input_count != 2) {
+				int cbuf;
+				if (good_input_count == 0) {
+					cout << "Please enter the friendly network: ";
+				}
+				else {
+					cout << "Network " << friendly << " against: ";
+				}
+				cin >> cbuf;
+				if (cbuf < 0 || cbuf > GLOBAL_MAX_POPULATION_PER_GEN - 1)
 				{
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+					cout << "INVALID INPUT" << endl;
+				}
+				else if (good_input_count == 0)
+				{
+					friendly = cbuf;
+					good_input_count++;
+				}
+				else if (good_input_count == 1)
+				{
+					enemy = cbuf;
+					good_input_count++;
+				}
+			}
+
+			cout << "Replaying Network " << friendly << " against Network " << enemy << endl;
+			const string file_name = 
+				"ai-playing-checkers\\nn_topologies\\GEN" + 
+				to_string(geninp) + 
+				"\\games_played\\" +
+				to_string(friendly) +
+				"_" +
+				to_string(enemy) +
+				".txt";
+
+			ifstream in_file;
+			in_file.open(file_name);
+
+			if (!in_file.is_open())
+			{
+				cout << "*********************************************************" << endl;
+				cout << "ERROR OPENING FILE: PROBABLY NOT READING GAME DATA" << endl;
+				cout << "PLEASE CHECK IF THE FILE NAME IS CORRECT FOR YOUR VERSION" << endl;
+				cout << "*********************************************************" << endl;
+				cout << endl << "press ENTER to quit";
+				while (cin.get() != '\n');
+				return 0;
+			}
+
+			vector<vector<int>> parsed_states;
+
+			string line;
+			int token;
+
+			while (getline(in_file, line))
+			{
+				vector<int> parsed_move;
+				stringstream ss(line);
+
+				while (ss >> token)
+				{
+					parsed_move.push_back(token);
+				}
+				parsed_states.push_back(parsed_move);
+			}
+
+			in_file.close();
+
+			if (parsed_states[parsed_states.size() - 1][0] != 100 &&
+				parsed_states[parsed_states.size() - 1][0] != -100 &&
+				parsed_states[parsed_states.size() - 1][0] != 50)
+			{
+				cout << "INCOMPLETE GAME FILE: CANNOT REPLAY GAME" << endl;
+				cout << endl << "press ENTER to quit";
+				while (cin.get() != '\n');
+				return 0;
+			}
+
+			bool player_is_red = false;
+			bool red_moved = false;
+			bool go_red = false;
+
+			for (int k = 0; k < 12; ++k)
+			{
+				if (parsed_states[1][k] != -1)
+				{
+					red_moved = true;
+				}
+			}
+			if (red_moved)
+			{
+				player_is_red = true;
+			}
+
+			if (player_is_red)
+			{
+				go_red = true;
+			}
+
+			int step = 0;
+			const int wait_time = 0;
+
+			temp_Board board(_RED_);
+
+			bool last_move = false;
+
+			unsigned int board_size = 8;
+			unsigned int board_width = 700;
+			unsigned int board_height = 700;
+			unsigned int side_display_width = 200;
+			unsigned int board_boarder = 30;
+			unsigned int slot_width = (board_width - board_boarder * 2) / board_size;
+			unsigned int slot_height = (board_width - board_boarder * 2) / board_size;
+			unsigned int piece_distance_from_edge = 10;
+
+			// SFML INITIALIZATIONS
+			sf::RenderWindow window(sf::VideoMode(board_width + side_display_width, board_height), "CHECKERS");
+
+			sf::RectangleShape board_base(sf::Vector2f(board_width, board_height));
+			sf::RectangleShape selector(sf::Vector2f(slot_width, slot_height));
+			sf::RectangleShape slot(sf::Vector2f(slot_width, slot_height));
+			sf::Sprite piece;
+			piece.setScale(0.2375, 0.2375);
+
+			sf::Vector2f board_base_origin = board_base.getPosition();
+			sf::Vector2f slot_origin = board_base_origin + sf::Vector2f(board_boarder, board_boarder);
+
+			board_base.setFillColor(sf::Color(85, 35, 5));
+			selector.setFillColor(sf::Color::Transparent);
+			selector.setOutlineThickness(10);
+			selector.setOutlineColor(sf::Color(55, 0, 130));
+
+			sf::Font font;
+
+			//sorry, for my version I have to enter the "ai-playing-checkers" direcotry to open the files
+			//just remove the "ai-playing-checkers/" part of the string for it to work for you (probably)
+			if (!font.loadFromFile("ai-playing-checkers/res/cour.ttf"))
+			{
+				cout << "font load failed" << endl;
+			}
+
+			sf::Texture red_king;
+			if (!red_king.loadFromFile("ai-playing-checkers/res/red_king.png"))
+			{
+				cout << "red_king load failed" << endl;
+			}
+			red_king.setSmooth(true);
+
+			sf::Texture red_soldier;
+			if (!red_soldier.loadFromFile("ai-playing-checkers/res/red_soldier.png"))
+			{
+				cout << "red_soldier load failed" << endl;
+			}
+			red_soldier.setSmooth(true);
+
+			sf::Texture black_king;
+			if (!black_king.loadFromFile("ai-playing-checkers/res/black_king.png"))
+			{
+				cout << "black_king load failed" << endl;
+			}
+			black_king.setSmooth(true);
+
+			sf::Texture black_soldier;
+			if (!black_soldier.loadFromFile("ai-playing-checkers/res/black_soldier.png"))
+			{
+				cout << "black_soldier load failed" << endl;
+			}
+			black_soldier.setSmooth(true);
+
+			sf::Texture unseen_piece;
+			if (!unseen_piece.loadFromFile("ai-playing-checkers/res/empty.png"))
+			{
+				cout << "unseen_piece load failed" << endl;
+			}
+
+			srand(time(NULL));
+
+			bool stepper = false;
+
+			sf::Event event;
+
+			while (window.isOpen())
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+
+				vector<int> board_status;
+				board_status.resize(32);
+
+
+				//*************************************************************************
+				// EVENT POLLER -- ADD RUNTIME EVENTS HERE
+				//*************************************************************************
+
+				while (window.pollEvent(event))
+				{
+					if (event.type == sf::Event::KeyPressed)
 					{
-						stepper = !stepper;
-						cout << "stepping: " << stepper << endl;
+						if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+						{
+							stepper = !stepper;
+							//cout << "stepping: " << stepper << endl;
+						}
+						if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+						{
+							//cout << "stepping backward" << endl;
+							if (step == 0)
+							{
+								step = parsed_states.size() - 2;
+							}
+							else
+							{
+								--step;
+							}
+							stepper = false;
+						}
+						if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+						{
+							//cout << "stepping forward" << endl;
+							if (step == parsed_states.size() - 2)
+							{
+								step = 0;
+							}
+							else
+							{
+								++step;
+							}
+							stepper = false;
+						}
+						if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+						{
+							if (step == parsed_states.size() - 2 && stepper)
+							{
+								//cout << "restarting" << endl;
+								step = 0;
+							}
+						}
+						if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+						{
+							window.close();
+							return 0;
+						}
 					}
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-					{
-						cout << "stepping backward" << endl;
-						if (step == 0)
-						{
-							step = parsed_states.size() - 2;
-						}
-						else
-						{
-							--step;
-						}
-						stepper = false;
-					}
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-					{
-						cout << "stepping forward" << endl;
-						if (step == parsed_states.size() - 2)
-						{
-							step = 0;
-						}
-						else
-						{
-							++step;
-						}
-						stepper = false;
-					}
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
-					{
-						if (step == parsed_states.size() - 2 && stepper)
-						{
-							cout << "restarting" << endl;
-							step = 0;
-						}
-					}
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+					if (event.type == sf::Event::Closed)
 					{
 						window.close();
-						return 0;
 					}
 				}
-				if (event.type == sf::Event::Closed)
+				//*************************************************************************
+				// END OF EVENT POLLER
+				//*************************************************************************
+
+				window.clear();
+				window.draw(board_base);
+				bool playable_slot = false;
+				sf::Vector2f selector_draw_position;
+
+				// Main chunk of drawing
+				for (int col = 0; col < board_size; ++col)
 				{
-					window.close();
-				}
-			}
-			//*************************************************************************
-			// END OF EVENT POLLER
-			//*************************************************************************
-
-			window.clear();
-			window.draw(board_base);
-			bool playable_slot = false;
-			sf::Vector2f selector_draw_position;
-
-			// Main chunk of drawing
-			for (int col = 0; col < board_size; ++col)
-			{
-				for (int row = 0; row < board_size; ++row)
-				{
-					sf::Vector2f position_on_board =
-						sf::Vector2f(slot_origin.x, slot_origin.y) +
-						sf::Vector2f(slot_width * col, slot_height * row);
-
-					slot.setPosition(position_on_board);
-
-					sf::Vector2f piece_dfe_holder(piece_distance_from_edge, piece_distance_from_edge);
-					piece.setPosition(position_on_board + piece_dfe_holder);
-
-					int playable_slot_id = (row * board_size + col) / 2;
-					int current_status = parsed_states.at(step).at(playable_slot_id);
-
-					switch (current_status)
+					for (int row = 0; row < board_size; ++row)
 					{
-					case -1:
-						piece.setTexture(red_soldier);
-						break;
-					case -2:
-						piece.setTexture(red_king);
-						break;
-					case 1:
-						piece.setTexture(black_soldier);
-						break;
-					case 2:
-						piece.setTexture(black_king);
-						break;
-					case 0:
-						piece.setTexture(unseen_piece);
-						break;
-					}
+						sf::Vector2f position_on_board =
+							sf::Vector2f(slot_origin.x, slot_origin.y) +
+							sf::Vector2f(slot_width * col, slot_height * row);
 
-					if (playable_slot)
-					{
-						string p_slot_id_str = to_string(playable_slot_id);
-						sf::Text slot_id(p_slot_id_str, font, 15);
-						slot_id.setPosition(position_on_board);
-						slot.setFillColor(sf::Color(125, 75, 30));
-						window.draw(slot);
-						window.draw(slot_id);
-						window.draw(piece);
-						playable_slot = !playable_slot;
+						slot.setPosition(position_on_board);
+
+						sf::Vector2f piece_dfe_holder(piece_distance_from_edge, piece_distance_from_edge);
+						piece.setPosition(position_on_board + piece_dfe_holder);
+
+						int playable_slot_id = (row * board_size + col) / 2;
+						int current_status = parsed_states.at(step).at(playable_slot_id);
+
+						switch (current_status)
+						{
+						case -1:
+							piece.setTexture(red_soldier);
+							break;
+						case -2:
+							piece.setTexture(red_king);
+							break;
+						case 1:
+							piece.setTexture(black_soldier);
+							break;
+						case 2:
+							piece.setTexture(black_king);
+							break;
+						case 0:
+							piece.setTexture(unseen_piece);
+							break;
+						}
+
+						if (playable_slot)
+						{
+							string p_slot_id_str = to_string(playable_slot_id);
+							sf::Text slot_id(p_slot_id_str, font, 15);
+							slot_id.setPosition(position_on_board);
+							slot.setFillColor(sf::Color(125, 75, 30));
+							window.draw(slot);
+							window.draw(slot_id);
+							window.draw(piece);
+							playable_slot = !playable_slot;
+						}
+						else
+						{
+							slot.setFillColor(sf::Color(240, 195, 150));
+							window.draw(slot);
+							playable_slot = !playable_slot;
+						}
 					}
-					else
-					{
-						slot.setFillColor(sf::Color(240, 195, 150));
-						window.draw(slot);
-						playable_slot = !playable_slot;
-					}
+					playable_slot = !playable_slot;
 				}
-				playable_slot = !playable_slot;
-			}
 
-			if (player_is_red && step % 2 == 0)
-			{
-				go_red = true;
-			}
-			else if (player_is_red && step % 2 == 1)
-			{
-				go_red = false;
-			}
-			else if (!player_is_red && step % 2 == 0)
-			{
-				go_red = false;
-			}
-			else if (!player_is_red && step % 2 == 1)
-			{
-				go_red = true;
-			}
-
-			// window text management
-			vector<string> strings_to_draw;
-			string player = "null";
-			sf::Text player_text(player, font, 30);
-
-			string pieces = "null";
-			sf::Text pieces_text(player, font, 30);
-
-			string moves = "null";
-			sf::Text moves_text(player, font, 30);
-
-			if (go_red)//board.get_Player() == _RED_)
-			{
-				player = "RED   TURN";
-				player_text.setFillColor(sf::Color::Red);
-			}
-			else
-			{
-				player = "BLACK TURN";
-				player_text.setFillColor(sf::Color::White);
-			}
-
-			if (step == parsed_states.size() - 2)
-			{
-				if (parsed_states[parsed_states.size() - 1][0] == 100)
+				if (player_is_red && step % 2 == 0)
 				{
-					player = "BLACK WINS";
-					player_text.setFillColor(sf::Color::White);
+					go_red = true;
 				}
-				else if (parsed_states[parsed_states.size() - 1][0] == -100)
+				else if (player_is_red && step % 2 == 1)
 				{
-					player = "RED   WINS";
+					go_red = false;
+				}
+				else if (!player_is_red && step % 2 == 0)
+				{
+					go_red = false;
+				}
+				else if (!player_is_red && step % 2 == 1)
+				{
+					go_red = true;
+				}
+
+				// window text management
+				vector<string> strings_to_draw;
+				string player = "null";
+				sf::Text player_text(player, font, 30);
+
+				string pieces = "null";
+				sf::Text pieces_text(player, font, 30);
+
+				string moves = "null";
+				sf::Text moves_text(player, font, 30);
+
+				if (go_red)//board.get_Player() == _RED_)
+				{
+					player = "RED   TURN";
 					player_text.setFillColor(sf::Color::Red);
 				}
-				else if (parsed_states[parsed_states.size() - 1][0] == 50)
+				else
 				{
-					player = "   DRAW";
-					player_text.setFillColor(sf::Color::Cyan);
+					player = "BLACK TURN";
+					player_text.setFillColor(sf::Color::White);
 				}
-			}
 
-			board.handle_replay_count(parsed_states.at(step), pieces, pieces_text); // live piece count
+				if (step == parsed_states.size() - 2)
+				{
+					if (parsed_states[parsed_states.size() - 1][0] == 100)
+					{
+						player = "BLACK WINS";
+						player_text.setFillColor(sf::Color::White);
+					}
+					else if (parsed_states[parsed_states.size() - 1][0] == -100)
+					{
+						player = "RED   WINS";
+						player_text.setFillColor(sf::Color::Red);
+					}
+					else if (parsed_states[parsed_states.size() - 1][0] == 50)
+					{
+						player = "   DRAW";
+						player_text.setFillColor(sf::Color::Cyan);
+					}
+				}
 
-			moves = "MOVE #" + to_string(step);
-			moves_text.setFillColor(sf::Color::White);
+				board.handle_replay_count(parsed_states.at(step), pieces, pieces_text); // live piece count
 
-			player_text.setString(player);
-			pieces_text.setString(pieces);
-			moves_text.setString(moves);
+				moves = "MOVE #" + to_string(step);
+				moves_text.setFillColor(sf::Color::White);
 
-			player_text.setPosition(board_width + 10, 5);
-			pieces_text.setPosition(board_width + 10, 100);
-			moves_text.setPosition(board_width + 10, 225);
+				player_text.setString(player);
+				pieces_text.setString(pieces);
+				moves_text.setString(moves);
 
-			window.draw(player_text);
-			window.draw(pieces_text);
-			window.draw(moves_text);
+				player_text.setPosition(board_width + 10, 5);
+				pieces_text.setPosition(board_width + 10, 100);
+				moves_text.setPosition(board_width + 10, 225);
 
-			window.display();
+				window.draw(player_text);
+				window.draw(pieces_text);
+				window.draw(moves_text);
 
-			if (stepper && step < parsed_states.size() - 2)
-			{
-				++step;
+				window.display();
+
+				if (stepper && step < parsed_states.size() - 2)
+				{
+					++step;
+				}
 			}
 		}
 
@@ -1129,7 +1177,7 @@ int main() {
 		// SETTINGS **************************************
 		//************************************************
 		int ply = 4;
-		int gens_to_train = 13;
+		int gens_to_train = 100;
 		//************************************************
 		//************************************************
 
@@ -1251,38 +1299,38 @@ int main() {
 
 					while (!board.is_over() && move_count < 100)
 					{
-						const auto move_begin = std::chrono::high_resolution_clock::now();
+						//const auto move_begin = std::chrono::high_resolution_clock::now();
 						eval_count = 0;
 						call_count = 1;
 
 						if (move_count < random_move_count) next_move = rand() % board.get_move_list().size();
 
 						else if (board.get_Player() == _RED_ && !board.get_move_list().empty()) {
-							const auto begin_calc = std::chrono::high_resolution_clock::now();
-							double * min_max_move = alpha_beta(nnpr, board, ply, -10000, 10000);
-							const auto end_calc = std::chrono::high_resolution_clock::now();
-							const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
-							const auto s_per_calc = double(ns_calc) / double(1000) / double(1000000);
-							cout << s_per_calc << endl;
-							next_move = min_max_move[0];
+							//const auto begin_calc = std::chrono::high_resolution_clock::now();
+							//double * min_max_move = alpha_beta(nnpr, board, ply, -10000, 10000);
+							//const auto end_calc = std::chrono::high_resolution_clock::now();
+							//const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
+							//const auto s_per_calc = double(ns_calc) / double(1000) / double(1000000);
+							// << s_per_calc << endl;
+							//next_move = min_max_move[0];
 						}
 
 						else if (board.get_Player() == _BLACK_ && !board.get_move_list().empty()) {
-							const auto begin_calc = std::chrono::high_resolution_clock::now();
-							double * min_max_move = alpha_beta(nnpb, board, ply, -10000, 10000);
-							const auto end_calc = std::chrono::high_resolution_clock::now();
-							const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
-							const auto s_per_calc = double(ns_calc) / double(1000) / double(1000000);
-							cout << s_per_calc << endl;
-							next_move = min_max_move[0];
+							//const auto begin_calc = std::chrono::high_resolution_clock::now();
+							//double * min_max_move = alpha_beta(nnpb, board, ply, -10000, 10000);
+							//const auto end_calc = std::chrono::high_resolution_clock::now();
+							//const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
+							//const auto s_per_calc = double(ns_calc) / double(1000) / double(1000000);
+							//cout << s_per_calc << endl;
+							//next_move = min_max_move[0];
 						}
 
 						board.move_piece(next_move);
 						board.write_board_to_file(fout);
 						move_count++;
-						const auto move_end = std::chrono::high_resolution_clock::now();
-						const auto ns_move = std::chrono::duration_cast<std::chrono::nanoseconds>(move_end - move_begin).count();
-						const auto s_per_move = double(ns_move) / double(1000) / double(1000000);
+						//const auto move_end = std::chrono::high_resolution_clock::now();
+						//const auto ns_move = std::chrono::duration_cast<std::chrono::nanoseconds>(move_end - move_begin).count();
+						//const auto s_per_move = double(ns_move) / double(1000) / double(1000000);
 
 						//if (move_count > 3) { // 0 == starting, 1~3 == random, 4 == first AI move
 						//	LNE_fout << "move_id: " << move_count;
