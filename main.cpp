@@ -71,7 +71,7 @@ int call_count;
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = NNvNN;
+int main_state = PLAY_CHECKERS;
 //**********************************************************************************************
 //**********************************************************************************************
 //**********************************************************************************************
@@ -115,7 +115,7 @@ void fn_play_checkers()
 	const auto red_is_ai = true;
 	const auto black_is_ai = false;
 	const int starting_player = _RED_;
-	const int ply = 20;
+	const int ply = 100;
 	const string ai_topo = R"(ai-playing-checkers\nn_topologies\GEN0\nn1_brunette26_topology.txt)";
 	const int random_move_count = 0;
 	const int ai_wait_time = 300;
@@ -275,8 +275,8 @@ void fn_play_checkers()
 				else
 				{
 
-					//vector<double> min_max_move = min_max_search(nnp, board, 1);
-					vector<double> alpha_beta_move = alpha_beta(nnp, board, 10, -999999, 999999);
+					//vector<double> min_max_move = min_max_search(nnp, board, ply);
+					vector<double> alpha_beta_move = alpha_beta(nnp, board, ply, -999999, 999999);
 					next_move = alpha_beta_move[0];
 					cout << "alpha beta move: " << alpha_beta_move[0] << " "<<alpha_beta_move[1]<< endl;
 					//double val = min_max_move[1];
