@@ -64,7 +64,8 @@ enum
 
 bool GLOBAL_DO_WRITE = true;
 char GLOBAL_WINNER_DENOTER;
-int eval_count;
+int mms_eval_count;
+int ab_eval_count;
 int call_count;
 
 //**********************************************************************************************
@@ -72,6 +73,7 @@ int call_count;
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
 int main_state = PLAY_CHECKERS;
+
 //**********************************************************************************************
 //**********************************************************************************************
 //**********************************************************************************************
@@ -119,7 +121,7 @@ void fn_play_checkers()
 	const string ai_topo = R"(ai-playing-checkers\nn_topologies\GEN0\nn1_brunette26_topology.txt)";
 	const int random_move_count = 0;
 	const int ai_wait_time = 300;
-	GLOBAL_DO_WRITE = false;
+	//GLOBAL_DO_WRITE = false;
 	//****************************************************
 	//****************************************************
 
@@ -266,7 +268,8 @@ void fn_play_checkers()
 		{
 			if (red_is_ai && board.get_Player() == _RED_ && !board.get_move_list().empty())
 			{
-				eval_count = 0;
+				ab_eval_count = 0;
+				mms_eval_count = 0;
 				if (random_moves_made < random_move_count)
 				{
 					next_move = rand() % board.get_move_list().size();
@@ -275,17 +278,22 @@ void fn_play_checkers()
 				else
 				{
 
-					//vector<double> min_max_move = min_max_search(nnp, board, ply);
-					vector<double> alpha_beta_move = alpha_beta(nnp, board, ply, -999999, 999999);
+					//vector<double> min_max_move = min_max_search(nnp, board, 1);
+					
+					vector<double> alpha_beta_move = alpha_beta(nnp, board, 6, -999999, 999999);
+					vector<double> min_max_move = min_max_search(nnp, board, 6);
 					next_move = alpha_beta_move[0];
 					cout << "alpha beta move: " << alpha_beta_move[0] << " "<<alpha_beta_move[1]<< endl;
 					//double val = min_max_move[1];
+				
 					//cout << "chosen: " << next_move << " " << val << endl;
+				
 				}
 				board.move_piece(next_move);
 				board.write_board_to_file(to_file);
-				cout << "eval count: " << eval_count << endl;
-				LNE_fout << "gen" << osp.get_current_generation_id() << ": " << eval_count << endl;
+				cout << "mms eval count: " << mms_eval_count << endl;
+				cout << "ab eval count: " << ab_eval_count << endl;
+				//LNE_fout << "gen" << osp.get_current_generation_id() << ": " << eval_count << endl;
 				window_loop_cycles = 0;
 			}
 			else if (black_is_ai && board.get_Player() == _BLACK_ && !board.get_move_list().empty())
@@ -546,16 +554,20 @@ int main() {
 		int geninp;
 		cout << "Please enter a VALID generation (does not handle incorrect input): ";
 		cin >> geninp;
-		while (true) {
+		while (true)
+		{
 			int good_input_count = 0;
 			int friendly = -1;
 			int enemy;
-			while (good_input_count != 2) {
+			while (good_input_count != 2)
+			{
 				int cbuf;
-				if (good_input_count == 0) {
-					cout << "Please enter the friendly network: ";
+				if (good_input_count == 0)
+				{
+					cout << endl << "Please enter the friendly network: ";
 				}
-				else {
+				else
+				{
 					cout << "Network " << friendly << " against: ";
 				}
 				cin >> cbuf;
@@ -575,7 +587,7 @@ int main() {
 				}
 			}
 
-			cout << "Replaying Network " << friendly << " against Network " << enemy << endl;
+			cout << endl << "Replaying Network " << friendly << " against Network " << enemy << endl << endl;
 			const string file_name = 
 				"ai-playing-checkers\\nn_topologies\\GEN" + 
 				to_string(geninp) + 
@@ -624,6 +636,8 @@ int main() {
 			{
 				cout << "INCOMPLETE GAME FILE: CANNOT REPLAY GAME" << endl;
 				cout << endl << "press ENTER to quit";
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n');
 				while (cin.get() != '\n');
 				return 0;
 			}
@@ -650,7 +664,7 @@ int main() {
 			}
 
 			int step = 0;
-			const int wait_time = 0;
+			const int wait_time = 300;
 
 			temp_Board board(_RED_);
 
@@ -733,7 +747,10 @@ int main() {
 
 			while (window.isOpen())
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+				if (stepper)
+				{
+					std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+				}
 
 				vector<int> board_status;
 				board_status.resize(32);
@@ -956,7 +973,7 @@ int main() {
 	else if (main_state == NEURAL_NETWORK_TIMING_PERF)
 	{
 		OffspringProducer osp;
-		vector<int> input = {
+		const vector<int> input = {
 			-1,-1,-1,-1,
 			-1,-1,-1,-1,
 			-1,-1,-1,-1,
@@ -968,7 +985,7 @@ int main() {
 		};
 
 		NeuralNetwork_PERF nn0(_RED_);
-//		nn0.set_input_layer(input);
+		nn0.set_input_layer(input);
 		nn0.set_topology(osp.generate_random_topology());
 
 		cout.precision(6);
@@ -1110,6 +1127,36 @@ int main() {
 				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
 				t_sum += (ns);
 				//cout << nn0.get_output() << endl;
+							}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 1000000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
+			}
+			double avg = t_sum / times;
+			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
+			avg = avg / 1000000000;
+			cout << 1.0 / avg << " BEF/sec, " << 1.0 / avg * 15 << " BEF/15 sec)" << endl;
+		}
+		{
+			int times = 2000000;
+			double t_sum = 0;
+			for (int i = 0; i < times; ++i) {
+				auto begin = std::chrono::high_resolution_clock::now();
+				nn0.calculate();
+				auto end = std::chrono::high_resolution_clock::now();
+				auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+				t_sum += (ns);
 			}
 			double avg = t_sum / times;
 			cout << times << ": calculation_output elapsed time: " << avg << " ns (";
@@ -1298,7 +1345,8 @@ int main() {
 					while (!board.is_over() && move_count < 100)
 					{
 						//const auto move_begin = std::chrono::high_resolution_clock::now();
-						eval_count = 0;
+						mms_eval_count = 0;
+						ab_eval_count = 0;
 						call_count = 1;
 
 						if (move_count < random_move_count) next_move = rand() % board.get_move_list().size();

@@ -6,7 +6,6 @@
 
 #include "board.h"
 #include <algorithm>
-#include <SFML\Graphics.hpp>
 #include <vector>
 using std::vector;
 #include <utility>
@@ -734,7 +733,6 @@ else { to_file << "B"; }
 void temp_Board::write_board_to_file(std::ofstream & to_file)
 {
 	if (GLOBAL_DO_WRITE) {
-		if (m_board.size() != 32) throw std::exception("Board has incorrect size");
 		string data = "";
 
 		for (auto row = 0; row < 8; ++row)
@@ -907,15 +905,6 @@ pair<int, int> temp_Board::count_pieces()
 	return make_pair(p_black, p_red);
 }
 
-void temp_Board::handle_count(string & pieces, sf::Text & pieces_text)
-{
-	pair<int, int> curr_count = count_pieces();
-	pieces = "R: " + to_string(curr_count.second) + "\nB: " + to_string(curr_count.first);
-	pieces_text.setFillColor(sf::Color::Green);
-}
-
-
-
 /////////////////////////////////////////////////////////////////////
 //                                                                 //
 //               Board Tree for evaluation stuff                   //
@@ -1059,7 +1048,6 @@ vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, 
 		vector<double> answer = { 0, nnp.get_result() };		
 		return answer;
 	}
-
 	Board_tree tree(current_board);
 	vector<double> max_node = { 0, -10000 }; // max_node = { move_id, move_value }
 
@@ -1068,13 +1056,12 @@ vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, 
 		next_board.move_piece(i, true);
 
 		if (next_board.is_over()) {
-			if (depth % 2 == 0) {			// even depth: "MY" winning move
+			if (depth % 2 == 0) {	// even depth: "MY" winning move
 				max_node[0] = i;
-				max_node[1] = 300; 
-			} else {						// odd depth: "ENEMY" winning move
+				max_node[1] = 300; }
+			else {					// odd depth: "ENEMY" winning move
 				max_node[0] = i;
-				max_node[1] = -300; 
-			}
+				max_node[1] = -300; }
 			break;
 		}
 
@@ -1100,46 +1087,4 @@ vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, 
 		}
 	}
 	return max_node;
-}
-
-
-/////////////////////////////////////////////////////////////////////
-//                                                                 //
-//                  Stuff for replaying boards                     //
-//                                                                 //
-/////////////////////////////////////////////////////////////////////
-void temp_Board::set_board_status(vector<int> board_state)
-{
-	for (auto i = 0; i < 32; ++i)
-	{
-		m_board.at(i) = board_state.at(i);
-	}
-}
-
-void temp_Board::handle_replay_count(vector<int> board_state, string & pieces, sf::Text & pieces_text)
-{
-	pair<int, int> curr_count = count_replay_pieces(board_state);
-
-	pieces = "R: " + to_string(curr_count.second) + "\nB: " + to_string(curr_count.first);
-	pieces_text.setFillColor(sf::Color::Green);
-}
-
-pair<int, int> temp_Board::count_replay_pieces(vector<int> board_state)
-{
-	int p_red = 0;
-	int p_black = 0;
-
-	for (int i = 0; i < board_state.size(); ++i)
-	{
-		if (board_state.at(i) == _BLACK_MAN_ || board_state.at(i) == _BLACK_KING_)
-		{
-			++p_black;
-		}
-		else if (board_state.at(i) == _RED_MAN_ || board_state.at(i) == _RED_KING_)
-		{
-			++p_red;
-		}
-	}
-
-	return make_pair(p_black, p_red);
 }

@@ -1,0 +1,20 @@
+1. open command prompt
+
+2. type g++ and hit enter
+
+3. if it states g++ is not recognized, get it
+
+4. if it states no input files, you have it
+
+5. type g++ -O2 -std=c++17 -o timing_o2 *.cpp for O2 optimizations
+        g++ -O3 -std=c++17 -o timing_o3 *.cpp for O3 optimizations
+        g++ -Ofast -std=c++17 -o timing_ofast *.cpp for Ofast optimizations
+   these commands will overwrite old versions so do not need to delete old ones
+
+6. if the directory contains no .exe files, run the timing file with
+	./timing_o2
+
+7. if the directory contains .exe files, double click or run
+	timing_o2.exe
+
+8. this may vary for your system
