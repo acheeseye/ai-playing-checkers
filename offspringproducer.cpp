@@ -246,7 +246,7 @@ void OffspringProducer::determine_survivors(const std::string & result_txt)
 	fin.open(result_txt, ifstream::in);
 	if(!fin.is_open())
 	{
-		cout << "result_txt was not opened in OffspringProducer::determine_survivors" << endl;
+		cout << "_result.txt was not opened in OffspringProducer::determine_survivors" << endl;
 		return;
 	}
 

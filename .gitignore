@@ -252,3 +252,5 @@ nn_topologies/GEN*
 nn_topologies/GEN*/
 nn_topologies/naming_status.txt
 nn_topologies/*
+nnp2.cpp
+nnp2.h

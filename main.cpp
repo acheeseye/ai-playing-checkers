@@ -9,40 +9,42 @@
 #include "NeuralNetwork_PERF.h"
 #include "offspringproducer.h"
 #include "gnugraph\GnuGraph.h"
+#include "checkers.hpp"
+#include "checkers_client.hpp"
 
 #include <time.h>
 #include <SFML\Graphics.hpp>
 
 #include <iostream>
-#include <vector>
-#include <map>
-#include <utility>
-#include <string>
-#include <fstream>
-#include <limits>
-#include <chrono>
-#include <random>
-#include <sstream>
-#include <thread>
-
-// USINGS
 using std::cout;
 using std::endl;
 using std::cin;
-using std::streamsize;
+#include <vector>
 using std::vector;
+#include <map>
+using std::map;
+#include <utility>
 using std::pair;
 using std::make_pair;
+#include <string>
 using std::string;
-using std::to_string;
+using std::to_string; 
+#include <fstream>
 using std::ofstream;
 using std::ifstream;
+#include <limits>
 using std::numeric_limits;
+#include <chrono>
+#include <random>
 using std::normal_distribution;
 using std::random_device;
 using std::mt19937;
-using std::map;
+#include <sstream>
 using std::stringstream;
+#include <thread>
+
+// USINGS
+using std::streamsize;
 
 enum
 {
@@ -59,7 +61,8 @@ enum
 	GEN0_GENERATE,	// generates 30 random gen 0 topologies
 	GAUSSIAN_GRAPHING,
 	NNvNN,						// network vs network (EACH RUN RESETS THE naming_status.txt FILE, WATCH OUT)
-	NNP_TEST
+	NNP_TEST,
+	NETWORK
 };
 
 bool GLOBAL_DO_WRITE = true;
@@ -72,7 +75,7 @@ int call_count;
 //CHANGE main_state VARIABLE TO DESIRED MAIN
 //MAINS MERGED ON 2/23/2018
 //**********************************************************************************************
-int main_state = PLAY_CHECKERS;
+int main_state = NETWORK;
 
 //**********************************************************************************************
 //**********************************************************************************************
@@ -536,6 +539,76 @@ void fn_play_checkers()
 	}
 
 	to_file.close();
+}
+
+string process_to_json_string(const vector<int> & board)
+{
+	string ret_str = "";
+
+	for (auto i = 0; i < 32; ++i)
+	{
+		int ibuf = board[i];
+		cout << ibuf << " ";
+		if (ibuf == -1)
+		{
+			ret_str += 'r';
+		}
+		else if (ibuf == -2)
+		{
+			ret_str += 'R';
+		}
+		else if (ibuf == 1)
+		{
+			ret_str += 'b';
+		}
+		else if (ibuf == 2)
+		{
+			ret_str += 'B';
+		}
+		else if (ibuf == 4)
+		{
+			ret_str += '_';
+		}
+		else
+		{
+			cout << "INVALID INT DETECTED" << ibuf << endl;
+		}
+	}
+	return ret_str;
+}
+
+vector<int> process_to_nn_vec(const string & board_str)
+{
+	vector<int> ret_vec;
+	for (auto i = 0; i < board_str.size(); ++i)
+	{
+		char cbuf = board_str[i];
+		if (cbuf == 'r')
+		{
+			ret_vec.push_back(-1);
+		}
+		else if (cbuf == 'R')
+		{
+			ret_vec.push_back(-2);
+		}
+		else if (cbuf == 'b')
+		{
+			ret_vec.push_back(1);
+		}
+		else if (cbuf == 'B')
+		{
+			ret_vec.push_back(2);
+		}
+		else if (cbuf == '_')
+		{
+			ret_vec.push_back(0);
+		}
+		else
+		{
+			cout << "INVALID CHARACTER DETECTED" << endl;
+		}
+	}
+	return ret_vec;
 }
 
 int main() {
@@ -1221,7 +1294,7 @@ int main() {
 	{
 		// SETTINGS **************************************
 		//************************************************
-		int ply = 4;
+		int ply = 8;
 		int gens_to_train = 100;
 		//************************************************
 		//************************************************
@@ -1237,17 +1310,12 @@ int main() {
 		vector<double> nnpb_topo;
 		int oppo_list[GLOBAL_OPPO_COUNT];
 
-		fout.open(R"(ai-playing-checkers\nn_topologies\NNP_modification_insurance.txt)", ofstream::out | ofstream::app);
-		fout << "Network RED's m_player_modifier value:   " << nnpr.get_player_modification() << endl;
-		fout << "Network BLACK's m_player_modifier value: " << nnpb.get_player_modification() << endl;
-		fout << "---DO NOT CHANGE THESE VALUES---" << endl;
-		fout.close();
-		LNE_fout.open("ai-playing-checkers\\nn_topologies\\LNE.txt", ofstream::out | ofstream::app);
+		//LNE_fout.open("ai-playing-checkers\\nn_topologies\\LNE.txt", ofstream::out | ofstream::app);
 		result_out.open("ai-playing-checkers\\nn_topologies\\timing.txt", ofstream::out | ofstream::trunc);
 
 		osp.reset_counter();
 		cout.precision(6);
-		LNE_fout.precision(4);
+		//LNE_fout.precision(4);
 
 		std::random_device r;
 		std::default_random_engine e1(r());
@@ -1434,7 +1502,7 @@ int main() {
 		const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
 		const auto min = double(ns) / double(1000) / double(1000000) / double(60);
 		cout << "estimated total time taken: " << min << endl;
-		LNE_fout.close();
+		//LNE_fout.close();
 		cout << "\nTRAINING SUCCESS" << endl;
 		while (cin.get() != '\n');
 		return 0;
@@ -1479,13 +1547,83 @@ int main() {
 		NeuralNetwork_PERF nnp(_RED_);
 
 		osp.set_topology(ai_topo);
-//		nnp.set_input_layer(nn_input_2);
+
 		nnp.set_topology(osp.get_topology());
 		nnp.calculate();
 		cout << nnp.get_result() << endl;
 		return 0;
 	}
+	else if (main_state == NETWORK)
+	{
+		int player_enum;
+		string game_name;
+		cout << "main_mode NETWORK\n";
+		cout << "ENTER THE GAME NAME: ";
+		cin >> game_name;
+		cout << "THIS SIDE NETWORK IS RED(0) OR BLACK(1): ";
+		cin >> player_enum;
 
+		int ply = 8;
+		int starting_player = _RED_;
+
+		ofstream fout;
+		ifstream fin;
+		fout.open("network_game.txt", ofstream::out | ofstream::trunc);
+
+		temp_Board board(starting_player);
+		//nnp.set_topology(osp.get_topology());
+		board.write_board_to_file(fout);
+
+		int red_turn = 0;
+		int black_turn = 1;
+		int turn_id = 0;
+
+		auto game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
+		//skynet::checkers::play_game("skynet.cs.uaf.edu", game_name, "rrrrrrrrrrr____r____bbbbbbbbbbbb");
+
+		NeuralNetwork_PERF nnp(player_enum);
+		while (!board.is_over()) {
+			game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
+
+			cout << game.status << endl;
+			while (game.status != player_enum) { 
+				/* wait */ 
+				//cout << "looping red" << endl;
+			}
+
+			string board_to_eval_str = game.boards[turn_id]; // to pass into an eval func
+			vector<int> move_pair = piece_count_search(board, ply);
+			int next_move = move_pair[0];
+			board.move_piece(next_move);
+			//board.write_board_to_file(fout);
+			vector<int> current_move = board.get_board_as_vector();
+			string skynet_input = process_to_json_string(current_move);
+			skynet::checkers::play_game("skynet.cs.uaf.edu", game_name, skynet_input);
+			turn_id++;
+
+			game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
+
+			cout << game.status << endl;
+
+			while (game.status != player_enum+1) { 
+				/* wait */
+			}
+
+			board_to_eval_str = game.boards[turn_id]; // to pass into an eval func
+			move_pair = piece_count_search(board, ply);
+			next_move = move_pair[0];
+			board.move_piece(next_move);
+			//board.write_board_to_file(fout);
+			current_move = board.get_board_as_vector();
+			skynet_input = process_to_json_string(current_move);
+			skynet::checkers::play_game("skynet.cs.uaf.edu", game_name, skynet_input);
+			turn_id++;
+		}
+		//auto game000 = skynet::checkers::info_game("skynet.cs.uaf.edu", "000");
+		//std::cout << "test " << std::to_string(game000.status) << game000.status << std::endl;
+		//skynet::checkers::play_game("skynet.cs.uaf.edu", "000", "rrrrrrrr_rrr_r______bbbbbbbbbbbb");
+		return 0;
+	}
 	cout << "You should not be here." << endl;
 	cout << endl << "press ENTER to quit" << endl;
 	while (cin.get() != '\n');
