@@ -84,6 +84,76 @@ int main_state = NETWORK;
 //**********************************************************************************************
 //**********************************************************************************************
 
+string process_to_json_string(const vector<int> & board)
+{
+	string ret_str = "";
+
+	for (auto i = 0; i < 32; ++i)
+	{
+		int ibuf = board[i];
+		if (ibuf == -1)
+		{
+			ret_str += 'r';
+		}
+		else if (ibuf == -2)
+		{
+			ret_str += 'R';
+		}
+		else if (ibuf == 1)
+		{
+			ret_str += 'b';
+		}
+		else if (ibuf == 2)
+		{
+			ret_str += 'B';
+		}
+		else if (ibuf == 4)
+		{
+			ret_str += '_';
+		}
+		else
+		{
+			cout << "INVALID INT DETECTED" << ibuf << endl;
+		}
+	}
+	return ret_str;
+}
+
+vector<int> process_to_nn_vec(const string & board_str)
+{
+	vector<int> ret_vec;
+	for (auto i = 0; i < board_str.size(); ++i)
+	{
+		char cbuf = board_str[i];
+		if (cbuf == 'r')
+		{
+			ret_vec.push_back(-1);
+		}
+		else if (cbuf == 'R')
+		{
+			ret_vec.push_back(-2);
+		}
+		else if (cbuf == 'b')
+		{
+			ret_vec.push_back(1);
+		}
+		else if (cbuf == 'B')
+		{
+			ret_vec.push_back(2);
+		}
+		else if (cbuf == '_')
+		{
+			ret_vec.push_back(0);
+		}
+		else
+		{
+			cout << "INVALID CHARACTER DETECTED" << endl;
+		}
+	}
+	return ret_vec;
+}
+
+
 int mouse_selected_index_converter(int mouse_selected_index, int mouse_index_x, int mouse_index_y)
 {
 	int return_index = 33;
@@ -101,11 +171,13 @@ int mouse_selected_index_converter(int mouse_selected_index, int mouse_index_x, 
 		return return_index;
 }
 
-int find_move(const vector<int> & move, temp_Board t, const int i)
+int find_move(const string & move, temp_Board t, const int i)
 {
 	t.move_piece(i);
 	vector<int> state = t.get_board_as_vector();
-	if(move == state)
+	string iter = process_to_json_string(state);
+	cout << "     " << iter << endl;
+	if(move == iter)
 	{
 		return i;
 	}
@@ -570,78 +642,6 @@ void fn_play_checkers()
 
 	to_file.close();
 }
-
-string process_to_json_string(const vector<int> & board)
-{
-	string ret_str = "";
-
-	for (auto i = 0; i < 32; ++i)
-	{
-		int ibuf = board[i];
-		cout << ibuf << " ";
-		if (ibuf == -1)
-		{
-			ret_str += 'r';
-		}
-		else if (ibuf == -2)
-		{
-			ret_str += 'R';
-		}
-		else if (ibuf == 1)
-		{
-			ret_str += 'b';
-		}
-		else if (ibuf == 2)
-		{
-			ret_str += 'B';
-		}
-		else if (ibuf == 4)
-		{
-			ret_str += '_';
-		}
-		else
-		{
-			cout << "INVALID INT DETECTED" << ibuf << endl;
-		}
-	}
-	cout << endl;
-	return ret_str;
-}
-
-vector<int> process_to_nn_vec(const string & board_str)
-{
-	vector<int> ret_vec;
-	for (auto i = 0; i < board_str.size(); ++i)
-	{
-		char cbuf = board_str[i];
-		if (cbuf == 'r')
-		{
-			ret_vec.push_back(-1);
-		}
-		else if (cbuf == 'R')
-		{
-			ret_vec.push_back(-2);
-		}
-		else if (cbuf == 'b')
-		{
-			ret_vec.push_back(1);
-		}
-		else if (cbuf == 'B')
-		{
-			ret_vec.push_back(2);
-		}
-		else if (cbuf == '_')
-		{
-			ret_vec.push_back(0);
-		}
-		else
-		{
-			cout << "INVALID CHARACTER DETECTED" << endl;
-		}
-	}
-	return ret_vec;
-}
-
 int main() {
 	if (main_state == PLAY_CHECKERS)
 	{
@@ -1668,18 +1668,13 @@ int main() {
 				cout << "moving red's first" << endl;
 				game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
 				board_to_eval_str = game.boards[game.boards.size() - 1];
-				cout << board_to_eval_str << endl;
+				cout << "red: " << board_to_eval_str << endl;
 				vector<int> ene_move = process_to_nn_vec(board_to_eval_str);
 				auto possible = board.get_move_list();
-				for(auto p : possible)
-					for (auto pp : p)
-					{
-						cout << pp << endl;
-					}
 				int ene_move_id;
 				for(auto i = 0; i < possible.size(); ++i)
 				{
-					if(find_move(ene_move, board, i) != -1)
+					if(find_move(board_to_eval_str, board, i) != -1)
 					{
 						cout << "found" << endl;
 						ene_move_id = i;
@@ -1728,19 +1723,23 @@ int main() {
 
 			while (game.status != player_enum)
 			{
-				cout << "waiting as red" << endl;
+				cout << "waiting for other" << endl;
 				game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
-
+				if(board.is_over())
+				{
+					cout << "game over" << endl;
+					return 0;
+				}
 			}
 
 			cout << "process enemy" << endl;
-			board_to_eval_str = game.boards[turn_id]; // to pass into an eval func
+			board_to_eval_str = game.boards[game.boards.size() - 1]; // to pass into an eval func
 			vector<int> ene_move = process_to_nn_vec(board_to_eval_str);
 			auto possible = board.get_move_list();
 			int ene_move_id;
 			for(auto i = 0; i < possible.size(); ++i)
 			{
-				if(find_move(ene_move, board, i) != -1)
+				if(find_move(board_to_eval_str, board, i) != -1)
 				{
 					ene_move_id = i;
 					break;
