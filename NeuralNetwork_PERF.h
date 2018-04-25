@@ -33,7 +33,6 @@ private:
 	double m_weights[GLOBAL_WC];
 	double m_king_val;
 	int m_weight_iter;
-	double m_player_modifier;
 };
 
 #endif

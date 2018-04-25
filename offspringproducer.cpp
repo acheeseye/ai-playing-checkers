@@ -127,7 +127,7 @@ void OffspringProducer::record_current()
 	fout << m_topology[0] << "\n999999\n";
 	for (auto i = GLOBAL_WEIGHT_START; i < GLOBAL_SIGMA_START; ++i) fout << m_topology[i] << '\n';
 	fout << "888888\n";
-	for (auto i = GLOBAL_SIGMA_START; i < GLOBAL_SIGMA_START + GLOBAL_SC; ++i) fout << m_topology[i] << '\n';
+	for (auto i = GLOBAL_SIGMA_START; i < GLOBAL_SIGMA_END; ++i) fout << m_topology[i] << '\n';
 	fout << "777777";
 	fout.close();
 
@@ -282,7 +282,7 @@ void OffspringProducer::determine_survivors(const std::string & result_txt)
 		);
 
 	int gen = get_current_generation_id();
-	string sorted_res = "ai-playing-checkers\\nn_topologies\\GEN" + to_string(gen) + "\\_sorted_res.txt";
+	string sorted_res = "ai-playing-checkers\\nn_topologies\\GEN" + to_string(gen) + "\\games_played\\_sorted_res.txt";
 
 	fout.open(sorted_res, ofstream::out | ofstream::app);
 	if(!fout.is_open())	cout << "sorted_res was not opened for writing" << endl;

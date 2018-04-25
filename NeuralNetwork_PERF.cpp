@@ -12,16 +12,7 @@ using std::string;
 #include <sys/types.h>
 
 NeuralNetwork_PERF::NeuralNetwork_PERF(const int player)
-{
-	if (player == _RED_)
-	{
-		m_player_modifier = -1;
-	}
-	else if (player == _BLACK_)
-	{
-		m_player_modifier = 1;
-	}
-}
+{}
 
 void NeuralNetwork_PERF::set_input_layer(const std::vector<int> & input)
 {
@@ -29,13 +20,13 @@ void NeuralNetwork_PERF::set_input_layer(const std::vector<int> & input)
 	{
 		if (input[i] == 2) 
 		{
-			m_nodes[i] = m_king_val * m_player_modifier;
+			m_nodes[i] = m_king_val;
 		}
 		else if (input[i] == -2) 
 		{
-			m_nodes[i] = -m_king_val * m_player_modifier;
+			m_nodes[i] = -m_king_val;
 		}
-		else m_nodes[i] = double(input[i]) * m_player_modifier;
+		else m_nodes[i] = double(input[i]);
 	}
 	for(auto i = GLOBAL_LAYER_0_NC; i < GLOBAL_NC; ++i)
 	{
@@ -81,7 +72,7 @@ void NeuralNetwork_PERF::calculate()
 			m_weight_iter++;
 		}
 		for (int l_0 = 0; l_0 < GLOBAL_LAYER_0_NC; ++l_0) {
-			m_nodes[GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + GLOBAL_LAYER_2_NC + l_3] += m_nodes[l_0] * m_player_modifier * m_weights[m_weight_iter];
+			m_nodes[GLOBAL_LAYER_0_NC + GLOBAL_LAYER_1_NC + GLOBAL_LAYER_2_NC + l_3] += m_nodes[l_0] * m_weights[m_weight_iter];
 			m_weight_iter++;
 		}
 		m_nodes[GLOBAL_NC - 1] = apply_sigma(m_nodes[GLOBAL_NC - 1]);
@@ -93,7 +84,3 @@ double NeuralNetwork_PERF::get_result()
 	return m_nodes[GLOBAL_NC - 1];
 }
 
-int NeuralNetwork_PERF::get_player_modification() const
-{
-	return m_player_modifier;
-}

@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <SFML\Graphics.hpp>
 #include <vector>
+#include "neuralnet.hpp"
+#include <stdlib.h>
 using std::vector;
 #include <utility>
 using std::move;
@@ -96,6 +98,11 @@ bool temp_Board::operator==(const temp_Board & board) const
 std::vector<std::vector<int>> & temp_Board::get_move_list()
 {
 	return m_possible_move_list;
+}
+
+void temp_Board::set_board(vector<int> board)
+{
+	m_board = board;
 }
 
 std::vector<std::vector<int>>& temp_Board::generate_moves()
@@ -1064,52 +1071,168 @@ std::vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & curren
 	return max_node;
 }
 
-vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta)
+// calculations: positive for good black, negative for good red
+vector<double> alpha_beta(skynet::neuralnet_t & nn, temp_Board & current_board, int depth, bool is_black, double alpha, double beta)
 {
+	/*enum
+	{
+		ID,
+		VALUE
+	};
+
+	if (depth == 0)
+	{
+		return { nn.evaluate(current_board.get_board_as_vector(), 1) };
+	}
+
+	Board_tree tree(current_board);
+
+	if (is_maximizing)
+	{
+		vector<double> best { alpha, 0 };
+
+		for (int i = 0; i < tree.m_number_of_children; ++i)
+		{
+			current_board.move_piece(i);
+			if (current_board.is_over())
+			{
+				if (current_board.get_Player() == _BLACK_)
+				{
+					best[VALUE] = 300;
+					best[ID] = i;
+				}
+				else
+				{
+					best[VALUE] = -300;
+					best[ID] = i;
+				}
+			}
+			vector<double> val = alpha_beta(nn, current_board, depth - 1, false, alpha, beta);
+			if (best[VALUE] < val[VALUE])
+			{
+				best[VALUE] = val[VALUE];
+				best[ID] = i;
+			}
+			alpha = std::max(alpha, best[VALUE]);
+
+			if (beta <= alpha)
+			{
+				break;
+			}
+		}
+		return best;
+	}
+	else
+	{
+		vector<double> best { beta, 0 };
+
+		for (int i = 0; i < tree.m_number_of_children; ++i)
+		{
+			current_board.move_piece(i);
+			if (current_board.is_over())
+			{
+				if (current_board.get_Player() == _BLACK_)
+				{
+					best[VALUE] = -300;
+					best[ID] = i;
+				}
+				else
+				{
+					best[VALUE] = -300;
+					best[ID] = i;
+				}
+			}
+
+			vector<double> val = alpha_beta(nn, current_board, true, depth - 1, alpha, beta);
+
+			if (best[VALUE] > val[VALUE])
+			{
+				best[VALUE] = val[VALUE];
+				best[ID] = i;
+			}
+			beta = std::min(beta, best[VALUE]);
+
+			if (beta <= alpha)
+			{
+				break;
+			}
+		}
+		return best;
+	}*/
 	if (depth == 0) {
-		nnp.set_input_layer(current_board.get_board_as_vector());
-		nnp.calculate();
-		vector<double> answer = { 0, nnp.get_result() };		
+		double value = nn.evaluate(current_board.get_board_as_vector(), 1);
+		vector<double> answer = { 0, value };		
 		return answer;
 	}
 
 	Board_tree tree(current_board);
-	vector<double> max_node = { 0, -10000 }; // max_node = { move_id, move_value }
+	vector<double> max_node { 0, -10000 }; // max_node = { move_id, move_value }
+	if(is_black)
+	{
+		max_node[1] = 10000;
+	}
 
 	for (auto i = 0; i < tree.m_number_of_children; i++) {
 		temp_Board next_board(current_board);
 		next_board.move_piece(i, true);
 
-		if (next_board.is_over()) {
-			if (depth % 2 == 0) {			// even depth: "MY" winning move
+		if (next_board.is_over())
+		{
+			if(next_board.piece_count_eval() > 0 /*black wins*/)
+			{
 				max_node[0] = i;
-				max_node[1] = 300; 
-			} else {						// odd depth: "ENEMY" winning move
+				max_node[1] = 300;
+			}
+			else if(next_board.piece_count_eval() < 0 /*red wins*/)
+			{
 				max_node[0] = i;
-				max_node[1] = -300; 
+				max_node[1] = -300;
 			}
 			break;
 		}
 
-		auto possible_move = alpha_beta(nnp, next_board, depth - 1, alpha, beta);
+		auto possible_move = alpha_beta(nn, next_board, depth - 1, is_black, alpha, beta);
 		possible_move[0] = i;
 
-		if (depth % 2 == 0) {
-			if (max_node[1] <= possible_move[1]) {
-				max_node[0] = possible_move[0];
-				max_node[1] = possible_move[1];
-				alpha = std::max(max_node[1], alpha);
-			}
-			if (beta <= alpha) break;
-		}
-		else 
+		if (is_black)	// maximizes
 		{
-			if (max_node[1] <= possible_move[1]) {
-				max_node[0] = possible_move[0];
-				max_node[1] = possible_move[1];
-				beta = std::min(max_node[1], beta);
+			if (depth % 2 == 1) {
+				if (max_node[1] >= possible_move[1]) {
+					max_node[0] = possible_move[0];
+					max_node[1] = possible_move[1];
+					alpha = std::max(max_node[1], alpha);
+				}
+				if (beta <= alpha) break;
 			}
-			if (beta <= alpha) break;
+			else
+			{
+				if (max_node[1] <= possible_move[1]) {
+					max_node[0] = possible_move[0];
+					max_node[1] = possible_move[1];
+					beta = std::min(max_node[1], beta);
+				}
+				if (beta <= alpha) break;
+			}
+		}
+		else		// minimizes
+		{
+			if (depth % 2 == 1) {
+				if (max_node[1] <= possible_move[1]) {
+					max_node[0] = possible_move[0];
+					max_node[1] = possible_move[1];
+					alpha = std::max(max_node[1], alpha);
+				}
+				if (beta <= alpha) break;
+			}
+			else
+			{
+				if (max_node[1] <= possible_move[1]) {
+					max_node[0] = possible_move[0];
+					max_node[1] = possible_move[1];
+					beta = std::min(max_node[1], beta);
+				}
+				if (beta <= alpha) break;
+			}
 		}
 	}
 	return max_node;

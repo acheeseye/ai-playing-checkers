@@ -8,13 +8,15 @@
 #include "board.h"
 #include "NeuralNetwork_PERF.h"
 #include "offspringproducer.h"
-#include "gnugraph\GnuGraph.h"
 #include "checkers.hpp"
 #include "checkers_client.hpp"
+#include "neuralnet.hpp"
+#include "../filehandler.h"
+
+#include <SFML\Graphics.hpp>
+#include "gnugraph\GnuGraph.h"
 
 #include <time.h>
-#include <SFML\Graphics.hpp>
-
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -99,6 +101,20 @@ int mouse_selected_index_converter(int mouse_selected_index, int mouse_index_x, 
 		return return_index;
 }
 
+int find_move(const vector<int> & move, temp_Board t, const int i)
+{
+	t.move_piece(i);
+	vector<int> state = t.get_board_as_vector();
+	if(move == state)
+	{
+		return i;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
 string adjust_time(int unit)
 {
 	string str;
@@ -118,11 +134,13 @@ void fn_play_checkers()
 	// SETTINGS ******************************************
 	//****************************************************
 	const auto red_is_ai = true;
-	const auto black_is_ai = false;
+	const auto black_is_ai = true;
+	const auto red_pc = false;
+	const auto black_pc = true;
 	const int starting_player = _RED_;
-	const int ply = 100;
-	const string ai_topo = R"(ai-playing-checkers\nn_topologies\GEN0\nn1_brunette26_topology.txt)";
-	const int random_move_count = 0;
+	const int ply = 10;
+	const string ai_topo = R"(ai-playing-checkers\nn_topologies\GEN4\nn21_brunette26_topology.txt)";
+	const int random_move_count = 3;
 	const int ai_wait_time = 300;
 	//GLOBAL_DO_WRITE = false;
 	//****************************************************
@@ -164,10 +182,10 @@ void fn_play_checkers()
 
 	temp_Board board(starting_player);
 	OffspringProducer osp;
-	osp.set_topology(ai_topo);
-	NeuralNetwork_PERF nnp(_RED_);
-	nnp.set_topology(osp.get_topology());
-	board.write_board_to_file(to_file);
+	FileHandler fh;
+
+	fh.set_file(ai_topo);
+	skynet::neuralnet_t nn({32, 40, 10, 1},fh.get_weights(), fh.get_king());
 
 	// declarations, initializations, GUI settings
 	int next_move;
@@ -269,10 +287,9 @@ void fn_play_checkers()
 		// AI movement
 		if (window_loop_cycles > ai_wait_time)
 		{
+			double val;
 			if (red_is_ai && board.get_Player() == _RED_ && !board.get_move_list().empty())
 			{
-				ab_eval_count = 0;
-				mms_eval_count = 0;
 				if (random_moves_made < random_move_count)
 				{
 					next_move = rand() % board.get_move_list().size();
@@ -282,21 +299,25 @@ void fn_play_checkers()
 				{
 
 					//vector<double> min_max_move = min_max_search(nnp, board, 1);
-					
-					vector<double> alpha_beta_move = alpha_beta(nnp, board, 6, -999999, 999999);
-					vector<double> min_max_move = min_max_search(nnp, board, 6);
-					next_move = alpha_beta_move[0];
-					cout << "alpha beta move: " << alpha_beta_move[0] << " "<<alpha_beta_move[1]<< endl;
+					if(red_pc)
+					{
+						vector<int> pcmove = piece_count_search(board, ply);
+						next_move = pcmove[0];
+						val = pcmove[1];
+					}
+					else
+					{
+						vector<double> alpha_beta_move = alpha_beta(nn, board, 6, false, -999999, 999999);
+						next_move = alpha_beta_move[0];
+						val = alpha_beta_move[1];
+					}
+					cout << "red alpha beta move: id(" << next_move << ") val(" << val << ")" << endl;
 					//double val = min_max_move[1];
 				
 					//cout << "chosen: " << next_move << " " << val << endl;
 				
 				}
 				board.move_piece(next_move);
-				board.write_board_to_file(to_file);
-				cout << "mms eval count: " << mms_eval_count << endl;
-				cout << "ab eval count: " << ab_eval_count << endl;
-				//LNE_fout << "gen" << osp.get_current_generation_id() << ": " << eval_count << endl;
 				window_loop_cycles = 0;
 			}
 			else if (black_is_ai && board.get_Player() == _BLACK_ && !board.get_move_list().empty())
@@ -307,12 +328,21 @@ void fn_play_checkers()
 					random_moves_made++;
 				}
 				else {
-					vector<int> min_max_move = piece_count_search(board, ply);
-					next_move = min_max_move.at(0);
-					int val = min_max_move.at(1);
+					if(black_pc)
+					{
+						vector<int> pcmove = piece_count_search(board, 6);
+						next_move = pcmove[0];
+						val = pcmove[1];
+					}
+					else
+					{
+						vector<double> min_max_move = alpha_beta(nn, board, ply, true, -999999, 999999);
+						next_move = min_max_move.at(0);
+						val = min_max_move[1];
+					}
+					cout << "black alpha beta move: id(" << next_move << ") val(" << val <<  ")" << endl;
 				}
 				board.move_piece(next_move);
-				board.write_board_to_file(to_file);
 				window_loop_cycles = 0;
 			}
 		}
@@ -574,6 +604,7 @@ string process_to_json_string(const vector<int> & board)
 			cout << "INVALID INT DETECTED" << ibuf << endl;
 		}
 	}
+	cout << endl;
 	return ret_str;
 }
 
@@ -1294,8 +1325,8 @@ int main() {
 	{
 		// SETTINGS **************************************
 		//************************************************
-		int ply = 8;
-		int gens_to_train = 100;
+		int ply = 6;
+		int gens_to_train = 5;
 		//************************************************
 		//************************************************
 
@@ -1304,18 +1335,15 @@ int main() {
 		ofstream result_out;
 		ofstream LNE_fout;
 		OffspringProducer osp;
-		NeuralNetwork_PERF nnpr(_RED_);	// network for red player (active network)
-		NeuralNetwork_PERF nnpb(_BLACK_);	// network for black player (oppposing network)
-		vector<double> nnpr_topo;
-		vector<double> nnpb_topo;
+		//NeuralNetwork_PERF nnpr(_RED_);	// network for red player (active network)
+		//NeuralNetwork_PERF nnpb(_BLACK_);	// network for black player (oppposing network)
+		FileHandler fhand;
 		int oppo_list[GLOBAL_OPPO_COUNT];
 
-		//LNE_fout.open("ai-playing-checkers\\nn_topologies\\LNE.txt", ofstream::out | ofstream::app);
 		result_out.open("ai-playing-checkers\\nn_topologies\\timing.txt", ofstream::out | ofstream::trunc);
 
 		osp.reset_counter();
 		cout.precision(6);
-		//LNE_fout.precision(4);
 
 		std::random_device r;
 		std::default_random_engine e1(r());
@@ -1333,7 +1361,9 @@ int main() {
 			cout << "training GEN" << gen << "..." << endl;
 			const auto gen_str = to_string(gen);
 			const auto gen_wrapper = "ai-playing-checkers\\nn_topologies\\GEN" + gen_str;
-			const auto result_txt = gen_wrapper + "\\_result.txt";
+			const auto result_txt = gen_wrapper + "\\games_played\\_result.txt";
+
+			// iterate through all 30 networks
 			for (auto active_nn_id = 0; active_nn_id < GLOBAL_MAX_POPULATION_PER_GEN; ++active_nn_id)
 			{
 				string result_out = to_string(active_nn_id);
@@ -1368,10 +1398,17 @@ int main() {
 				active_nn_topo += "\\nn";
 				active_nn_topo += to_string(active_nn_id);
 				active_nn_topo += "_brunette26_topology.txt";
-				nnpr_topo.clear();
-				osp.set_topology(active_nn_topo);
-				nnpr_topo = osp.get_topology();
-				nnpr.set_topology(nnpr_topo);
+
+				const vector<size_t> topo_layout { 32, 40, 10, 1 };
+				try { fhand.set_file(active_nn_topo); }
+				catch (...)
+				{
+					cout << "fhand set_file throw for active" << endl;
+				}
+
+
+				skynet::neuralnet_t nnred(topo_layout, fhand.get_weights(), fhand.get_king()); 
+
 				for (auto i = 0; i < GLOBAL_OPPO_COUNT; ++i) {
 					const auto oppo_nn_id = oppo_list[i];
 
@@ -1381,10 +1418,14 @@ int main() {
 					against_nn_topo += "\\nn";
 					against_nn_topo += to_string(oppo_nn_id);
 					against_nn_topo += "_brunette26_topology.txt";
-					nnpb_topo.clear();
-					osp.set_topology(against_nn_topo);
-					nnpb_topo = osp.get_topology();
-					nnpb.set_topology(nnpb_topo);
+
+					try { fhand.set_file(against_nn_topo); }
+					catch (...)
+					{
+						cout << "fhand set file throw for against" << endl;
+					}
+
+					skynet::neuralnet_t nnblk(topo_layout, fhand.get_weights(), fhand.get_king());
 
 					string game_played_destination = "ai-playing-checkers\\nn_topologies\\GEN" + gen_str;
 					game_played_destination += "\\games_played\\";
@@ -1397,7 +1438,7 @@ int main() {
 					temp_Board board(_BLACK_); // black is starting player
 					const int random_move_count = 3;
 					int move_count = 0;
-					int next_move;
+					int next_move = -1;
 					// game begin
 					fout.open(game_played_destination, ofstream::out | ofstream::app);
 					if (!fout.is_open())
@@ -1421,7 +1462,7 @@ int main() {
 
 						else if (board.get_Player() == _RED_ && !board.get_move_list().empty()) {
 							//const auto begin_calc = std::chrono::high_resolution_clock::now();
-							vector<double> alpha_beta_move = alpha_beta(nnpr, board, ply, -10000, 10000);
+							vector<double> alpha_beta_move = alpha_beta(nnred, board, ply, false, -10000, 10000);
 							//const auto end_calc = std::chrono::high_resolution_clock::now();
 							//const auto ns_calc = std::chrono::duration_cast<std::chrono::nanoseconds>(end_calc - begin_calc).count();
 							//const auto s_per_calc = double(ns_calc) / double(1000) / double(1000000);
@@ -1430,7 +1471,7 @@ int main() {
 						}
 
 						else if (board.get_Player() == _BLACK_ && !board.get_move_list().empty()) {
-							vector<double> alpha_beta_move = alpha_beta(nnpr, board, ply, -10000, 10000);
+							vector<double> alpha_beta_move = alpha_beta(nnblk, board, ply, true, -10000, 10000);
 							next_move = alpha_beta_move[0];
 
 							//const auto begin_calc = std::chrono::high_resolution_clock::now();
@@ -1442,7 +1483,7 @@ int main() {
 							//next_move = min_max_move[0];
 						}
 
-						board.move_piece(next_move);
+						if(next_move != -1) board.move_piece(next_move);
 						board.write_board_to_file(fout);
 						move_count++;
 						//const auto move_end = std::chrono::high_resolution_clock::now();
@@ -1488,8 +1529,16 @@ int main() {
 				fout.close();
 			}
 			// after 150 games, advancing generation and producing offspring
-			osp.determine_survivors(result_txt);
-			osp.produce_next_generation();
+			try { osp.determine_survivors(result_txt); }
+			catch (...)
+			{
+				cout << "determine survivor throw" << endl;
+			}
+			try { osp.produce_next_generation(); }
+			catch (...)
+			{
+				cout << "produce next gen throw" << endl;
+			}
 			const auto end_gen = std::chrono::high_resolution_clock::now();
 			const auto ns_gen = std::chrono::duration_cast<std::chrono::nanoseconds>(end_gen - begin_gen).count();
 			const auto min_per_gen = double(ns_gen) / double(1000) / double(1000000) / double(60);
@@ -1543,27 +1592,48 @@ int main() {
 			1,1,1,1,
 			1,1,1,1
 		};
+
+		FileHandler fh;
 		OffspringProducer osp;
-		NeuralNetwork_PERF nnp(_RED_);
+		temp_Board board(_RED_);
 
-		osp.set_topology(ai_topo);
+		fh.set_file(ai_topo);
+		vector<double> weights = fh.get_weights();
+		vector<double> sigmas = fh.get_sigmas();
+		const vector<size_t> topo_layout { 32, 40, 10, 1 };
 
-		nnp.set_topology(osp.get_topology());
-		nnp.calculate();
-		cout << nnp.get_result() << endl;
+		skynet::neuralnet_t nnred(topo_layout, fh.get_weights(), fh.get_king());
+		vector<double> minimax = alpha_beta(nnred, board, 6, false, -10000, 10000);
+		cout << minimax[0] << " " << minimax[1] << endl;
+		//osp.set_topology(ai_topo);
+
+		//nnp.set_topology(osp.get_topology());
+		//nnp.calculate();
+		//cout << nnp.get_result() << endl;
 		return 0;
 	}
 	else if (main_state == NETWORK)
 	{
 		int player_enum;
 		string game_name;
+		FileHandler fh;
+		string topo = "mostrecent\\nn27_brunette26_topology.txt";
+
 		cout << "main_mode NETWORK\n";
+
+		try { fh.set_file(topo); }
+		catch (...)
+		{
+			cout << "exception caught" << endl;
+			return 0;
+		}
+
 		cout << "ENTER THE GAME NAME: ";
 		cin >> game_name;
 		cout << "THIS SIDE NETWORK IS RED(0) OR BLACK(1): ";
 		cin >> player_enum;
 
-		int ply = 8;
+		int ply = 6;
 		int starting_player = _RED_;
 
 		ofstream fout;
@@ -1580,44 +1650,116 @@ int main() {
 
 		auto game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
 		//skynet::checkers::play_game("skynet.cs.uaf.edu", game_name, "rrrrrrrrrrr____r____bbbbbbbbbbbb");
-
-		NeuralNetwork_PERF nnp(player_enum);
+		skynet::neuralnet_t nn({ 32, 40, 10 ,1 }, fh.get_weights(), fh.get_king());
+		int next_move;
 		while (!board.is_over()) {
 			game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
+			string board_to_eval_str;
 
-			cout << game.status << endl;
-			while (game.status != player_enum) { 
-				/* wait */ 
-				//cout << "looping red" << endl;
+			while (game.status != player_enum) {
+				/* wait */
+				cout << "waiting as black" << endl;
+				game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
+			}
+			cout << "turn id" << turn_id << endl;
+
+			if(turn_id == 0 && player_enum == 1)
+			{
+				cout << "moving red's first" << endl;
+				game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
+				board_to_eval_str = game.boards[game.boards.size() - 1];
+				cout << board_to_eval_str << endl;
+				vector<int> ene_move = process_to_nn_vec(board_to_eval_str);
+				auto possible = board.get_move_list();
+				for(auto p : possible)
+					for (auto pp : p)
+					{
+						cout << pp << endl;
+					}
+				int ene_move_id;
+				for(auto i = 0; i < possible.size(); ++i)
+				{
+					if(find_move(ene_move, board, i) != -1)
+					{
+						cout << "found" << endl;
+						ene_move_id = i;
+						break;
+					}
+					else
+					{
+						cout << "invalid detect" << endl;
+					}
+				}
+				board.move_piece(ene_move_id);
+				turn_id++;
+				cout << "red first ok" << endl;
 			}
 
-			string board_to_eval_str = game.boards[turn_id]; // to pass into an eval func
-			vector<int> move_pair = piece_count_search(board, ply);
-			int next_move = move_pair[0];
-			board.move_piece(next_move);
-			//board.write_board_to_file(fout);
-			vector<int> current_move = board.get_board_as_vector();
-			string skynet_input = process_to_json_string(current_move);
-			skynet::checkers::play_game("skynet.cs.uaf.edu", game_name, skynet_input);
-			turn_id++;
-
+			if(turn_id <= 3)
+			{
+				cout << "random move" << endl;
+				next_move = rand() % board.get_move_list().size();
+				board.move_piece(next_move);
+				cout << "called move" << endl;
+				vector<int> current_move = board.get_board_as_vector();
+				string skynet_input = process_to_json_string(current_move);
+				cout << "sending" << endl;
+				skynet::checkers::play_game("skynet.cs.uaf.edu", game_name, skynet_input);
+				turn_id++;
+				cout << "random ok" << endl;
+			}
+			else {
+				cout << "normal move" << endl;
+				board_to_eval_str = game.boards[game.boards.size() - 1]; // to pass into an eval func
+				vector<int> input_board = process_to_nn_vec(board_to_eval_str);
+				//vector<int> move_pair = piece_count_search(board, ply);
+				vector<double> move_pair = alpha_beta(nn, board, ply, false, -999999, 999999);
+				next_move = move_pair[0];
+				board.move_piece(next_move);
+				//board.write_board_to_file(fout);
+				vector<int> current_move = board.get_board_as_vector();
+				string skynet_input = process_to_json_string(current_move);
+				skynet::checkers::play_game("skynet.cs.uaf.edu", game_name, skynet_input);
+				turn_id++;
+				cout << "normal ok" << endl;
+			}
+		
 			game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
 
-			cout << game.status << endl;
+			while (game.status != player_enum)
+			{
+				cout << "waiting as red" << endl;
+				game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
 
-			while (game.status != player_enum+1) { 
-				/* wait */
 			}
 
+			cout << "process enemy" << endl;
 			board_to_eval_str = game.boards[turn_id]; // to pass into an eval func
-			move_pair = piece_count_search(board, ply);
-			next_move = move_pair[0];
-			board.move_piece(next_move);
-			//board.write_board_to_file(fout);
-			current_move = board.get_board_as_vector();
-			skynet_input = process_to_json_string(current_move);
-			skynet::checkers::play_game("skynet.cs.uaf.edu", game_name, skynet_input);
+			vector<int> ene_move = process_to_nn_vec(board_to_eval_str);
+			auto possible = board.get_move_list();
+			int ene_move_id;
+			for(auto i = 0; i < possible.size(); ++i)
+			{
+				if(find_move(ene_move, board, i) != -1)
+				{
+					ene_move_id = i;
+					break;
+				}
+				else
+				{
+					cout << "invalid detect" << endl;
+				}
+			}
+			board.move_piece(ene_move_id);
 			turn_id++;
+			//vector<int> move_pair2 = piece_count_search(board, ply);
+			//next_move = move_pair2[0];
+			//board.move_piece(next_move);
+			////board.write_board_to_file(fout);
+			//current_move = board.get_board_as_vector();
+			//skynet_input = process_to_json_string(current_move);
+			//skynet::checkers::play_game("skynet.cs.uaf.edu", game_name, skynet_input);
+			//turn_id++;
 		}
 		//auto game000 = skynet::checkers::info_game("skynet.cs.uaf.edu", "000");
 		//std::cout << "test " << std::to_string(game000.status) << game000.status << std::endl;

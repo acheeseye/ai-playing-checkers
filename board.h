@@ -10,6 +10,7 @@
 #define _INCLUDED_BOARD_H_
 
 #include "NeuralNetwork_PERF.h"
+#include "./neuralnet.hpp"
 
 #include <SFML\Graphics.hpp>
 #include <vector>
@@ -100,11 +101,14 @@ class temp_Board
 public:
 	temp_Board(int starting_player); //default constructor
 	temp_Board(vector<int> board, int player);
-	temp_Board(temp_Board &) = default; //copy constructor, useful for recursion
+	temp_Board(const temp_Board & t) = default; //copy constructor, useful for recursion
 
 	vector<vector<int>> & generate_moves(); //generates list of moves
 	bool operator==(const temp_Board &) const;
 	vector<vector<int>>& get_move_list();
+
+	void set_board(vector<int> board);
+	int find_move(const vector<int> & move);
 
 	int piece_count_eval();
 	pair<int, int> count_pieces();
@@ -162,9 +166,9 @@ public:
 	//friend vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth); //ist entry is move, 2nd is value
 	//friend vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta);
 	friend vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth); //ist entry is move, 2nd is value
-	friend vector<double> alpha_beta(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth, double alpha, double beta);
-private:
+	friend vector<double> alpha_beta(skynet::neuralnet_t & nn, temp_Board & current_board, int depth, bool is_black, double alpha, double beta);
 	int m_number_of_children;
+private:
 };
 
 #endif // !_INCLUDED_BOARD_H_
