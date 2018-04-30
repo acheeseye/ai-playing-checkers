@@ -208,12 +208,12 @@ void fn_play_checkers()
 	const auto red_is_ai = true;
 	const auto black_is_ai = true;
 	const auto red_pc = false;
-	const auto black_pc = true;
+	const auto black_pc = false;
 	const int starting_player = _RED_;
 	const int ply = 10;
 	const string ai_topo = R"(ai-playing-checkers\nn_topologies\GEN4\nn21_brunette26_topology.txt)";
-	const int random_move_count = 3;
-	const int ai_wait_time = 300;
+	const int random_move_count = 0;
+	const int ai_wait_time = 0;
 	//GLOBAL_DO_WRITE = false;
 	//****************************************************
 	//****************************************************
@@ -369,7 +369,9 @@ void fn_play_checkers()
 				}
 				else
 				{
-
+					call_count = 0;
+					ab_eval_count = 0;
+					mms_eval_count = 0;
 					//vector<double> min_max_move = min_max_search(nnp, board, 1);
 					if(red_pc)
 					{
@@ -379,7 +381,13 @@ void fn_play_checkers()
 					}
 					else
 					{
-						vector<double> alpha_beta_move = alpha_beta(nn, board, 6, false, -999999, 999999);
+						//vector<double> alpha_beta_move = min_max_search(nn, board, ply);
+						vector<double> alpha_beta_move = alpha_beta(nn, board, ply, false, -999999, 999999);
+
+						cout << "ply " << ply << endl;
+						cout << "call count: " << call_count << endl;
+						cout << "eval count: " << ab_eval_count << endl;
+
 						next_move = alpha_beta_move[0];
 						val = alpha_beta_move[1];
 					}
@@ -408,7 +416,7 @@ void fn_play_checkers()
 					}
 					else
 					{
-						vector<double> min_max_move = alpha_beta(nn, board, ply, true, -999999, 999999);
+						vector<double> min_max_move = alpha_beta(nn, board, 2, true, -999999, 999999);
 						next_move = min_max_move.at(0);
 						val = min_max_move[1];
 					}
@@ -1617,7 +1625,7 @@ int main() {
 		int player_enum;
 		string game_name;
 		FileHandler fh;
-		string topo = "mostrecent\\nn27_brunette26_topology.txt";
+		string topo = "ai-playing-checkers\\nn_topologies\\GEN4\\nn21_brunette26_topology.txt";
 
 		cout << "main_mode NETWORK\n";
 
@@ -1633,7 +1641,11 @@ int main() {
 		cout << "THIS SIDE NETWORK IS RED(0) OR BLACK(1): ";
 		cin >> player_enum;
 
-		int ply = 6;
+		bool nnbool;
+		if (player_enum == 1) { nnbool = false; }
+		else { nnbool = true; }
+
+		int ply = 10;
 		int starting_player = _RED_;
 
 		ofstream fout;
@@ -1658,7 +1670,7 @@ int main() {
 
 			while (game.status != player_enum) {
 				/* wait */
-				cout << "waiting as black" << endl;
+				//cout << "waiting as black" << endl;
 				game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
 			}
 			cout << "turn id" << turn_id << endl;
@@ -1723,7 +1735,7 @@ int main() {
 
 			while (game.status != player_enum)
 			{
-				cout << "waiting for other" << endl;
+				//cout << "waiting for other" << endl;
 				game = skynet::checkers::info_game("skynet.cs.uaf.edu", game_name);
 				if(board.is_over())
 				{

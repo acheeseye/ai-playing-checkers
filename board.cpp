@@ -1029,16 +1029,12 @@ std::vector<int> piece_count_search(temp_Board & current_board, int depth)
 	return max_node;
 }
 
-std::vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & current_board, int depth)
+std::vector<double> min_max_search(skynet::neuralnet_t & nn, temp_Board & current_board, int depth)
 {
-	//call_count++;
+	call_count++;
 	if (depth == 0) {
-		vector<double> answer = { 0, 0 };
-		nnp.set_input_layer(current_board.get_board_as_vector());
-		nnp.calculate();
 		mms_eval_count++;
-		answer[1] = nnp.get_result();
-		return answer;
+		return { 0 , nn.evaluate(current_board.get_board_as_vector(), 1) };
 	}
 	const Board_tree tree(current_board);
 	vector<double> max_node = { 0, -10000 }; // max_node = { move_id, move_value }
@@ -1060,7 +1056,7 @@ std::vector<double> min_max_search(NeuralNetwork_PERF & nnp, temp_Board & curren
 			break;
 		}
 
-		auto possible_move = min_max_search(nnp, next_board, depth - 1); // next_board has called move_piece
+		auto possible_move = min_max_search(nn, next_board, depth - 1); // next_board has called move_piece
 		possible_move[0] = i; // setting move ID
 		if (max_node[1] <= possible_move[1])
 		{
@@ -1159,8 +1155,10 @@ vector<double> alpha_beta(skynet::neuralnet_t & nn, temp_Board & current_board, 
 		}
 		return best;
 	}*/
+	call_count++;
 	if (depth == 0) {
 		double value = nn.evaluate(current_board.get_board_as_vector(), 1);
+		ab_eval_count++;
 		vector<double> answer = { 0, value };		
 		return answer;
 	}
